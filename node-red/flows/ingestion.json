@@ -168,11 +168,12 @@
             "walk_ldi"
         ],
         "uncaught": false,
-        "x": 810,
-        "y": 620,
+        "x": 790,
+        "y": 600,
         "wires": [
             [
-                "00595ec98b745e60"
+                "00595ec98b745e60",
+                "babc8f1b594629d0"
             ]
         ]
     },
@@ -252,8 +253,8 @@
         "name": "Global Catch",
         "scope": null,
         "uncaught": false,
-        "x": 830,
-        "y": 660,
+        "x": 550,
+        "y": 600,
         "wires": [
             []
         ]
@@ -275,7 +276,7 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 230,
+        "x": 250,
         "y": 380,
         "wires": [
             [
@@ -288,14 +289,14 @@
         "type": "function",
         "z": "ims-tab-v5",
         "name": "Load Device Registry",
-        "func": "const pool = global.get('pgPool');\nif (!pool) { node.error('pgPool not available in global context'); return null; }\n\nconst sql = 'SELECT machine_id, hostname, community, snmp_port FROM public.machines WHERE enabled = true';\n\npool.query(sql, [], function(err, result) {\n    if (err) { node.warn('Device Registry: ' + err.message + ' — using fallback defaults'); return; }\n    \n    const registry = {};\n    if (result && result.rows) {\n        result.rows.forEach(row => {\n            registry[row.machine_id] = {\n                hostname: row.hostname || row.machine_id,\n                community: row.community || 'public'||'Netk@' ,\n                snmp_port: row.snmp_port || 161\n            };\n        });\n    }\n\n    const g = global.get('deviceRegistry') || {};\n    Object.assign(g, registry);\n    global.set('deviceRegistry', g);\n    node.log('Device registry loaded: ' + Object.keys(registry).length + ' devices');\n});\nreturn null;",
+        "func": "const pool = global.get('pgPool');\nif (!pool) { node.error('pgPool not available in global context'); return null; }\n\nconst sql = 'SELECT machine_id, hostname, community, snmp_port FROM public.machines WHERE enabled = true';\n\npool.query(sql, [], function(err, result) {\n    if (err) { node.warn('Device Registry: ' + err.message + ' — using fallback defaults'); return; }\n    \n    const registry = {};\n    if (result && result.rows) {\n        result.rows.forEach(row => {\n            registry[row.machine_id] = {\n                hostname: row.hostname || row.machine_id,\n                community: row.community || 'Netk@' ,\n                snmp_port: row.snmp_port || 161\n            };\n        });\n    }\n\n    const g = global.get('deviceRegistry') || {};\n    Object.assign(g, registry);\n    global.set('deviceRegistry', g);\n    node.log('Device registry loaded: ' + Object.keys(registry).length + ' devices');\n});\nreturn null;",
         "outputs": 0,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 540,
+        "x": 560,
         "y": 380,
         "wires": []
     },
@@ -311,7 +312,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 680,
+        "x": 700,
         "y": 480,
         "wires": [
             [
@@ -331,7 +332,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1760,
+        "x": 1780,
         "y": 500,
         "wires": [
             []
@@ -379,6 +380,92 @@
         "wires": [
             [
                 "a2d8dcc11923e637"
+            ]
+        ]
+    },
+    {
+        "id": "7d26e065645e3f55",
+        "type": "http in",
+        "z": "ims-tab-v5",
+        "name": "K6 Stress Endpoint",
+        "url": "/k6-inject",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 1170,
+        "y": 260,
+        "wires": [
+            [
+                "a78883e2a3582eef",
+                "04eaa4d003934907"
+            ]
+        ]
+    },
+    {
+        "id": "04eaa4d003934907",
+        "type": "http response",
+        "z": "ims-tab-v5",
+        "name": "200 OK",
+        "statusCode": "200",
+        "headers": {},
+        "x": 1380,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "a78883e2a3582eef",
+        "type": "function",
+        "z": "ims-tab-v5",
+        "name": "Map K6 to V2 Format",
+        "func": "msg.topic = msg.payload.machine_id;\nmsg.payload = msg.payload.metrics;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1400,
+        "y": 240,
+        "wires": [
+            [
+                "697d8dfd1a168220"
+            ]
+        ]
+    },
+    {
+        "id": "024375cb3ff070bf",
+        "type": "debug",
+        "z": "ims-tab-v5",
+        "name": "Send Notification",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1460,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "babc8f1b594629d0",
+        "type": "function",
+        "z": "ims-tab-v5",
+        "name": "Format Error Alert (Line/Telegram)",
+        "func": "const mid = msg.machine_id || msg.topic || 'Unknown Device';\nconst errorMsg = msg.error ? msg.error.message : 'Timeout/Disconnect';\n\n// ประเมินความเสี่ยงและระบุชื่อเซ็นเซอร์เฉพาะตัว\nlet sensor = \"Unknown Sensor\";\nlet risk = \"Low\";\n\nswitch(msg._walker) {\n    case 'cpu': \n        sensor = \"CPU\"; \n        risk = \"Medium (เสี่ยงระบบอืด)\"; \n        break;\n    case 'storage': \n        sensor = \"Storage/RAM\"; \n        risk = \"High (เสี่ยงเซิร์ฟเวอร์ค้าง)\"; \n        break;\n    case 'network': \n        sensor = \"Network Interface\"; \n        risk = \"Critical (เสี่ยงข้อมูลสูญหาย/เชื่อมต่อไม่ได้)\"; \n        break;\n    case 'temp': \n        sensor = \"Temperature\"; \n        risk = \"Critical (เสี่ยงไฟไหม้/เครื่องน็อค)\"; \n        break;\n    case 'ldi': \n        sensor = \"LDI Environment\"; \n        risk = \"Medium (เสี่ยงสภาพแวดล้อมผิดปกติ)\"; \n        break;\n}\n\nmsg.payload = `🚨 [IMS ALERT - ${sensor} Error]\\n⚠️ Risk Level: ${risk}\\n💻 Device: ${mid}\\n❌ Detail: ${errorMsg}\\n🕒 Time: ${new Date().toISOString()}`;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 640,
+        "wires": [
+            [
+                "024375cb3ff070bf"
             ]
         ]
     },
@@ -487,55 +574,6 @@
         "wires": [
             [
                 "b408fd2565f6307e"
-            ]
-        ]
-    },
-    {
-        "id": "7d26e065645e3f55",
-        "type": "http in",
-        "z": "ims-tab-v5",
-        "name": "K6 Stress Endpoint",
-        "url": "/k6-inject",
-        "method": "post",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 170,
-        "y": 660,
-        "wires": [
-            [
-                "a78883e2a3582eef",
-                "04eaa4d003934907"
-            ]
-        ]
-    },
-    {
-        "id": "04eaa4d003934907",
-        "type": "http response",
-        "z": "ims-tab-v5",
-        "name": "200 OK",
-        "statusCode": "200",
-        "headers": {},
-        "x": 360,
-        "y": 700,
-        "wires": []
-    },
-    {
-        "id": "a78883e2a3582eef",
-        "type": "function",
-        "z": "ims-tab-v5",
-        "name": "Map K6 to V2 Format",
-        "func": "msg.topic = msg.payload.machine_id;\nmsg.payload = msg.payload.metrics;\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 380,
-        "y": 660,
-        "wires": [
-            [
-                "697d8dfd1a168220"
             ]
         ]
     }
