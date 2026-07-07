@@ -53,7 +53,9 @@ jobs:
 
       - name: Validate Node-RED Flow JSON
         run: |
-          python3 -c "import json; f=json.load(open('flows-ubuntu.json')); print(f'Source flow valid: {len(f)} nodes')"
+          for f in node-red/flows/*.json; do
+            python3 -c "import json; f=json.load(open('$f')); print(f'Source flow {f} valid: {len(f)} nodes')"
+          done
           if [ -f nodered_data/flows.json ]; then
             python3 -c "import json; f=json.load(open('nodered_data/flows.json')); print(f'Runtime flow valid: {len(f)} nodes')"
           else
