@@ -5,11 +5,11 @@ datasources:
     uid: timescaledb
     type: postgres
     access: proxy
-    url: pgbouncer:5432
+    url: ${POOLER_HOST}:${POOLER_PORT}
     database: ims
     user: ${POSTGRES_USER}
     secureJsonData:
-      password: ${POSTGRES_PASSWORD}
+      password: $__file{/run/secrets/postgres_password}
     jsonData:
       sslmode: disable
       postgresVersion: 1600

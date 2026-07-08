@@ -64,3 +64,4 @@ memory/
 backup_*.sql
 
 docker-compose.override.yaml
+docker-compose.local.yaml

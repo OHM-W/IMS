@@ -41,7 +41,7 @@ services:
       TZ: ${TZ:-Asia/Bangkok}
       POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in .env}
       POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       PGDATA: /var/lib/postgresql/data/pgdata
     secrets:
       - postgres_password
@@ -97,7 +97,7 @@ services:
     <<: *default-restart
     init: true
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@timescaledb:5432/${POSTGRES_DB}
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST:-timescaledb}:${DB_PORT:-5432}/${POSTGRES_DB}
       POOL_MODE: transaction
       MAX_CLIENT_CONN: 200
       DEFAULT_POOL_SIZE: 20
@@ -107,7 +107,7 @@ services:
       CLIENT_IDLE_TIMEOUT: 300
       LOG_CONNECTIONS: "0"
       LOG_DISCONNECTIONS: "0"
-      AUTH_TYPE: plain
+      AUTH_TYPE: scram-sha-256
     deploy:
       resources:
         limits: *resource-small
@@ -191,19 +191,21 @@ services:
     environment:
       TZ: ${TZ:-Asia/Bangkok}
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:?set GRAFANA_ADMIN_USER in .env}
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env}
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin_password
       POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POOLER_HOST: ${POOLER_HOST:-pgbouncer}
+      POOLER_PORT: ${POOLER_PORT:-5432}
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_AUTH_ANONYMOUS_ENABLED: "false"
       GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-http://localhost:3000}
       GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-piechart-panel"
-      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/ims-noc-overview.json
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/ims-custom-machine.json
       GF_SECURITY_COOKIE_SECURE: "false"
       GF_SECURITY_STRICT_TRANSPORT_SECURITY: "false"
       GF_LOG_LEVEL: "info"
     secrets:
       - grafana_admin_password
+      - postgres_password
     volumes:
       - grafana_data:/var/lib/grafana
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
@@ -293,11 +295,10 @@ services:
       CREDENTIAL_SECRET: ${NODE_RED_CREDENTIAL_SECRET:?set NODE_RED_CREDENTIAL_SECRET in .env}
       NODE_RED_ADMIN_USER: ${NODE_RED_ADMIN_USER:-admin}
       NODE_RED_ADMIN_PASSWORD_HASH: ${NODE_RED_ADMIN_PASSWORD_HASH:-}
-      PGHOST: pgbouncer
-      PGPORT: "5432"
+      PGHOST: ${POOLER_HOST:-pgbouncer}
+      PGPORT: ${POOLER_PORT:-5432}
       PGDATABASE: ${POSTGRES_DB}
       PGUSER: ${POSTGRES_USER}
-      PGPASSWORD: ${POSTGRES_PASSWORD}
     secrets:
       - postgres_password
     ports:

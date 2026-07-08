@@ -558,7 +558,7 @@ module.exports = {
                  port: parseInt(process.env.PGPORT || '5432'),
                  database: process.env.PGDATABASE || 'ims',
                  user: process.env.PGUSER || 'ims_admin',
-                 password: process.env.PGPASSWORD || 'admin1234',
+                 password: require('fs').readFileSync('/run/secrets/postgres_password', 'utf8').trim(), // [SEC-FIX] Read securely from Docker secret
                  max: 10,
                  idleTimeoutMillis: 10000,
                  connectionTimeoutMillis: 10000
