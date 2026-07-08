@@ -18,6 +18,12 @@ jobs:
       - name: Seed .env for validation
         run: cp .env.example .env
 
+      - name: Mock Docker Secrets
+        run: |
+          mkdir -p secrets
+          echo "mock_password" > secrets/postgres_password.txt
+          echo "mock_password" > secrets/grafana_admin_password.txt
+
       - name: Validate Docker Compose
         run: docker compose config -q
 
