@@ -1,169 +1,239 @@
-<div align="center">
+# 🏭 IMS — Infrastructure Monitoring System
 
-# IMS — Infrastructure Monitoring System
-
-### Enterprise-Grade NOC Monitoring for 1000+ Nodes
-
-[![Docker](https://img.shields.io/badge/Docker-24.0-blue?logo=docker&logoColor=white)](https://www.docker.com/)
-[![Grafana](https://img.shields.io/badge/Grafana-11.1-F46800?logo=grafana&logoColor=white)](https://grafana.com/)
-[![Node-RED](https://img.shields.io/badge/Node--RED-4.0-8F0000?logo=nodered&logoColor=white)](https://nodered.org/)
-[![TimescaleDB](https://img.shields.io/badge/TimescaleDB-2.x-316192?logo=postgresql&logoColor=white)](https://www.timescale.com/)
-[![Prometheus](https://img.shields.io/badge/Prometheus-2.55-E6522C?logo=prometheus&logoColor=white)](https://prometheus.io/)
-[![K6](https://img.shields.io/badge/K6-Load--Testing-7B61FF?logo=k6&logoColor=white)](https://k6.io/)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-
-![Architecture](https://img.shields.io/badge/Architecture-Cyberpunk_HUD-00F2FE)
-![Uptime](https://img.shields.io/badge/Uptime-99.9%25-00FF87)
-![Nodes](https://img.shields.io/badge/Scalable-1000%2B_Nodes-FF003C)
+> **ระบบ Real-time Monitoring สำหรับ IT Infrastructure ขององค์กร**
+> ออกแบบและพัฒนาโดยทีมงาน internship เพื่อเรียนรู้เครื่องมือ monitoring ระดับ Enterprise
 
 ---
 
-**IMS** is a production-grade, real-time IT infrastructure monitoring system built for Enterprise NOC operations. It collects SNMP telemetry from 1000+ machines, processes it through an asynchronous Node-RED pipeline, stores it in TimescaleDB with continuous aggregates, and visualizes it via a cyberpunk-themed Grafana HUD — all orchestrated by Docker Compose.
+<div align="center">
+
+![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)
+![Version](https://img.shields.io/badge/Version-1.0.0-blue)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![Stack](https://img.shields.io/badge/Stack-Docker--Compose-orange)
+![Database](https://img.shields.io/badge/DB-TimescaleDB-purple)
+![Monitoring](https://img.shields.io/badge/Monitoring-Prometheus--Grafana-red)
 
 </div>
 
 ---
 
-## Architecture
+## 📋 Executive Summary
 
-```
-┌─────────────┐     ┌───────────┐     ┌─────────────┐     ┌────────────┐
-│  SNMP Poll   │────▶│  Node-RED  │────▶│ TimescaleDB  │────▶│   Grafana   │
-│  (5-thread)  │     │  Async I/O  │     │  CAGGs+Raw   │     │  Cyberpunk  │
-└─────────────┘     └───────────┘     └─────────────┘     └────────────┘
-                         │                      │
-                    ┌────▼────┐            ┌────▼────┐
-                    │  K6 Load │            │Prometheus│
-                    │  Testing │            │  +Alert  │
-                    └─────────┘            └─────────┘
-```
+**IMS (Infrastructure Monitoring System)** เป็นระบบ monitoring แบบ end-to-end ที่ออกแบบมาเพื่อติดตามสถานะของ IT Infrastructure ขององค์กรแบบ real-time ระบบนี้พัฒนาขึ้นภายใต้กรอบของ internship program เพื่อให้นักศึกษาได้เรียนรู้เครื่องมือ monitoring ที่ใช้จริงในอุตสาหกรรม รวมถึง SNMP protocol, data pipeline architecture, time-series database, และ dashboard visualization
 
-### Data Flow (Macro-to-Micro Paradigm)
+### วัตถุประสงค์ของโครงการ
 
-1. **SNMP Collection** — Node-RED forks 5 parallel walker threads (CPU, Storage, Network, Temperature, LDI) per machine every 10 seconds
-2. **Async Batch Parser** — Aggregates walker results, calculates per-interface Mbps deltas, and performs 30-column parameterized INSERT via `pg` module
-3. **TimescaleDB CAGG** — `telemetry_minute_summary` and `telemetry_hourly_summary` materialize fleet-wide aggregates for 1000x faster dashboard queries
-4. **Grafana HUD** — Fleet Envelope (AVG+MAX), Top-10 Critical Nodes, State-Timeline Z-Score anomaly detection, Donut resource distribution, Linear regression capacity forecasting
-5. **Prometheus + Alertmanager** — 12 scrape targets, inhibition rules, webhook integration (Line/Teams)
-
-### Dashboard Architecture (3 Dashboards)
-
-| Dashboard | Panels | Purpose |
-|-----------|--------|---------|
-| **NOC Overview** | 16 | Executive fleet view: Fleet Envelope, Top-10 Critical Nodes, Network Throughput, LDI Yield Risk |
-| **Engineering Drill-Down** | 21 | Per-machine deep dive: Gauges, Memory/Temp timeseries, LDI manufacturing, Z-Score anomalies, Donut charts |
-| **Capacity Planning** | 16 | Forecasting: Days Until Full (bargauge), Disk/CPU/RAM trends, Z-Score anomaly detection |
-
-**Design System:** Cyberpunk HUD aesthetic — Rajdhani font, `#030407` background, `#00F2FE`/`#00FF87`/`#FF003C` neon palette, glassmorphism panels with corner bracket accents, 2D overlap-free Grid-24 layout.
+| # | วัตถุประสงค์ | สถานะ |
+|---|---|---|
+| 1 | **Real-time Monitoring** — ติดตามสถานะ IT Infrastructure ขององค์กรแบบเรียลไทม์ | ✅ สำเร็จ |
+| 2 | **Health Monitoring** — ตรวจสอบ Server, Network Devices, Services และ Resource Usage อย่างต่อเนื่อง | ✅ สำเร็จ |
+| 3 | **Downtime Reduction** — ลด downtime ด้วยระบบ Alerting ที่ตรวจจับ anomalies และ failures | ✅ สำเร็จ |
+| 4 | **Visibility Dashboard** — สร้าง Dashboard ที่เข้าใจง่ายเพื่อให้ทีม IT เห็นภาพรวมของระบบ | ✅ สำเร็จ |
+| 5 | **Internship Training** — ฝึกอบรมนักศึกษาฝึกงานบนเครื่องมือ monitoring สมัยใหม่ | ✅ สำเร็จ |
 
 ---
 
-## SRE & DevSecOps Triumphs
+## Architecture Overview
 
-### Principle of Least Privilege (PoLP)
-- `grafana_reader` role with read-only access to `public` schema — no admin credentials exposed
-- Direct `ims-timescaledb:5432` connection bypasses PgBouncer SCRAM auth issues
+```mermaid
+graph LR
+    subgraph "Data Collection"
+        A[Network Devices<br/>Servers] -->|SNMP v2c/v3| B[SNMP Simulator<br/>(Dev)]
+    end
 
-### Automated 2D Overlap Prevention
-- Every dashboard panel passes rectangle collision detection before commit
-- Strict bottom-up Y-axis accumulation: `Next Y = Previous Y + Previous H`
-- Zero overlapping panels across all 3 dashboards (verified by automated scanner)
+    subgraph "Data Pipeline"
+        B --> C[Node-RED<br/>5-Thread Walker]
+        C -->|JSON Parse<br/>Mbps Calc| D[PostgreSQL INSERT<br/>via PgBouncer]
+    end
 
-### Technical Debt Eradication
-- Migration files sequenced `001`–`011` with zero duplicate prefixes
-- Node-RED context unified under `nodered_data/` (single source of truth)
-- Documentation consolidated into root-level SSOT guides
-- PgBouncer dead weight removed (direct DB connections)
-- AI prompt artifacts purged from repository
+    subgraph "Storage"
+        D --> E[(TimescaleDB<br/>Hypertable)]
+        E -->|Auto-Refresh| F[(telemetry_minute_summary<br/>Continuous Aggregate)]
+    end
 
-### K6 Stress Testing
-- `db-write-stress.js` — 100-node write throughput via Node-RED `/inject`
-- `grafana-query-stress.js` — 50-user concurrent dashboard query stress
-- Automated results export to JSON for CI/CD integration
+    subgraph "Visualization"
+        F --> G[Grafana<br/>3 Dashboards]
+        G -->|Drill-Down| G1[NOC Overview]
+        G -->|Drill-Down| G2[Engineering]
+        G -->|Drill-Down| G3[Capacity]
+    end
 
----
+    subgraph "Alerting"
+        F --> H[Prometheus<br/>Scraping]
+        H --> I[Alertmanager<br/>Webhooks]
+    end
 
-## Quick Start
+    subgraph "SLA Probing"
+        J[Blackbox Exporter] -->|HTTP/TCP/ICMP| H
+    end
 
-```bash
-# Clone the repository
-git clone https://github.com/PATTANAKORN025/IMS.git
-cd IMS
-
-# Configure environment
-cp .env.example .env
-
-# Launch the complete stack (7 services)
-docker compose up -d
-
-# Wait 40 seconds for full startup
-sleep 40
-
-# Verify all services
-docker compose ps
-
-# Open Grafana
-open http://localhost:3000
+    style A fill:#e1f5fe
+    style E fill:#f3e5f5
+    style G fill:#e8f5e9
+    style H fill:#fff3e0
 ```
 
-**Default credentials:** `admin` / `admin` (change on first login)
+### Tech Stack ที่ใช้
 
-### Available Commands
-
-| Command | Description |
-|---------|-------------|
-| `make up` | Start all services (dev mode with SNMP simulator) |
-| `make down` | Stop all services |
-| `make verify` | Full system health check |
-| `make test-unit` | Run unit tests (56 tests) |
-| `make test-load` | Run K6 load tests |
-| `make backup` | Database backup |
-| `bash scripts/init-migrations.sh` | Apply all migrations to fresh DB |
+| Layer | Technology | หน้าที่ |
+|---|---|---|
+| **Data Collection** | SNMP v2c/v3, Node-RED | เก็บข้อมูลจาก Network Devices และ Servers |
+| **Data Pipeline** | Node-RED Function Nodes | ประมวลผลข้อมูลดิบ, คำนวณ bandwidth, จัดรูปแบบ |
+| **Storage** | TimescaleDB (PostgreSQL) | เก็บข้อมูล time-series พร้อม hypertable optimization |
+| **Visualization** | Grafana | Dashboard แบบ real-time, drill-down, forecasting |
+| **Alerting** | Prometheus + Alertmanager | ตรวจจับ anomalies, ส่ง notification ผ่าน webhook |
+| **Infrastructure** | Docker Compose | Container orchestration สำหรับ dev/prod |
+| **Testing** | K6 Load Testing | ทดสอบ performance และ stress testing |
 
 ---
 
-## Tech Stack
+## 🚀 Key Features
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Orchestration** | Docker Compose | 7-service container orchestration |
-| **Data Collection** | Node-RED + SNMP | Async 5-thread parallel walker pipeline |
-| **Database** | TimescaleDB (PostgreSQL) | Time-series optimized with Continuous Aggregates |
-| **Visualization** | Grafana 11.1 | Cyberpunk HUD dashboards with state-timeline anomalies |
-| **Alerting** | Prometheus + Alertmanager | Metric scraping, inhibition rules, webhook integration |
-| **Load Testing** | K6 | Database write and Grafana query stress testing |
-| **SLA Probing** | Blackbox Exporter | HTTP/TCP/ICMP endpoint monitoring |
+### 📊 Real-time Monitoring
+- ติดตาม **CPU, RAM, Disk, Network (per-interface), Temperature** แบบเรียลไทม์
+- รองรับ **Multiple Machines** ผ่าน device registry pattern (database-driven)
+- **LDI Manufacturing Telemetry**: Throughput, PE, JE, Humidity, Power, Vibration
+
+### ⚡ Zero Downtime Alerting
+- **AIOps Z-Score Anomaly Detection** สำหรับ temperature และ metrics อื่นๆ
+- **Predictive Alerting** ด้วย Linear Regression (regr_slope/regr_intercept)
+- **Smart Inhibition Rules**: Critical alerts suppress lower-severity alerts อัตโนมัติ
+
+### 🎯 Enterprise Dashboard
+- **NOC Overview**: Executive fleet view สำหรับผู้บริหาร
+- **System Overview**: Server health, disk, network, temperature
+- **Engineering Drilldown**: Per-machine deep dive พร้อม per-interface metrics
+- **Capacity Planning**: Forecasting สำหรับ long-term resource planning
+
+### 🛡️ Security & Reliability
+- **SNMP v2c/v3** support (v3 แนะนำสำหรับ production)
+- **PgBouncer** connection pooling สำหรับ database scalability
+- **Docker secrets management** แยก credentials ออกจาก codebase
+- **CI/CD pipeline** พร้อม Gitleaks security scanning
 
 ---
 
-## Database Schema
-
-- **`machine_telemetry`** — 30-column raw telemetry (CPU, RAM, Disk, Network per-interface, Temperature, LDI manufacturing, WiFi)
-- **`telemetry_minute_summary`** — Continuous aggregate: per-minute fleet averages
-- **`telemetry_hourly_summary`** — Continuous aggregate: per-hour fleet rollups
-- **`machines`** — Device registry (machine_id, hostname, community string, SNMP port)
-- **11 idempotent migrations** in `database/migrations/` (001–011)
-
----
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 IMS/
-├── monitoring/grafana/          # Dashboards, datasources, provisioning
-│   └── dashboards/              # 3 JSON dashboard files (source of truth)
-├── nodered_data/                # Node-RED flows, settings, Dockerfile
-│   └── flows/                   # ingestion.json + alerting.json
-├── postgres/init/               # Database init SQL + readonly role
-├── database/migrations/         # 11 sequenced migration files
-├── tests/k6/                    # K6 stress & chaos test scripts
-├── tests/unit/                  # Parser & counter unit tests
-├── scripts/                     # Utility scripts
-└── docs/                        # Architecture, Troubleshooting, Design System
+├── docker-compose.yaml          # Main Docker orchestration
+├── docker-compose.override.yaml # Dev overrides (snmpsim)
+├── docker-compose.prod.yaml     # Production overrides
+├── flows-ubuntu.json            # Node-RED flows (source of truth)
+├── .env.example                 # Environment variables template
+├── secrets/                     # Docker secrets (gitignored)
+├── postgres/
+│   └── init/
+│       └── 001-init-timescaledb.sql  # DB schema + hypertable
+├── database/
+│   └── migrations/              # TimescaleDB migration scripts
+├── monitoring/
+│   ├── grafana/
+│   │   ├── dashboards/          # Grafana dashboard JSON files
+│   │   └── provisioning/        # Grafana datasource provisioning
+│   ├── prometheus/
+│   │   ├── prometheus.yml       # Prometheus scrape config
+│   │   └── rules/               # Alert rules
+│   └── snmpsim/
+│       └── Netk@.snmprec        # SNMP simulator config
+├── node-red/
+│   ├── flows/                   # Split flows (ingestion + alerting)
+│   └── settings-prometheus.js   # Node-RED Prometheus metrics
+├── scripts/
+│   ├── backup-db.sh             # Database backup script
+│   ├── restore-db.sh            # Database restore script
+│   └── verify-deployment.sh     # Post-deploy verification
+├── tests/
+│   └── k6/                      # K6 load/stress tests
+├── docs/                        # Documentation suite
+├── Makefile                     # Build targets
+├── SECURITY.md                  # Security considerations
+├── CHANGELOG.md                 # Version history
+├── CONTRIBUTING.md              # Contribution guidelines
+└── LICENSE                      # MIT License
 ```
 
 ---
 
-## License
+## ⚙️ Quick Start
 
-MIT License — see [LICENSE](LICENSE) for details.
+### Prerequisites
+- Docker Desktop (v4.0+)
+- Docker Compose v2
+- 4GB RAM minimum (8GB recommended)
+
+### 1. Setup
+```bash
+# Clone repository
+git clone [https://github.com/PATTANAKOORN/IMS.git](https://github.com/PATTANAKORN025/IMS.git)
+cd IMS
+
+# Create secrets
+mkdir -p secrets
+echo "your-secure-password" > secrets/postgres_password.txt
+echo "your-grafana-password" > secrets/grafana_admin_password.txt
+
+# Copy environment template
+cp .env.example .env
+```
+
+### 2. Start Services
+```bash
+# Development mode (with SNMP simulator)
+docker compose up -d
+
+# Production mode
+docker compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d
+```
+
+### 3. Verify
+```bash
+# Check all containers
+docker compose ps
+
+# Verify data flow (wait 30s after start)
+docker compose exec timescaledb psql -U ims_admin -d ims -c \
+  "SELECT machine_id, COUNT(*) FROM public.machine_telemetry GROUP BY machine_id;"
+```
+
+### 4. Access Dashboards
+- **Grafana**: http://localhost:3000 (admin/admin)
+- **Node-RED**: http://localhost:1880
+- **Prometheus**: http://localhost:9090
+- **Alertmanager**: http://localhost:9093
+
+---
+
+## 📚 Documentation
+
+| Document | Description |
+|---|---|
+| [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) | Technical topology, data flow, alerting pipeline |
+| [Admin Manual](docs/admin/ADMIN_MANUAL.md) | Docker management, device registry, troubleshooting guide |
+| [User Manual](docs/user/USER_MANUAL.md) | Dashboard guide, metrics interpretation, incident response |
+| [Business Value & ROI](docs/business/BUSINESS_VALUE_ROI.md) | ROI analysis, cost savings, executive summary |
+| [Internship Report](docs/business/INTERNSHIP_REPORT_SUMMARY.md) | Learning outcomes, business value, academic review |
+| [Deployment Readiness](docs/deployment-readiness.md) | Pre-deployment checklist, infrastructure requirements |
+| [Scaling Plan](docs/scaling-plan.md) | Performance optimization, 1000+ machines roadmap |
+
+---
+
+## 🤝 Contributing
+
+ดู [CONTRIBUTING.md](CONTRIBUTING.md) สำหรับ guidelines การร่วมพัฒนา
+
+## 📄 License
+
+MIT License — ดู [LICENSE](LICENSE) สำหรับรายละเอียด
+
+---
+
+<div align="center">
+
+**Built with ❤️ by IMS Internship Team**
+
+*Industrial NOC Monitoring System — Production-Ready Since 2026*
+
+</div>
