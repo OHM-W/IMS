@@ -1,5 +1,7 @@
 apiVersion: 1
-
+deleteDatasources:
+  - name: TimescaleDB
+    orgId: 1
 datasources:
   - name: TimescaleDB
     uid: timescaledb
@@ -7,9 +9,9 @@ datasources:
     access: proxy
     url: ${POOLER_HOST}:${POOLER_PORT}
     database: ims
-    user: ${POSTGRES_USER}
+    user: ${GRAFANA_DB_USER}
     secureJsonData:
-      password: $__file{/run/secrets/postgres_password}
+      password: ${GRAFANA_DB_PASSWORD}
     jsonData:
       sslmode: disable
       postgresVersion: 1600

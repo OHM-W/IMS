@@ -12,17 +12,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Seed .env for validation
         run: cp .env.example .env
 
-      - name: Create secret stubs for compose validation
-        run: |
-          mkdir -p secrets
-          echo "placeholder" > secrets/postgres_password.txt
-          echo "placeholder" > secrets/grafana_admin_password.txt
-
       - name: Validate Docker Compose
         run: docker compose config -q
+
+      - name: Build Node-RED image
+        run: docker compose build node-red
+
+      - name: Smoke test Node-RED boot
+        run: |
+          docker compose up -d timescaledb node-red
+          sleep 25
+          docker logs ims-node-red 2>&1 | grep -q "Started flows" || (docker logs ims-node-red; exit 1)
 
       - name: Lint Prometheus Config
         run: |
@@ -44,23 +50,21 @@ jobs:
               check rules "/etc/prometheus/rules/$(basename $f)"
           done
 
-      - name: Validate Dashboard JSON
+      - name: Lint Grafana Dashboards
+        run: node tests/lint/dashboard-linter.js
+
+      - name: Run Unit Tests
         run: |
-          for f in monitoring/grafana/dashboards/*.json; do
-            echo "Validating $f"
-            python3 -c "import json; json.load(open('$f'))"
-          done
+          node tests/unit/boundary-validation.test.js
+          node tests/unit/parser.test.js
+          node tests/unit/counter-wraparound.test.js
 
       - name: Validate Node-RED Flow JSON
         run: |
           for f in node-red/flows/*.json; do
-            python3 -c "import json; f=json.load(open('$f')); print(f'Source flow {f} valid: {len(f)} nodes')"
+            echo "Checking $f"
+            python3 -c "import json; f=json.load(open('$f')); print(f'VALID: {len(f)} nodes')"
           done
-          if [ -f nodered_data/flows.json ]; then
-            python3 -c "import json; f=json.load(open('nodered_data/flows.json')); print(f'Runtime flow valid: {len(f)} nodes')"
-          else
-            echo "Runtime flow not found (gitignored) — skipping"
-          fi
 
       - name: Secret Scan (gitleaks)
         run: |

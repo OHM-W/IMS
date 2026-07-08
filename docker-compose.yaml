@@ -43,8 +43,6 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       PGDATA: /var/lib/postgresql/data/pgdata
-    secrets:
-      - postgres_password
     command:
       - postgres
       - -c
@@ -96,6 +94,7 @@ services:
     container_name: ims-pgbouncer
     <<: *default-restart
     init: true
+    entrypoint: ["/bin/sh", "/etc/pgbouncer/entrypoint-wrapper.sh"]
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST:-timescaledb}:${DB_PORT:-5432}/${POSTGRES_DB}
       POOL_MODE: transaction
@@ -108,6 +107,8 @@ services:
       LOG_CONNECTIONS: "0"
       LOG_DISCONNECTIONS: "0"
       AUTH_TYPE: scram-sha-256
+    volumes:
+      - ./pgbouncer/entrypoint-wrapper.sh:/etc/pgbouncer/entrypoint-wrapper.sh:ro
     deploy:
       resources:
         limits: *resource-small
@@ -195,10 +196,13 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POOLER_HOST: ${POOLER_HOST:-pgbouncer}
       POOLER_PORT: ${POOLER_PORT:-5432}
+      GRAFANA_DB_USER: ${GRAFANA_DB_USER:-grafana_reader}
+      GRAFANA_DB_PASSWORD: ${GRAFANA_DB_PASSWORD:-grafana_secure}
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_AUTH_ANONYMOUS_ENABLED: "false"
       GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-http://localhost:3000}
       GF_INSTALL_PLUGINS: "grafana-clock-panel,grafana-piechart-panel"
+      GF_PANELS_DISABLE_SANITIZE_HTML: "true"
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/ims-noc-overview.json
       GF_SECURITY_COOKIE_SECURE: "false"
       GF_SECURITY_STRICT_TRANSPORT_SECURITY: "false"
@@ -283,7 +287,9 @@ services:
 
   # ── Node-RED ──────────────────────────────────────────────
   node-red:
-    image: nodered/node-red:4.0.5-22-minimal
+    build:
+      context: ./nodered_data
+      dockerfile: Dockerfile
     container_name: ims-node-red
     <<: *default-restart
     init: true
@@ -291,7 +297,7 @@ services:
     environment:
       TZ: ${TZ:-Asia/Bangkok}
       NODE_RED_ENABLE_PROJECTS: "false"
-      NODE_OPTIONS: "--max-old-space-size=1024"
+      NODE_OPTIONS: "--max-old-space-size=2048"
       CREDENTIAL_SECRET: ${NODE_RED_CREDENTIAL_SECRET:?set NODE_RED_CREDENTIAL_SECRET in .env}
       NODE_RED_ADMIN_USER: ${NODE_RED_ADMIN_USER:-admin}
       NODE_RED_ADMIN_PASSWORD_HASH: ${NODE_RED_ADMIN_PASSWORD_HASH:-}
@@ -299,6 +305,10 @@ services:
       PGPORT: ${POOLER_PORT:-5432}
       PGDATABASE: ${POSTGRES_DB}
       PGUSER: ${POSTGRES_USER}
+      LINE_CHANNEL_ACCESS_TOKEN: ${LINE_CHANNEL_ACCESS_TOKEN:-}
+      LINE_USER_ID: ${LINE_USER_ID:-}
+      TEAMS_WEBHOOK_URL: ${TEAMS_WEBHOOK_URL:-}
+      TEAMS_WEBHOOK_TYPE: ${TEAMS_WEBHOOK_TYPE:-AdaptiveCard}
     secrets:
       - postgres_password
     ports:
@@ -308,10 +318,10 @@ services:
       - /etc/localtime:/etc/localtime:ro
     deploy:
       resources:
-        limits: *resource-medium
+        limits: *resource-large
         reservations:
-          cpus: '0.25'
-          memory: 256M
+          cpus: '0.5'
+          memory: 512M
     healthcheck:
       test:
         - CMD-SHELL
@@ -344,9 +354,3 @@ networks:
     driver: bridge
   ims-monitoring:
     driver: bridge
-
-secrets:
-  postgres_password:
-    file: ./secrets/postgres_password.txt
-  grafana_admin_password:
-    file: ./secrets/grafana_admin_password.txt
