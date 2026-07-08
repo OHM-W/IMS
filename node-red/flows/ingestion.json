@@ -161,11 +161,11 @@
         "z": "ims-tab-v5",
         "name": "Catch Walker Error",
         "scope": [
-            "walk_cpu",
-            "walk_storage",
-            "walk_net_get",
-            "walk_temp",
-            "walk_ldi"
+            "88777e250c952277",
+            "282caa9e4c6982b2",
+            "3baa1fd05c800263",
+            "99162bb1b9195b05",
+            "3a31fd375e9ea2b4"
         ],
         "uncaught": false,
         "x": 790,
@@ -238,7 +238,7 @@
         "reduceInit": "",
         "reduceInitType": "",
         "reduceFixup": "",
-        "x": 1490,
+        "x": 1500,
         "y": 500,
         "wires": [
             [
@@ -454,7 +454,7 @@
         "type": "function",
         "z": "ims-tab-v5",
         "name": "Format Error Alert (Line/Telegram)",
-        "func": "const mid = msg.machine_id || msg.topic || 'Unknown Device';\nconst errorMsg = msg.error ? msg.error.message : 'Timeout/Disconnect';\n\n// ประเมินความเสี่ยงและระบุชื่อเซ็นเซอร์เฉพาะตัว\nlet sensor = \"Unknown Sensor\";\nlet risk = \"Low\";\n\nswitch(msg._walker) {\n    case 'cpu': \n        sensor = \"CPU\"; \n        risk = \"Medium (เสี่ยงระบบอืด)\"; \n        break;\n    case 'storage': \n        sensor = \"Storage/RAM\"; \n        risk = \"High (เสี่ยงเซิร์ฟเวอร์ค้าง)\"; \n        break;\n    case 'network': \n        sensor = \"Network Interface\"; \n        risk = \"Critical (เสี่ยงข้อมูลสูญหาย/เชื่อมต่อไม่ได้)\"; \n        break;\n    case 'temp': \n        sensor = \"Temperature\"; \n        risk = \"Critical (เสี่ยงไฟไหม้/เครื่องน็อค)\"; \n        break;\n    case 'ldi': \n        sensor = \"LDI Environment\"; \n        risk = \"Medium (เสี่ยงสภาพแวดล้อมผิดปกติ)\"; \n        break;\n}\n\nmsg.payload = `🚨 [IMS ALERT - ${sensor} Error]\\n⚠️ Risk Level: ${risk}\\n💻 Device: ${mid}\\n❌ Detail: ${errorMsg}\\n🕒 Time: ${new Date().toISOString()}`;\n\nreturn msg;",
+        "func": "const mid = msg.machine_id || msg.topic || 'Unknown Device';\nconst errorMsg = msg.error ? msg.error.message : 'Timeout/Disconnect';\n\n// ประเมินความเสี่ยงและระบุชื่อเซ็นเซอร์เฉพาะตัว\nlet sensor = \"Unknown Sensor\";\nlet risk = \"Low\";\n\nswitch(msg._walker) {\n    case 'cpu': \n        sensor = \"CPU\"; \n        risk = \"Medium \"; \n        break;\n    case 'storage': \n        sensor = \"Storage/RAM\"; \n        risk = \"High \"; \n        break;\n    case 'network': \n        sensor = \"Network Interface\"; \n        risk = \"Critical \"; \n        break;\n    case 'temp': \n        sensor = \"Temperature\"; \n        risk = \"Critical \"; \n        break;\n    case 'ldi': \n        sensor = \"LDI Environment\"; \n        risk = \"Medium \"; \n        break;\n}\n\nmsg.payload = `🚨 [IMS ALERT - ${sensor} Error]\\n⚠️ Risk Level: ${risk}\\n💻 Device: ${mid}\\n❌ Detail: ${errorMsg}\\n🕒 Time: ${new Date().toISOString()}`;\n\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
