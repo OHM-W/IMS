@@ -84,6 +84,8 @@ services:
       timeout: 5s
       retries: 5
       #<<: *healthcheck-defaults
+    secrets:
+      - postgres_password
     networks:
       - ims-internal
     logging: *default-logging
