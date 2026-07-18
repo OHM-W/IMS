@@ -13,18 +13,22 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
-fi
-
-DATABASE="${POSTGRES_DB:-ims}"
-USER="${POSTGRES_USER:-ims_admin}"
+CONTAINER="ims-timescaledb"
+DATABASE="ims"
+USER="ims_admin"
 MIGRATIONS_DIR="$(dirname "$0")/../database/migrations"
 
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${CYAN}  IMS — Database Migration Runner${NC}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
+
+# Verify container is running
+if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER}$"; then
+    echo -e "${RED}ERROR: Container '${CONTAINER}' is not running.${NC}"
+    echo -e "${YELLOW}Run: docker compose up -d timescaledb${NC}"
+    exit 1
+fi
 
 # Verify migrations directory exists
 if [ ! -d "$MIGRATIONS_DIR" ]; then
@@ -51,18 +55,21 @@ for migration_file in $(ls -1 "$MIGRATIONS_DIR"/*.sql | sort); do
     echo -ne "  ${CYAN}▶ ${filename}...${NC} "
 
     # Check if migration already applied (by counting its statements)
-    RESULT=$(docker compose exec -T timescaledb psql -U "$USER" -d "$DATABASE" -v ON_ERROR_STOP=1 -f - < "$migration_file" 2>&1 || true)
+    RESULT=$(docker exec -i "$CONTAINER" psql -U "$USER" -d "$DATABASE" -v ON_ERROR_STOP=1 -f "$migration_file" 2>&1)
 
-    if echo "$RESULT" | grep -qi "already exists\|does not exist\|relation.*already"; then
-        echo -e "${YELLOW}⊘ Skipped (already applied)${NC}"
-        SKIPPED=$((SKIPPED + 1))
-    elif echo "$RESULT" | grep -qi "ERROR\|FATAL\|PANIC"; then
-        echo -e "${RED}✗ FAILED${NC}"
-        echo -e "${RED}  Error: $(echo "$RESULT" | head -3)${NC}"
-        FAILED=$((FAILED + 1))
-    else
+    if [ $? -eq 0 ]; then
         echo -e "${GREEN}✓ OK${NC}"
         APPLIED=$((APPLIED + 1))
+    else
+        # Check if error is "already exists" (idempotent — skip gracefully)
+        if echo "$RESULT" | grep -qi "already exists\|does not exist\|relation.*already"; then
+            echo -e "${YELLOW}⊘ Skipped (already applied)${NC}"
+            SKIPPED=$((SKIPPED + 1))
+        else
+            echo -e "${RED}✗ FAILED${NC}"
+            echo -e "${RED}  Error: $(echo "$RESULT" | head -3)${NC}"
+            FAILED=$((FAILED + 1))
+        fi
     fi
 done
 

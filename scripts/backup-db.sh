@@ -17,7 +17,10 @@ mkdir -p "$BACKUP_DIR"
 echo "Backing up database to ${BACKUP_DIR}/${FILENAME}..."
 docker compose exec -T timescaledb pg_dump -Fc -U "$DB_USER" "$DB_NAME" > "${BACKUP_DIR}/${FILENAME}"
 
-echo "Done: ${BACKUP_DIR}/${FILENAME}"
+echo "Compressing..."
+gzip "${BACKUP_DIR}/${FILENAME}"
+
+echo "Done: ${BACKUP_DIR}/${FILENAME}.gz"
 
 # ลบ backup ที่เก่ากว่า 30 วันอัตโนมัติ
-find "$BACKUP_DIR" -name "*.dump" -mtime +30 -delete
+find "$BACKUP_DIR" -name "*.dump.gz" -mtime +30 -delete

@@ -57,7 +57,9 @@ CREATE TABLE public.sys_metrics (
     disk_used_gb        DOUBLE PRECISION,
     disk_free_gb        DOUBLE PRECISION,
     disk_description    TEXT            DEFAULT '',
-    temp_c              DOUBLE PRECISION DEFAULT 0
+    temp_c              DOUBLE PRECISION DEFAULT 0,
+    cpu_metrics         JSONB           DEFAULT '{}'::jsonb,
+    temp_metrics        JSONB           DEFAULT '{}'::jsonb
 );
 SELECT create_hypertable('public.sys_metrics', 'time', chunk_time_interval => INTERVAL '1 day', if_not_exists => TRUE);
 CREATE INDEX IF NOT EXISTS idx_sys_device_time ON public.sys_metrics (device_id, "time" DESC);
@@ -89,9 +91,7 @@ CREATE TABLE public.ldi_metrics (
     pressure            DOUBLE PRECISION DEFAULT 0,
     joule_effect        DOUBLE PRECISION DEFAULT 0,
     power_watt          DOUBLE PRECISION DEFAULT 0,
-    vibration           DOUBLE PRECISION DEFAULT 0,
-    wifi_rssi           INTEGER         DEFAULT 0,
-    wifi_snr            INTEGER         DEFAULT 0
+    vibration           DOUBLE PRECISION DEFAULT 0
 );
 SELECT create_hypertable('public.ldi_metrics', 'time', chunk_time_interval => INTERVAL '1 day', if_not_exists => TRUE);
 CREATE INDEX IF NOT EXISTS idx_ldi_device_time ON public.ldi_metrics (device_id, "time" DESC);
@@ -125,8 +125,7 @@ WITH (timescaledb.continuous) AS
 SELECT time_bucket('1 hour', "time") AS bucket, device_id,
     AVG(throughput) AS avg_throughput, MAX(temperature) AS max_temp,
     AVG(humidity) AS avg_humidity, AVG(power_watt) AS avg_power,
-    AVG(vibration) AS avg_vibration, AVG(wifi_rssi) AS avg_rssi,
-    AVG(wifi_snr) AS avg_snr
+    AVG(vibration) AS avg_vibration
 FROM public.ldi_metrics GROUP BY bucket, device_id WITH NO DATA;
 
 -- ── CAGG Refresh Policies (wrapped for safe boot) ───────
@@ -188,6 +187,19 @@ INSERT INTO public.devices (device_id, hostname, ip_address, snmp_community, snm
     ('ERP-MASTER-UBUNTU',  'ims-snmpsim', '192.168.1.11', 'ubuntu', 161, true)
 ON CONFLICT (device_id) DO NOTHING;
 
+-- Seed 1000 simulated devices for K6 stress testing
+INSERT INTO public.devices (device_id, hostname, ip_address, snmp_community, snmp_port, enabled, device_type)
+SELECT
+    'E2E-SERVER-' || LPAD(i::text, 3, '0'),
+    'ims-snmpsim',
+    '10.0.0.' || (i + 1),
+    CASE WHEN i % 2 = 0 THEN 'windows' ELSE 'ubuntu' END,
+    161,
+    false,
+    'server'
+FROM generate_series(0, 999) AS i
+ON CONFLICT (device_id) DO NOTHING;
+
 -- ══════════════════════════════════════════════════════════════
 -- VIEWS
 -- ══════════════════════════════════════════════════════════════
@@ -199,13 +211,11 @@ SELECT DISTINCT ON (d.device_id)
     ROUND((s.ram_used_mb / NULLIF(s.ram_total_mb, 0) * 100)::NUMERIC, 1) AS ram_pct,
     ROUND((s.disk_used_gb / NULLIF(s.disk_total_gb, 0) * 100)::NUMERIC, 1) AS disk_pct,
     ROUND(s.temp_c::NUMERIC, 0) AS temp_c,
-    CASE
-        WHEN s.cpu_load_percent > 90 OR s.ram_used_mb / NULLIF(s.ram_total_mb, 0) * 100 > 95
-             OR s.disk_used_gb / NULLIF(s.disk_total_gb, 0) * 100 > 90 THEN 0
-        WHEN s.cpu_load_percent > 80 OR s.ram_used_mb / NULLIF(s.ram_total_mb, 0) * 100 > 85
-             OR s.disk_used_gb / NULLIF(s.disk_total_gb, 0) * 100 > 80 THEN 50
-        ELSE 100
-    END AS health_score,
+    GREATEST(0, 100
+        - GREATEST(0, s.cpu_load_percent - 70) * 1.5
+        - GREATEST(0, (s.ram_used_mb / NULLIF(s.ram_total_mb, 0) * 100) - 75) * 2
+        - GREATEST(0, (s.disk_used_gb / NULLIF(s.disk_total_gb, 0) * 100) - 80) * 2
+    )::NUMERIC(5,1) AS health_score,
     s.time
 FROM public.sys_metrics s
 JOIN public.devices d ON d.device_id = s.device_id

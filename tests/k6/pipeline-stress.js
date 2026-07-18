@@ -47,7 +47,7 @@ export default function () {
   const pipelineStart = Date.now();
 
   const injectRes = http.post(
-    `${NODERED_URL}/k6-inject`,
+    `${NODERED_URL}/inject`,
     JSON.stringify(payload),
     {
       headers: { 'Content-Type': 'application/json', 'x-api-key': INGEST_API_KEY },
@@ -70,6 +70,7 @@ export default function () {
     pipelineSuccess.add(0);
   }
 
+  endToEndDuration.add(Date.now() - e2eStart);
   sleep(Math.random() * 3 + 1);
 }
 

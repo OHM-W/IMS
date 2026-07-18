@@ -101,6 +101,12 @@ services:
     <<: *default-restart
     init: true
     entrypoint: ["/bin/sh", "/etc/pgbouncer/entrypoint-wrapper.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 ${PGPORT:-5432} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -109,11 +115,11 @@ services:
       DEFAULT_POOL_SIZE: 100
       MIN_POOL_SIZE: 5
       RESERVE_POOL_SIZE: 5
-      SERVER_IDLE_TIMEOUT: 30
-      CLIENT_IDLE_TIMEOUT: 30
+      SERVER_IDLE_TIMEOUT: 300
+      CLIENT_IDLE_TIMEOUT: 300
       LOG_CONNECTIONS: "0"
       LOG_DISCONNECTIONS: "0"
-      AUTH_TYPE: scram-sha-256
+      AUTH_TYPE: plain
     secrets:
       - postgres_password
     volumes:
@@ -149,7 +155,7 @@ services:
       - ./monitoring/prometheus/rules:/etc/prometheus/rules:ro
       - prometheus_data:/prometheus
     ports:
-      - "127.0.0.1:9090:9090"
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:${PROMETHEUS_PORT:-9090}"
     deploy:
       resources:
         limits: *resource-medium
@@ -179,7 +185,7 @@ services:
       - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
       - alertmanager_data:/alertmanager
     ports:
-      - "127.0.0.1:9093:9093"
+      - "127.0.0.1:${ALERTMANAGER_PORT:-9093}:${ALERTMANAGER_PORT:-9093}"
     deploy:
       resources:
         limits: *resource-small
@@ -216,9 +222,10 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
       - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
     ports:
-      - "3000:3000"
+      - "${GRAFANA_PORT:-3000}:${GRAFANA_PORT:-3000}"
     deploy:
       resources:
         limits: *resource-medium
@@ -232,6 +239,12 @@ services:
         condition: service_started
       alertmanager:
         condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${GRAFANA_PORT:-3000}/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - ims-internal
       - ims-monitoring
@@ -246,7 +259,7 @@ services:
     entrypoint: ["python", "/usr/local/bin/snmpsimd.py"]
     command:
       - --data-dir=/data
-      - --agent-udpv4-endpoint=0.0.0.0:161
+      - --agent-udpv4-endpoint=0.0.0.0:${SNMP_PORT:-161}
       - --force-index-rebuild
       - --process-user=nobody
       - --process-group=nogroup
@@ -276,7 +289,7 @@ services:
     volumes:
       - ./monitoring/blackbox/blackbox.yml:/etc/blackbox_exporter/config.yml:ro
     ports:
-      - "127.0.0.1:9115:9115"
+      - "127.0.0.1:${BLACKBOX_PORT:-9115}:${BLACKBOX_PORT:-9115}"
     deploy:
       resources:
         limits: *resource-small
@@ -325,7 +338,7 @@ services:
       TEAMS_WEBHOOK_TYPE: ${TEAMS_WEBHOOK_TYPE:-AdaptiveCard}
       INGEST_API_KEY: ${INGEST_API_KEY:-ims-secret-key}
     ports:
-      - "127.0.0.1:1880:1880"
+      - "127.0.0.1:${NODE_RED_PORT:-1880}:${NODE_RED_PORT:-1880}"
     volumes:
       - ./nodered_data:/data
       - /etc/localtime:/etc/localtime:ro
@@ -338,14 +351,14 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - node -e "const http=require('http');const req=http.get('http://127.0.0.1:1880/',res=>process.exit(res.statusCode&&res.statusCode<500?0:1));req.on('error',()=>process.exit(1));req.setTimeout(3000,()=>{req.destroy();process.exit(1);});"
+        - node -e "const http=require('http');const req=http.get('http://127.0.0.1:${NODE_RED_PORT:-1880}/metrics',res=>{process.exit(res.statusCode===200?0:1)});req.on('error',()=>process.exit(1));req.setTimeout(3000,()=>{req.destroy();process.exit(1);});"
       <<: *healthcheck-defaults
       start_period: 45s
     depends_on:
       timescaledb:
         condition: service_healthy
       pgbouncer:
-        condition: service_started
+        condition: service_healthy
       grafana:
         condition: service_started
     networks:

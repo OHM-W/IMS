@@ -1,19 +1,15 @@
 #!/bin/sh
 # Wrapper: pre-seed userlist.txt with grafana_reader, then run original entrypoint
 # auth_type=plain: PgBouncer proxies without validating, PostgreSQL handles SCRAM auth
-
 _AUTH_FILE="${AUTH_FILE:-/etc/pgbouncer/userlist.txt}"
 touch "${_AUTH_FILE}"
-
 # Add grafana_reader if missing
 if ! grep -q '"grafana_reader"' "${_AUTH_FILE}" 2>/dev/null; then
-  echo '"grafana_reader" "grafana_secure"' >> "${_AUTH_FILE}"
+  echo "\"grafana_reader\" \"${GRAFANA_DB_PASSWORD:-grafana_secure}\"" >> "${_AUTH_FILE}"
 fi
-
 if [ -f /run/secrets/postgres_password ]; then
   _PG_PASS=$(cat /run/secrets/postgres_password)
   export DATABASE_URL="postgres://${POSTGRES_USER}:${_PG_PASS}@timescaledb:5432/${POSTGRES_DB}"
 fi
-
 # Run original entrypoint with the pgbouncer command as argument
 exec /entrypoint.sh pgbouncer /etc/pgbouncer/pgbouncer.ini
