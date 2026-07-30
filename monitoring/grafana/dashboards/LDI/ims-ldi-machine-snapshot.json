@@ -342,7 +342,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\nROUND(temperature::NUMERIC, 2) AS value \r\nFROM public.ldi_data \r\nWHERE eqp_id IN (${Eqp:singlequote}) \r\nAND ( (NULLIF('${exact_time}', '') IS NOT NULL \r\nAND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \r\nAND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \r\nOR (NULLIF('${exact_time}', '') IS NULL \r\nAND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \r\nAND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute') )",
+          "rawSql": "SELECT \r\nROUND(temperature::NUMERIC, 2) AS value \r\nFROM public.ldi_data \r\nWHERE eqp_id IN (${Eqp:singlequote}) \r\nAND ( (NULLIF('${exact_time}', '') IS NOT NULL \r\nAND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \r\nAND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \r\nOR (NULLIF('${exact_time}', '') IS NULL AND \"time\" = (SELECT MAX(\"time\") FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute')) )",
           "refId": "A",
           "sql": {
             "columns": [
@@ -432,7 +432,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "SELECT ROUND(humidity::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute') )",
+          "rawSql": "SELECT ROUND(humidity::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" = (SELECT MAX(\"time\") FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute')) )",
           "refId": "A"
         }
       ],
@@ -505,7 +505,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "SELECT ROUND(air_vacuum::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute') )",
+          "rawSql": "SELECT ROUND(air_vacuum::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" = (SELECT MAX(\"time\") FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute')) )",
           "refId": "A"
         }
       ],
@@ -578,7 +578,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "SELECT ROUND(scan_speed::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute') )",
+          "rawSql": "SELECT ROUND(scan_speed::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" = (SELECT MAX(\"time\") FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute')) )",
           "refId": "A"
         }
       ],
@@ -651,7 +651,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "SELECT ROUND(thickness::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute') )",
+          "rawSql": "SELECT ROUND(thickness::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" = (SELECT MAX(\"time\") FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute')) )",
           "refId": "A"
         }
       ],
@@ -724,7 +724,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "SELECT ROUND(resist_dosage::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute') )",
+          "rawSql": "SELECT ROUND(resist_dosage::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" = (SELECT MAX(\"time\") FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute')) )",
           "refId": "A"
         }
       ],
@@ -857,7 +857,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\nROUND(pe_1::NUMERIC, 3) AS \"pe_1\", \r\nROUND(pe_2::NUMERIC, 3) AS \"pe_2\", \r\nROUND(pe_3::NUMERIC, 3) AS \"pe_3\", \r\nROUND(pe_4::NUMERIC, 3) AS \"pe_4\", \r\nROUND(pe_5::NUMERIC, 3) AS \"pe_5\", \r\nROUND(pe_6::NUMERIC, 3) AS \"pe_6\", \r\nROUND(GREATEST(ABS(COALESCE(pe_1,0)), \r\nABS(COALESCE(pe_2,0)), \r\nABS(COALESCE(pe_3,0)), \r\nABS(COALESCE(pe_4,0)), \r\nABS(COALESCE(pe_5,0)), \r\nABS(COALESCE(pe_6,0)))::NUMERIC, 3) AS \"MAX|PE|\", \r\nROUND(pe_setting::NUMERIC, 1) AS \"pe_setting\" \r\nFROM public.ldi_data \r\nWHERE eqp_id IN (${Eqp:singlequote}) \r\nAND ( (NULLIF('${exact_time}', '') IS NOT NULL \r\nAND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \r\nAND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL \r\nAND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \r\nAND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute') )\r\nLIMIT 1;",
+          "rawSql": "SELECT \r\nROUND(pe_1::NUMERIC, 3) AS \"pe_1\", \r\nROUND(pe_2::NUMERIC, 3) AS \"pe_2\", \r\nROUND(pe_3::NUMERIC, 3) AS \"pe_3\", \r\nROUND(pe_4::NUMERIC, 3) AS \"pe_4\", \r\nROUND(pe_5::NUMERIC, 3) AS \"pe_5\", \r\nROUND(pe_6::NUMERIC, 3) AS \"pe_6\", \r\nROUND(GREATEST(ABS(COALESCE(pe_1,0)), \r\nABS(COALESCE(pe_2,0)), \r\nABS(COALESCE(pe_3,0)), \r\nABS(COALESCE(pe_4,0)), \r\nABS(COALESCE(pe_5,0)), \r\nABS(COALESCE(pe_6,0)))::NUMERIC, 3) AS \"MAX|PE|\", \r\nROUND(pe_setting::NUMERIC, 1) AS \"pe_setting\" \r\nFROM public.ldi_data \r\nWHERE eqp_id IN (${Eqp:singlequote}) \r\nAND ( (NULLIF('${exact_time}', '') IS NOT NULL \r\nAND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \r\nAND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" = (SELECT MAX(\"time\") FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute')) )\r\nLIMIT 1;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1008,7 +1008,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\nROUND(je_1::NUMERIC, 3) AS \"je_1\", \r\nROUND(je_2::NUMERIC, 3) AS \"je_2\", \r\nROUND(je_3::NUMERIC, 3) AS \"je_3\", \r\nROUND(je_4::NUMERIC, 3) AS \"je_4\",  \r\nROUND(GREATEST(ABS(COALESCE(je_1,0)), \r\nABS(COALESCE(je_2,0)), \r\nABS(COALESCE(je_3,0)), \r\nABS(COALESCE(je_4,0)))::NUMERIC, 3) AS \"MAX|JE|\", \r\nROUND(je_setting::NUMERIC, 1) AS \"je_setting\" \r\nFROM public.ldi_data \r\nWHERE eqp_id IN (${Eqp:singlequote}) \r\nAND ( (NULLIF('${exact_time}', '') IS NOT NULL \r\nAND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \r\nAND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL \r\nAND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \r\nAND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute') )\r\nLIMIT 1;",
+          "rawSql": "SELECT \r\nROUND(je_1::NUMERIC, 3) AS \"je_1\", \r\nROUND(je_2::NUMERIC, 3) AS \"je_2\", \r\nROUND(je_3::NUMERIC, 3) AS \"je_3\", \r\nROUND(je_4::NUMERIC, 3) AS \"je_4\",  \r\nROUND(GREATEST(ABS(COALESCE(je_1,0)), \r\nABS(COALESCE(je_2,0)), \r\nABS(COALESCE(je_3,0)), \r\nABS(COALESCE(je_4,0)))::NUMERIC, 3) AS \"MAX|JE|\", \r\nROUND(je_setting::NUMERIC, 1) AS \"je_setting\" \r\nFROM public.ldi_data \r\nWHERE eqp_id IN (${Eqp:singlequote}) \r\nAND ( (NULLIF('${exact_time}', '') IS NOT NULL \r\nAND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \r\nAND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" = (SELECT MAX(\"time\") FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute')) )\r\nLIMIT 1;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1301,7 +1301,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "WITH target AS (  SELECT \"time\" FROM public.ldi_data   WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute') )) SELECT al.logdate AS \"Time\", al.eqp_id AS \"Machine\", al.errorcode AS \"errorcode\", al.logdate AS \"errortime\", COALESCE(m.alarm_msg, al.errorcode::TEXT) AS \"Message\", COALESCE(m.alarm_type, 'WARN') AS \"Severity\", COALESCE(m.alarm_detail, '') AS \"Details\" FROM public.ldi_alarm_log al LEFT JOIN public.ldi_alarm_ms_code m ON al.errorcode::TEXT = m.alarm_code::TEXT WHERE al.eqp_id IN (${Eqp:singlequote}) AND al.logdate >= (SELECT MIN(\"time\") - INTERVAL '5 minutes' FROM target) AND al.logdate <= (SELECT MAX(\"time\") + INTERVAL '5 minutes' FROM target) ORDER BY al.logdate DESC",
+          "rawSql": "WITH target AS (  SELECT \"time\" FROM public.ldi_data   WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" = (SELECT MAX(\"time\") FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute')) )) SELECT al.logdate AS \"Time\", al.eqp_id AS \"Machine\", al.errorcode AS \"errorcode\", al.logdate AS \"errortime\", COALESCE(m.alarm_msg, al.errorcode::TEXT) AS \"Message\", COALESCE(m.alarm_type, 'WARN') AS \"Severity\", COALESCE(m.alarm_detail, '') AS \"Details\" FROM public.ldi_alarm_log al LEFT JOIN public.ldi_alarm_ms_code m ON al.errorcode::TEXT = m.alarm_code::TEXT WHERE al.eqp_id IN (${Eqp:singlequote}) AND al.logdate >= (SELECT MIN(\"time\") - INTERVAL '5 minutes' FROM target) AND al.logdate <= (SELECT MAX(\"time\") + INTERVAL '5 minutes' FROM target) ORDER BY al.logdate DESC",
           "refId": "A"
         }
       ],
@@ -1369,7 +1369,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "SELECT \"time\" AS value FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute') )",
+          "rawSql": "SELECT \"time\" AS value FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND ( (NULLIF('${exact_time}', '') IS NOT NULL AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' AND \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') OR (NULLIF('${exact_time}', '') IS NULL AND \"time\" = (SELECT MAX(\"time\") FROM public.ldi_data WHERE eqp_id IN (${Eqp:singlequote}) AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '1 minute')) )",
           "refId": "A"
         }
       ],
