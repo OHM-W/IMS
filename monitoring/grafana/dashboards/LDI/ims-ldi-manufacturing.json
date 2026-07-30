@@ -750,7 +750,7 @@
                     "keepTime": true,
                     "targetBlank": true,
                     "title": "Analyze Process Trend",
-                    "url": "/d/ldi-engineering-analytics/ims-ldi-engineering-analytics?var-machine_id=${__data.fields.Machine}&from=${__from}&to=${__to}"
+                    "url": "/d/ldi-engineering-analytics/ims-ldi-engineering-analytics?var-Eqp=${__value.text}&from=${__from}&to=${__to}"
                   }
                 ]
               }
@@ -1770,7 +1770,7 @@
                     "keepTime": true,
                     "targetBlank": true,
                     "title": "Analyze Process Trend",
-                    "url": "/d/ldi-engineering-analytics/ims-ldi-engineering-analytics?var-machine_id=${__data.fields.Machine}&from=${__from}&to=${__to}"
+                    "url": "/d/ldi-engineering-analytics/ims-ldi-engineering-analytics?var-Eqp=${__value.text}&from=${__from}&to=${__to}"
                   }
                 ]
               }
