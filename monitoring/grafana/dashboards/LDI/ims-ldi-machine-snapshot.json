@@ -1374,7 +1374,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   \"time\" AS value \nFROM\n   public.ldi_data \nWHERE\n   eqp_id IN (${Eqp:singlequote}) \n  AND  ( (NULLIF('${exact_time}', '') IS NOT NULL \n  AND  \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \n  AND  \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \n  OR  (NULLIF('${exact_time}', '') IS NULL \n  AND  \"time\" = (\nSELECT MAX(\"time\") FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \n  AND  \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}')) )",
+          "rawSql": "\nSELECT\n   (EXTRACT(EPOCH FROM \"time\") * 1000)::bigint AS value \nFROM\n   public.ldi_data \nWHERE\n   eqp_id IN (${Eqp:singlequote}) \n  AND  ( (NULLIF('${exact_time}', '') IS NOT NULL \n  AND  \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \n  AND  \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \n  OR  (NULLIF('${exact_time}', '') IS NULL \n  AND  \"time\" = (\nSELECT MAX(\"time\") FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \n  AND  \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}')) )",
           "refId": "A"
         }
       ],
