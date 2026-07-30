@@ -246,6 +246,7 @@
           "decimals": 1,
           "links": [
             {
+              "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
               "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&from=${__from}&to=${__to}"
@@ -364,6 +365,7 @@
           "decimals": 2,
           "links": [
             {
+              "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
               "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&from=${__from}&to=${__to}"
@@ -480,6 +482,7 @@
           "decimals": 2,
           "links": [
             {
+              "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
               "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&from=${__from}&to=${__to}"
@@ -596,6 +599,7 @@
           "decimals": 6,
           "links": [
             {
+              "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
               "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&from=${__from}&to=${__to}"
@@ -712,6 +716,7 @@
           "decimals": 6,
           "links": [
             {
+              "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
               "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&from=${__from}&to=${__to}"
@@ -828,6 +833,7 @@
           "decimals": 2,
           "links": [
             {
+              "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
               "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&from=${__from}&to=${__to}"
@@ -996,6 +1002,7 @@
           "decimals": 2,
           "links": [
             {
+              "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
               "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&from=${__from}&to=${__to}"
@@ -1738,5 +1745,5 @@
   "timezone": "browser",
   "title": "IMS LDI — Engineering Analytics & SPC",
   "uid": "ldi-engineering-analytics",
-  "version": 48
+  "version": 51
 }
