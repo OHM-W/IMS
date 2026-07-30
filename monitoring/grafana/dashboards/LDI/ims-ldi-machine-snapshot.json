@@ -160,6 +160,10 @@
               {
                 "id": "unit",
                 "value": "dateTimeAsIso"
+              },
+              {
+                "id": "custom.width",
+                "value": 177
               }
             ]
           },
@@ -1574,23 +1578,23 @@
       },
       {
         "current": {
-          "text": "1784605620000",
-          "value": "1784605620000"
+          "text": "1784602200000",
+          "value": "1784602200000"
         },
         "hide": 2,
         "name": "clicked_time",
-        "query": "1784605620000",
+        "query": "1784602200000",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "current": {
-          "text": "",
-          "value": ""
+          "text": "1784602251851",
+          "value": "1784602251851"
         },
         "hide": 2,
         "name": "exact_time",
-        "query": "",
+        "query": "1784602251851",
         "skipUrlSync": false,
         "type": "textbox"
       },
