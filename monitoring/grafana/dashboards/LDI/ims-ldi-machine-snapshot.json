@@ -251,7 +251,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "\nSELECT\n   \"time\" AS \"Timestamp\", log_id AS \"Log ID\", eqp_id AS \"Machine\", state AS \"State\", \n   mo AS \"MO\", fpn AS \"FPN\", layer_name AS \"Layer\", (board_no::TEXT || '/' || total_board::TEXT) AS \"Board\", \n   filmno AS \"Film\", resist AS \"Resist\", scale_mode AS \"Scale Mode\",  \n   FLOOR(extract(epoch from \"time\") * 1000) AS \"UnixTime\" \nFROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n   AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0)\n   AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}'\nORDER BY \"time\" ASC;\n",
+          "rawSql": "\nSELECT\n   \"time\" AS \"Timestamp\", log_id AS \"Log ID\", eqp_id AS \"Machine\", state AS \"State\", \n   mo AS \"MO\", fpn AS \"FPN\", layer_name AS \"Layer\", (board_no::TEXT || '/' || total_board::TEXT) AS \"Board\", \n   filmno AS \"Film\", resist AS \"Resist\", scale_mode AS \"Scale Mode\",  \n   FLOOR(extract(epoch from \"time\") * 1000) AS \"UnixTime\" \nFROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n   AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0)\n   AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}'\nORDER BY \"time\" DESC;\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1551,8 +1551,8 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "EXPOSURE LDI-2B",
-          "value": "EXPOSURE LDI-2B"
+          "text": "EXPOSURE LDI-2",
+          "value": "EXPOSURE LDI-2"
         },
         "datasource": {
           "type": "postgres",
@@ -1574,49 +1574,42 @@
       },
       {
         "current": {
-          "text": "1784608417466",
-          "value": "1784608417466"
+          "text": "1784605620000",
+          "value": "1784605620000"
         },
         "hide": 2,
         "name": "clicked_time",
-        "query": "1784608417466",
+        "query": "1784605620000",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "current": {
-          "text": "1784608462405",
-          "value": "1784608462405"
+          "text": "",
+          "value": ""
         },
         "hide": 2,
         "name": "exact_time",
-        "query": "1784608462405",
+        "query": "",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
+        "current": {
+          "text": "1 minute",
+          "value": "1 minute"
+        },
         "hide": 2,
         "name": "bucket_size",
-        "query": "5 minutes",
-        "type": "textbox",
-        "current": {
-          "selected": false,
-          "text": "5 minutes",
-          "value": "5 minutes"
-        },
-        "options": [
-          {
-            "selected": true,
-            "text": "5 minutes",
-            "value": "5 minutes"
-          }
-        ]
+        "query": "1 minute",
+        "skipUrlSync": false,
+        "type": "textbox"
       }
     ]
   },
   "time": {
-    "from": "2026-07-20T20:00:00.000Z",
-    "to": "2026-07-21T08:00:00.000Z"
+    "from": "2026-07-20T23:00:00.000Z",
+    "to": "2026-07-21T05:00:00.000Z"
   },
   "timepicker": {
     "refresh_intervals": [

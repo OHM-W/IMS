@@ -16,34 +16,44 @@
     ]
   },
   "description": "4-Layer RCA Dashboard: Executive HUD + Machine Telemetry + Production Context + Alarm Stream. Schema-driven naming. Shared crosshair. Fixed axis scaling.",
+  "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 2,
   "id": null,
   "links": [
     {
+      "asDropdown": false,
       "icon": "external link",
       "includeVars": true,
       "keepTime": true,
+      "tags": [],
       "targetBlank": false,
       "title": "Engineering Analytics & SPC",
+      "tooltip": "",
       "type": "link",
       "url": "/d/ldi-engineering-analytics/ims-ldi-engineering-analytics"
     },
     {
+      "asDropdown": false,
       "icon": "external link",
       "includeVars": true,
       "keepTime": true,
+      "tags": [],
       "targetBlank": false,
       "title": "Operator Andon Board",
+      "tooltip": "",
       "type": "link",
       "url": "/d/ldi-operator-andon/ims-ldi-operator-andon"
     },
     {
+      "asDropdown": false,
       "icon": "external link",
       "includeVars": true,
       "keepTime": true,
+      "tags": [],
       "targetBlank": false,
       "title": "Incident Snapshot",
+      "tooltip": "",
       "type": "link",
       "url": "/d/ldi-machine-snapshot/ims-ldi-machine-snapshot"
     }
@@ -52,21 +62,24 @@
   "panels": [
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
-      "description": "Estimated Yield: percentage of samples where max|PE| <= pe_setting (within tolerance).",
+      "description": "Estimated Yield: percentage of samples where max|PE|,max|JE| <= je-pe_setting (within tolerance).",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
           "decimals": 1,
+          "max": 100,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -79,8 +92,7 @@
             ]
           },
           "unit": "percent"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -94,25 +106,52 @@
         "graphMode": "none",
         "justifyMode": "center",
         "noValue": "-",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
+          "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {
           "titleSize": 14,
           "valueSize": 48
-        }
+        },
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
+          "editorMode": "code",
           "format": "table",
-          "rawSql": "\nSELECT\n   ROUND((COUNT(*) FILTER (\nWHERE\n   GREATEST(ABS(pe_1), ABS(pe_2), ABS(pe_3), ABS(pe_4), ABS(pe_5), ABS(pe_6)) <= pe_setting)::NUMERIC / NULLIF(COUNT(*) FILTER (\nWHERE\n   pe_1 IS NOT NULL), 0)) * 100, 1) AS value \nFROM\n   public.ldi_data \nWHERE\n   $__timeFilter(time) \n  AND  factory IN ($Factory) \n  AND  process IN ($process)",
-          "refId": "A"
+          "rawQuery": true,
+          "rawSql": "SELECT ROUND((COUNT(*) FILTER (\n  WHERE GREATEST(ABS(pe_1),ABS(pe_2),ABS(pe_3),ABS(pe_4),ABS(pe_5),ABS(pe_6)) <= pe_setting\n    AND GREATEST(ABS(je_1),ABS(je_2),ABS(je_3),ABS(je_4)) <= je_setting\n)::NUMERIC / NULLIF(COUNT(*) FILTER (WHERE pe_1 IS NOT NULL), 0)) * 100, 1) AS value\nFROM public.ldi_data\nWHERE $__timeFilter(time) AND factory IN ($Factory) AND process IN ($process);",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "Estimated Yield (%)",
@@ -121,6 +160,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Fleet Availability: percentage of time state=true across all machines in selected interval.",
@@ -130,12 +170,14 @@
             "mode": "thresholds"
           },
           "decimals": 1,
+          "max": 100,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -148,8 +190,7 @@
             ]
           },
           "unit": "percent"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -163,20 +204,28 @@
         "graphMode": "none",
         "justifyMode": "center",
         "noValue": "-",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
+          "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {
           "titleSize": 14,
           "valueSize": 48
-        }
+        },
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -190,6 +239,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Fleet-wide average Cpk. >= 1.33 = Capable, >= 1.67 = Excellent, >= 2.0 = World Class.",
@@ -204,7 +254,7 @@
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -217,8 +267,7 @@
             ]
           },
           "unit": "short"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -232,20 +281,28 @@
         "graphMode": "none",
         "justifyMode": "center",
         "noValue": "-",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
+          "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {
           "titleSize": 14,
           "valueSize": 48
-        }
+        },
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -259,6 +316,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Count of machines with state=true (powered on and available). Red < 8, Green >= 8 of 10.",
@@ -273,7 +331,7 @@
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#22C55E",
@@ -282,8 +340,7 @@
             ]
           },
           "unit": "short"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -297,20 +354,28 @@
         "graphMode": "none",
         "justifyMode": "center",
         "noValue": "-",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
+          "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {
           "titleSize": 14,
           "valueSize": 48
-        }
+        },
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -324,6 +389,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Mean of max absolute PE deviation across 6 fiducial points. Green < 10µm, Amber 10-20µm, Red > 20µm.",
@@ -340,7 +406,7 @@
             "steps": [
               {
                 "color": "#22C55E",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -353,8 +419,7 @@
             ]
           },
           "unit": "lengthum"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -364,19 +429,27 @@
       },
       "id": 2,
       "options": {
-        "noValue": "N/A",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
+          "fields": "",
           "values": false
         },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -386,10 +459,11 @@
       ],
       "title": "Position Error Deviation (pe_1 ~ pe_6 µm)",
       "transparent": true,
-      "type": "gauge"
+      "type": "stat"
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Fleet-wide average temperature. Target 22±2°C. Red outside 20-24°C, Amber 20-24°C, Green 22-24°C.",
@@ -404,7 +478,7 @@
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -425,8 +499,7 @@
             ]
           },
           "unit": "celsius"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -440,20 +513,28 @@
         "graphMode": "none",
         "justifyMode": "center",
         "noValue": "-",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
+          "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {
           "titleSize": 14,
           "valueSize": 48
-        }
+        },
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -467,6 +548,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Fleet-wide average humidity. Target 55±5%RH. Red outside 50-60%, Amber 50-60%, Green 55-60%.",
@@ -481,7 +563,7 @@
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -502,8 +584,7 @@
             ]
           },
           "unit": "humidity"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -517,20 +598,28 @@
         "graphMode": "none",
         "justifyMode": "center",
         "noValue": "-",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
+          "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {
           "titleSize": 14,
           "valueSize": 48
-        }
+        },
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -544,6 +633,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Note: Alarm durations and MTTR are not calculated as the source EAP system currently does not broadcast explicit alarm-clear events. Only occurrence times are logged. Duration estimation requires EAP team confirmation of clear/reset event availability. Count of alarms with alarm_type='Critical' in the last 5 minutes.",
@@ -558,7 +648,7 @@
             "steps": [
               {
                 "color": "#22C55E",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#EF4444",
@@ -567,8 +657,7 @@
             ]
           },
           "unit": "short"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -582,20 +671,28 @@
         "graphMode": "none",
         "justifyMode": "center",
         "noValue": "-",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
+          "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {
           "titleSize": 14,
           "valueSize": 48
-        }
+        },
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -609,11 +706,36 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Latest production context per machine: job info + live physical parameters (temperature, humidity, scan_speed, thickness, resist_dosage, state).",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
         "overrides": [
           {
             "matcher": {
@@ -669,13 +791,14 @@
         ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 7,
+        "w": 24,
         "x": 0,
         "y": 8
       },
       "id": 6,
       "options": {
+        "cellHeight": "sm",
         "rowHeight": 0.6,
         "showHeader": true,
         "sortBy": [
@@ -685,9 +808,11 @@
           }
         ]
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -701,6 +826,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "3-color compliance matrix per machine. Green 20-24°C, Amber 19-25°C, Red outside.",
@@ -708,6 +834,18 @@
         "defaults": {
           "color": {
             "mode": "thresholds"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
           },
           "mappings": [
             {
@@ -733,7 +871,7 @@
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -746,29 +884,41 @@
             ]
           },
           "unit": "short"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
-        "w": 6,
-        "x": 12,
-        "y": 8
+        "w": 12,
+        "x": 0,
+        "y": 15
       },
       "id": 7,
       "options": {
         "alignValue": "center",
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
         "legend": {
           "displayMode": "list",
-          "placement": "bottom"
+          "overflow": "ellipsis",
+          "placement": "bottom",
+          "showLegend": true
         },
         "mergeValues": true,
         "rowHeight": 0.85,
-        "showValue": "auto"
+        "showValue": "auto",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "time_series",
@@ -783,6 +933,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "3-color compliance matrix per machine. Green 50-60%, Amber 45-65%, Red outside.",
@@ -790,6 +941,18 @@
         "defaults": {
           "color": {
             "mode": "thresholds"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
           },
           "mappings": [
             {
@@ -815,7 +978,7 @@
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -828,29 +991,41 @@
             ]
           },
           "unit": "short"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
-        "w": 6,
-        "x": 18,
-        "y": 8
+        "w": 12,
+        "x": 12,
+        "y": 15
       },
       "id": 8,
       "options": {
         "alignValue": "center",
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
         "legend": {
           "displayMode": "list",
-          "placement": "bottom"
+          "overflow": "ellipsis",
+          "placement": "bottom",
+          "showLegend": true
         },
         "mergeValues": true,
         "rowHeight": 0.85,
-        "showValue": "auto"
+        "showValue": "auto",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "time_series",
@@ -865,6 +1040,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Dual Y-axis: scan_speed (left, mm/s) and air_vacuum (right, kPa) per machine.",
@@ -874,15 +1050,53 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 15,
             "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
-            "spanNulls": false
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
           "unit": "short"
         },
         "overrides": [
@@ -932,10 +1146,14 @@
         "h": 6,
         "w": 8,
         "x": 0,
-        "y": 16
+        "y": 23
       },
       "id": 9,
       "options": {
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
         "connectNullPoints": true,
         "legend": {
           "calcs": [
@@ -943,16 +1161,22 @@
             "lastNotNull"
           ],
           "displayMode": "table",
-          "placement": "bottom"
+          "enableFacetedFilter": false,
+          "overflow": "ellipsis",
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "desc"
         }
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "time_series",
@@ -962,6 +1186,7 @@
         },
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "time_series",
@@ -976,6 +1201,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Dual Y-axis: thickness (left, mm) and resist_dosage (right, mJ/cm²) per machine.",
@@ -985,15 +1211,53 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 15,
             "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
-            "spanNulls": false
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "decimals": 3,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
           "unit": "short"
         },
         "overrides": [
@@ -1043,10 +1307,14 @@
         "h": 6,
         "w": 8,
         "x": 8,
-        "y": 16
+        "y": 23
       },
       "id": 10,
       "options": {
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
         "connectNullPoints": true,
         "legend": {
           "calcs": [
@@ -1054,16 +1322,22 @@
             "lastNotNull"
           ],
           "displayMode": "table",
-          "placement": "bottom"
+          "enableFacetedFilter": false,
+          "overflow": "ellipsis",
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "desc"
         }
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "time_series",
@@ -1073,6 +1347,7 @@
         },
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "time_series",
@@ -1087,6 +1362,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "XY calibration drift. High-precision (6 decimals) monitoring of scale_x and scale_y ratios. Drift from 1.0 indicates lens magnification error.",
@@ -1096,15 +1372,53 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 15,
             "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
-            "spanNulls": false
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "decimals": 6,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
           "unit": "short"
         },
         "overrides": [
@@ -1154,10 +1468,14 @@
         "h": 6,
         "w": 8,
         "x": 16,
-        "y": 16
+        "y": 23
       },
       "id": 11,
       "options": {
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
         "connectNullPoints": true,
         "legend": {
           "calcs": [
@@ -1165,16 +1483,22 @@
             "lastNotNull"
           ],
           "displayMode": "table",
-          "placement": "bottom"
+          "enableFacetedFilter": false,
+          "overflow": "ellipsis",
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "desc"
         }
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "time_series",
@@ -1184,6 +1508,7 @@
         },
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "time_series",
@@ -1198,56 +1523,84 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Avg cycle time per board in 5-minute buckets. Hotter (redder) = slower cycle time.",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "scheme",
-            "reverse": true,
-            "scheme": "RdYlGn"
+            "mode": "thresholds"
           },
           "custom": {
-            "cellGap": 1,
-            "fillOpacity": 80,
-            "scaleDistribution": {
-              "type": "linear"
+            "axisPlacement": "auto",
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
             },
-            "showCellBorders": true,
-            "stacking": {
-              "mode": "none"
-            }
+            "lineWidth": 1
           },
           "links": [
             {
-              "targetBlank": true,
+              "oneClick": true,
+              "targetBlank": false,
               "title": "View Incident Snapshot",
               "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__field.name}&var-clicked_time=${__value.time}&var-exact_time=&var-bucket_size=5 minutes&from=${__from}&to=${__to}"
             }
-          ]
-        },
-        "overrides": []
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 3
+              },
+              {
+                "color": "red",
+                "value": 7
+              }
+            ]
+          }
+        }
       },
       "gridPos": {
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 22
+        "y": 29
       },
       "id": 12,
       "options": {
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
+        "colWidth": 0.9,
         "legend": {
           "displayMode": "list",
-          "placement": "bottom"
+          "overflow": "ellipsis",
+          "placement": "bottom",
+          "showLegend": true
         },
+        "rowHeight": 0.9,
+        "showValue": "auto",
         "tooltip": {
-          "mode": "single"
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
         }
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "time_series",
@@ -1257,10 +1610,11 @@
       ],
       "title": "total_time / total_board (s/board)",
       "transparent": true,
-      "type": "heatmap"
+      "type": "status-history"
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "3-sigma Z-Score on temperature per machine. Green ±2 (normal), Amber 2.5 (watch), Red 3+ (anomaly).",
@@ -1270,29 +1624,70 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 15,
             "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
-            "spanNulls": false
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "decimals": 2,
           "max": 4,
           "min": -4,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
           "unit": "short"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 22
+        "y": 29
       },
       "id": 13,
       "options": {
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
         "connectNullPoints": true,
         "legend": {
           "calcs": [
@@ -1300,16 +1695,22 @@
             "lastNotNull"
           ],
           "displayMode": "table",
-          "placement": "bottom"
+          "enableFacetedFilter": false,
+          "overflow": "ellipsis",
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "desc"
         }
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "time_series",
@@ -1324,11 +1725,174 @@
     },
     {
       "datasource": {
+        "type": "postgres",
+        "uid": "LDI"
+      },
+      "description": "Top 5 machines with worst PE alignment excursion in current time range. Click Machine to drill to Snapshot.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Machine"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "keepTime": true,
+                    "targetBlank": true,
+                    "title": "Analyze Process Trend",
+                    "url": "/d/ldi-engineering-analytics/ims-ldi-engineering-analytics?var-machine_id=${__data.fields.Machine}&from=${__from}&to=${__to}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Worst PE"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "#22C55E",
+                      "value": 0
+                    },
+                    {
+                      "color": "#FACC15",
+                      "value": 25
+                    },
+                    {
+                      "color": "#EF4444",
+                      "value": 50
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unit",
+                "value": "lengthum"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Worst JE"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "lengthum"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 35
+      },
+      "id": 18,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Worst PE"
+          }
+        ]
+      },
+      "pluginVersion": "13.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "LDI"
+          },
+          "format": "table",
+          "rawSql": "\nSELECT\n   time, eqp_id AS \"Machine\",\n       GREATEST(ABS(pe_1),ABS(pe_2),ABS(pe_3),ABS(pe_4),ABS(pe_5),ABS(pe_6)) AS \"Worst PE\",\n       GREATEST(ABS(je_1),ABS(je_2),ABS(je_3),ABS(je_4)) AS \"Worst JE\",\n       log_id\n\nFROM\n   public.ldi_data\n\nWHERE\n   $__timeFilter(time)\n  \n  AND  pe_1 IS NOT NULL\n  \n  AND  COALESCE(pe_setting, 0) > 2.0\n\nORDER BY\n   \"Worst PE\" DESC NULLS LAST\n\nLIMIT\n   5",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 5 Alignment Excursions (Worst PE)",
+      "transparent": true,
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Note: Alarm durations and MTTR are not calculated as the source EAP system currently does not broadcast explicit alarm-clear events. Only occurrence times are logged. Duration estimation requires EAP team confirmation of clear/reset event availability. Alarm stream with errorcode, errortime, message, and severity. LEFT JOIN on ldi_alarm_ms_code for alarm details.",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
         "overrides": [
           {
             "matcher": {
@@ -1404,10 +1968,11 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 28
+        "y": 35
       },
       "id": 14,
       "options": {
+        "cellHeight": "sm",
         "rowHeight": 0.65,
         "showHeader": true,
         "sortBy": [
@@ -1417,9 +1982,11 @@
           }
         ]
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -1430,125 +1997,11 @@
       "title": "Alarm Stream",
       "transparent": true,
       "type": "table"
-    },
-    {
-      "datasource": {
-        "uid": "LDI"
-      },
-      "description": "Top 5 machines with worst PE alignment excursion in current time range. Click Machine to drill to Snapshot.",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "auto",
-            "filterable": true
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Machine"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "keepTime": true,
-                    "targetBlank": true,
-                    "title": "Analyze Process Trend",
-                    "url": "/d/ldi-engineering-analytics/ims-ldi-engineering-analytics?var-machine_id=${__data.fields.Machine}&from=${__from}&to=${__to}"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Worst PE"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background"
-                }
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "#22C55E",
-                      "value": null
-                    },
-                    {
-                      "color": "#FACC15",
-                      "value": 25
-                    },
-                    {
-                      "color": "#EF4444",
-                      "value": 50
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "unit",
-                "value": "lengthum"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Worst JE"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "lengthum"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 0,
-        "y": 28
-      },
-      "id": 18,
-      "options": {
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Worst PE"
-          }
-        ]
-      },
-      "targets": [
-        {
-          "datasource": {
-            "uid": "LDI"
-          },
-          "format": "table",
-          "rawSql": "\nSELECT\n   time, eqp_id AS \"Machine\",\n       GREATEST(ABS(pe_1),ABS(pe_2),ABS(pe_3),ABS(pe_4),ABS(pe_5),ABS(pe_6)) AS \"Worst PE\",\n       GREATEST(ABS(je_1),ABS(je_2),ABS(je_3),ABS(je_4)) AS \"Worst JE\",\n       log_id\n\nFROM\n   public.ldi_data\n\nWHERE\n   $__timeFilter(time)\n  \n  AND  pe_1 IS NOT NULL\n  \n  AND  COALESCE(pe_setting, 0) > 2.0\n\nORDER BY\n   \"Worst PE\" DESC NULLS LAST\n\nLIMIT\n   5",
-          "refId": "A"
-        }
-      ],
-      "title": "Top 5 Alignment Excursions (Worst PE)",
-      "transparent": true,
-      "type": "table"
     }
   ],
+  "preload": false,
   "refresh": "5s",
-  "schemaVersion": 39,
-  "style": "dark",
+  "schemaVersion": 42,
   "tags": [
     "ims",
     "ldi",
@@ -1559,11 +2012,9 @@
   "templating": {
     "list": [
       {
+        "allowCustomValue": true,
         "current": {
-          "selected": false,
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -1581,16 +2032,15 @@
         "query": "\nSELECT\n   DISTINCT factory \n\nFROM\n   ldi_data \n\nORDER BY\n   factory;",
         "refresh": 1,
         "regex": "",
+        "regexApplyTo": "value",
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
       },
       {
+        "allowCustomValue": true,
         "current": {
-          "selected": false,
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -1608,13 +2058,14 @@
         "query": "\nSELECT\n   DISTINCT process \n\nFROM\n   ldi_data \n\nWHERE\n   factory IN ($Factory) \n\nORDER BY\n   process;",
         "refresh": 1,
         "regex": "",
+        "regexApplyTo": "value",
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
       },
       {
+        "allowCustomValue": true,
         "current": {
-          "selected": false,
           "text": "LDI-C-02",
           "value": "LDI-C-02"
         },
@@ -1631,20 +2082,34 @@
         "query": "\nSELECT\n   DISTINCT eqp_id \n\nFROM\n   ldi_data \n\nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n\nORDER BY\n   eqp_id;",
         "refresh": 1,
         "regex": "",
+        "regexApplyTo": "value",
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
       },
       {
+        "allowCustomValue": true,
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
         "datasource": {
+          "type": "postgres",
           "uid": "LDI"
         },
+        "hide": 0,
         "includeAll": true,
         "label": "MO (Work Order)",
         "multi": true,
         "name": "mo",
+        "options": [],
         "query": "\nSELECT\n   DISTINCT mo \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \nORDER BY\n   mo",
         "refresh": 2,
+        "regex": "",
+        "regexApplyTo": "value",
+        "skipUrlSync": false,
         "sort": 1,
         "type": "query"
       }
@@ -1653,6 +2118,20 @@
   "time": {
     "from": "2026-07-20T23:00:00.000Z",
     "to": "2026-07-21T05:00:00.000Z"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
   },
   "timezone": "browser",
   "title": "IMS LDI — Apex Circuit Fleet Command Center",
