@@ -675,7 +675,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   a.logdate AS \"Time\", a.eqp_id AS \"Machine\", COALESCE(m.alarm_msg, a.errorcode::TEXT) AS \"Message\", COALESCE(m.alarm_type, 'WARN') AS \"Severity\" \nFROM\n   public.ldi_alarm_log a \nLEFT JOIN\n   public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT \nWHERE\n   $__timeFilter(a.logdate) \nORDER BY\n   a.logdate DESC \nLIMIT\n   20",
+          "rawSql": "\nSELECT\n   a.logdate AS \"Time\", a.equipmentid AS \"Machine\", COALESCE(m.alarm_msg, a.errorcode::TEXT) AS \"Message\", COALESCE(m.alarm_type, 'WARN') AS \"Severity\" \nFROM\n   public.ldi_alarm_log a \nLEFT JOIN\n   public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT \nWHERE\n   $__timeFilter(a.logdate) \nORDER BY\n   a.logdate DESC \nLIMIT\n   20",
           "refId": "A"
         }
       ],
