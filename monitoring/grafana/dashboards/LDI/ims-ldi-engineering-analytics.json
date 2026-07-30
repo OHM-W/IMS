@@ -19,6 +19,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 2,
+  "id": null,
   "links": [
     {
       "asDropdown": false,
@@ -110,7 +111,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&varexact_time=&from=${__from}&to=${__to}"
+              "url": "/d/ldi-machine-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&from=${__from}&to=${__to}"
             }
           ],
           "max": 28,
@@ -1737,6 +1738,5 @@
   "timezone": "browser",
   "title": "IMS LDI — Engineering Analytics & SPC",
   "uid": "ldi-engineering-analytics",
-  "version": 36,
-  "id": null
+  "version": 38
 }
