@@ -1205,7 +1205,8 @@
         "defaults": {
           "color": {
             "mode": "scheme",
-            "scheme": "Green-Yellow-Red"
+            "reverse": true,
+            "scheme": "RdYlGn"
           },
           "custom": {
             "cellGap": 1,
@@ -1649,5 +1650,5 @@
   "timezone": "browser",
   "title": "IMS LDI — Apex Circuit Fleet Command Center",
   "uid": "ldi-pcb-manufacturing",
-  "version": 27
+  "version": 28
 }
