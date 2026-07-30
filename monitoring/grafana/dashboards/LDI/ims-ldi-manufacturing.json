@@ -1218,7 +1218,14 @@
             "stacking": {
               "mode": "none"
             }
-          }
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "View Incident Snapshot",
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__field.name}&var-clicked_time=${__value.time}&var-exact_time=&var-bucket_size=5 minutes&from=${__from}&to=${__to}"
+            }
+          ]
         },
         "overrides": []
       },
