@@ -1598,7 +1598,19 @@
         "hide": 2,
         "name": "bucket_size",
         "query": "5 minutes",
-        "type": "constant"
+        "type": "textbox",
+        "current": {
+          "selected": false,
+          "text": "5 minutes",
+          "value": "5 minutes"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "5 minutes",
+            "value": "5 minutes"
+          }
+        ]
       }
     ]
   },
