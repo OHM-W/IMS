@@ -111,7 +111,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&from=${__from}&to=${__to}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=&var-clicked_time=&var-exact_time=&from=&to="
             }
           ],
           "max": 28,
@@ -248,7 +248,7 @@
             {
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-machine-snapshot?var-machine_id=${__series.name}&var-log_id=${__data.fields.log_id}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=&var-clicked_time=&var-exact_time=&from=&to="
             }
           ],
           "max": 70,
@@ -366,7 +366,7 @@
             {
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-machine-snapshot?var-machine_id=${__series.name}&var-log_id=${__data.fields.log_id}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=&var-clicked_time=&var-exact_time=&from=&to="
             }
           ],
           "thresholds": {
@@ -482,7 +482,7 @@
             {
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-machine-snapshot?var-machine_id=${__series.name}&var-log_id=${__data.fields.log_id}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=&var-clicked_time=&var-exact_time=&from=&to="
             }
           ],
           "thresholds": {
@@ -598,7 +598,7 @@
             {
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-machine-snapshot?var-machine_id=${__series.name}&var-log_id=${__data.fields.log_id}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=&var-clicked_time=&var-exact_time=&from=&to="
             }
           ],
           "thresholds": {
@@ -714,7 +714,7 @@
             {
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-machine-snapshot?var-machine_id=${__series.name}&var-log_id=${__data.fields.log_id}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=&var-clicked_time=&var-exact_time=&from=&to="
             }
           ],
           "thresholds": {
@@ -830,7 +830,7 @@
             {
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-machine-snapshot?var-machine_id=${__series.name}&var-log_id=${__data.fields.log_id}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=&var-clicked_time=&var-exact_time=&from=&to="
             }
           ],
           "max": 80,
@@ -998,7 +998,7 @@
             {
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-machine-snapshot?var-machine_id=${__series.name}&var-log_id=${__data.fields.log_id}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=&var-clicked_time=&var-exact_time=&from=&to="
             }
           ],
           "max": 45,
@@ -1738,5 +1738,5 @@
   "timezone": "browser",
   "title": "IMS LDI — Engineering Analytics & SPC",
   "uid": "ldi-engineering-analytics",
-  "version": 41
+  "version": 45
 }
