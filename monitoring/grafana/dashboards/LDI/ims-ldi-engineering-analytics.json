@@ -111,7 +111,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-exact_time=${__data.fields[0].numeric}&var-clicked_time=&from=${__from}&to=${__to}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "max": 28,
@@ -249,7 +249,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-exact_time=${__data.fields[0].numeric}&var-clicked_time=&from=${__from}&to=${__to}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "max": 70,
@@ -368,7 +368,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-exact_time=${__data.fields[0].numeric}&var-clicked_time=&from=${__from}&to=${__to}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "thresholds": {
@@ -485,7 +485,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-exact_time=${__data.fields[0].numeric}&var-clicked_time=&from=${__from}&to=${__to}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "thresholds": {
@@ -602,7 +602,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-exact_time=${__data.fields[0].numeric}&var-clicked_time=&from=${__from}&to=${__to}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "thresholds": {
@@ -719,7 +719,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-exact_time=${__data.fields[0].numeric}&var-clicked_time=&from=${__from}&to=${__to}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "thresholds": {
@@ -836,7 +836,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-exact_time=${__data.fields[0].numeric}&var-clicked_time=&from=${__from}&to=${__to}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "max": 80,
@@ -1005,7 +1005,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-exact_time=${__data.fields[0].numeric}&var-clicked_time=&from=${__from}&to=${__to}"
+              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "max": 45,
