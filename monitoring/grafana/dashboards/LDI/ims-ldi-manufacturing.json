@@ -1163,7 +1163,7 @@
         },
         "tooltip": {
           "hideZeros": false,
-          "mode": "multi",
+          "mode": "single",
           "sort": "desc"
         }
       },
@@ -1324,7 +1324,7 @@
         },
         "tooltip": {
           "hideZeros": false,
-          "mode": "multi",
+          "mode": "single",
           "sort": "desc"
         }
       },
@@ -1485,7 +1485,7 @@
         },
         "tooltip": {
           "hideZeros": false,
-          "mode": "multi",
+          "mode": "single",
           "sort": "desc"
         }
       },
@@ -2030,7 +2030,7 @@
         },
         "tooltip": {
           "hideZeros": false,
-          "mode": "multi",
+          "mode": "single",
           "sort": "desc"
         }
       },
