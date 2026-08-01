@@ -133,7 +133,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT ROUND((COUNT(*) FILTER (\n  WHERE GREATEST(ABS(pe_1),ABS(pe_2),ABS(pe_3),ABS(pe_4),ABS(pe_5),ABS(pe_6)) <= pe_setting\n    AND GREATEST(ABS(je_1),ABS(je_2),ABS(je_3),ABS(je_4)) <= je_setting\n)::NUMERIC / NULLIF(COUNT(*) FILTER (WHERE pe_1 IS NOT NULL), 0)) * 100, 1) AS value\nFROM public.ldi_data\nWHERE $__timeFilter(time) AND factory IN ($Factory) AND process IN ($process);",
+          "rawSql": "SELECT eqp_id AS metric, ROUND((COUNT(*) FILTER (\n  WHERE GREATEST(ABS(pe_1),ABS(pe_2),ABS(pe_3),ABS(pe_4),ABS(pe_5),ABS(pe_6)) <= pe_setting\n    AND GREATEST(ABS(je_1),ABS(je_2),ABS(je_3),ABS(je_4)) <= je_setting\n)::NUMERIC / NULLIF(COUNT(*) FILTER (WHERE pe_1 IS NOT NULL), 0)) * 100, 1) AS value\nFROM public.ldi_data\nWHERE $__timeFilter(time) AND factory IN ($Factory) AND process IN ($process) AND eqp_id IN ($Eqp)\nGROUP BY eqp_id",
           "refId": "A",
           "sql": {
             "columns": [
@@ -229,7 +229,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   ROUND((COUNT(*) FILTER (\nWHERE\n   state = true)::NUMERIC / NULLIF(COUNT(*), 0)) * 100, 1) AS value \nFROM\n   public.ldi_data \nWHERE\n   $__timeFilter(time) \n  AND  factory IN ($Factory) \n  AND  process IN ($process)",
+          "rawSql": "SELECT eqp_id AS metric, ROUND((COUNT(*) FILTER (WHERE state = true)::NUMERIC / NULLIF(COUNT(*), 0)) * 100, 1) AS value \nFROM public.ldi_data \nWHERE $__timeFilter(time) AND factory IN ($Factory) AND process IN ($process) AND eqp_id IN ($Eqp)\nGROUP BY eqp_id",
           "refId": "A"
         }
       ],
@@ -306,7 +306,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   ROUND(AVG(cpk)::NUMERIC, 2) AS value \nFROM\n   public.v_machine_spc_ranking",
+          "rawSql": "SELECT eqp_id AS metric, ROUND(AVG(cpk)::NUMERIC, 2) AS value \nFROM public.v_machine_spc_ranking \nWHERE eqp_id IN ($Eqp)\nGROUP BY eqp_id",
           "refId": "A"
         }
       ],
@@ -379,7 +379,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   COUNT(DISTINCT eqp_id) FILTER (\nWHERE\n   state = true) AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time)",
+          "rawSql": "SELECT DISTINCT ON (eqp_id) eqp_id AS metric, CASE WHEN state = true THEN 1 ELSE 0 END AS value \nFROM public.ldi_data \nWHERE factory IN ($Factory) AND process IN ($process) AND $__timeFilter(time) AND eqp_id IN ($Eqp) \nORDER BY eqp_id, time DESC",
           "refId": "A"
         }
       ],
@@ -453,7 +453,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "WITH MaxPE AS (\nSELECT\n   eqp_id, GREATEST(ABS(COALESCE(pe_1,0)),ABS(COALESCE(pe_2,0)),ABS(COALESCE(pe_3,0)),ABS(COALESCE(pe_4,0)),ABS(COALESCE(pe_5,0)),ABS(COALESCE(pe_6,0))) AS max_error \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  pe_1 IS NOT NULL) \nSELECT\n   ROUND(AVG(max_error)::NUMERIC, 2) AS value \nFROM\n   MaxPE",
+          "rawSql": "WITH MaxPE AS (\n  SELECT eqp_id, GREATEST(ABS(COALESCE(pe_1,0)),ABS(COALESCE(pe_2,0)),ABS(COALESCE(pe_3,0)),ABS(COALESCE(pe_4,0)),ABS(COALESCE(pe_5,0)),ABS(COALESCE(pe_6,0))) AS max_error \n  FROM public.ldi_data \n  WHERE factory IN ($Factory) AND process IN ($process) AND $__timeFilter(time) AND eqp_id IN ($Eqp) AND pe_1 IS NOT NULL\n) \nSELECT eqp_id AS metric, ROUND(AVG(max_error)::NUMERIC, 2) AS value \nFROM MaxPE\nGROUP BY eqp_id",
           "refId": "A"
         }
       ],
@@ -538,7 +538,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   ROUND(AVG(temperature)::NUMERIC, 1) AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  temperature IS NOT NULL",
+          "rawSql": "SELECT eqp_id AS metric, ROUND(AVG(temperature)::NUMERIC, 1) AS value \nFROM public.ldi_data \nWHERE factory IN ($Factory) AND process IN ($process) AND $__timeFilter(time) AND eqp_id IN ($Eqp) AND temperature IS NOT NULL\nGROUP BY eqp_id",
           "refId": "A"
         }
       ],
@@ -623,7 +623,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   ROUND(AVG(humidity)::NUMERIC, 1) AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  humidity IS NOT NULL",
+          "rawSql": "SELECT eqp_id AS metric, ROUND(AVG(humidity)::NUMERIC, 1) AS value \nFROM public.ldi_data \nWHERE factory IN ($Factory) AND process IN ($process) AND $__timeFilter(time) AND eqp_id IN ($Eqp) AND humidity IS NOT NULL\nGROUP BY eqp_id",
           "refId": "A"
         }
       ],
@@ -696,7 +696,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   COUNT(*)::NUMERIC AS value \nFROM\n   public.ldi_alarm_log a \nLEFT JOIN\n   public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT \nWHERE\n   a.logdate >= NOW() - INTERVAL '5 minutes' \n  AND  m.alarm_type ILIKE '%Critical%'",
+          "rawSql": "SELECT a.eqp_id AS metric, COUNT(*)::NUMERIC AS value \nFROM public.ldi_alarm_log a \nLEFT JOIN public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT \nWHERE a.logdate >= NOW() - INTERVAL '5 minutes' AND m.alarm_type ILIKE '%Critical%' AND a.eqp_id IN ($Eqp)\nGROUP BY a.eqp_id",
           "refId": "A"
         }
       ],
@@ -811,7 +811,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   DISTINCT ON (eqp_id) eqp_id AS \"Machine\", mo AS \"Job (MO)\", fpn AS \"Part (FPN)\", layer_name AS \"Layer\", (board_no::TEXT || '/' || total_board::TEXT) AS \"Progress\", ROUND(temperature::NUMERIC, 1) AS \"temperature (\u0e22\u0e10C)\", ROUND(humidity::NUMERIC, 1) AS \"humidity (%RH)\", ROUND(scan_speed::NUMERIC, 1) AS \"scan_speed (mm/s)\", ROUND(thickness::NUMERIC, 3) AS \"thickness (mm)\", ROUND(resist_dosage::NUMERIC, 1) AS \"resist_dosage\", state AS \"state\" \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \nORDER BY\n   eqp_id, time DESC \nLIMIT\n   50",
+          "rawSql": "SELECT DISTINCT ON (eqp_id) eqp_id AS \"Machine\", mo AS \"Job (MO)\", fpn AS \"Part (FPN)\", layer_name AS \"Layer\", (board_no::TEXT || '/' || total_board::TEXT) AS \"Progress\", ROUND(temperature::NUMERIC, 1) AS \"temperature (\u00b0C)\", ROUND(humidity::NUMERIC, 1) AS \"humidity (%RH)\", ROUND(scan_speed::NUMERIC, 1) AS \"scan_speed (mm/s)\", ROUND(thickness::NUMERIC, 3) AS \"thickness (mm)\", ROUND(resist_dosage::NUMERIC, 1) AS \"resist_dosage\", state AS \"state\" \nFROM public.ldi_data \nWHERE factory IN ($Factory) AND process IN ($process) AND $__timeFilter(time) AND eqp_id IN ($Eqp)\nORDER BY eqp_id, time DESC \nLIMIT 50",
           "refId": "A"
         }
       ],
@@ -918,7 +918,7 @@
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time, eqp_id AS metric, CASE WHEN temperature BETWEEN 20 \n  AND  24 THEN 2 WHEN temperature BETWEEN 19 \n  AND  25 THEN 1 ELSE 0 END AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  temperature IS NOT NULL \nORDER BY\n   time ASC",
+          "rawSql": "\nSELECT\n   time, eqp_id AS metric, CASE WHEN temperature BETWEEN 20 \n  AND  24 THEN 2 WHEN temperature BETWEEN 19 \n  AND  25 THEN 1 ELSE 0 END AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  temperature IS NOT NULL \n AND eqp_id IN ($Eqp) \nORDER BY\n   time ASC",
           "refId": "A"
         }
       ],
@@ -1025,7 +1025,7 @@
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time, eqp_id AS metric, CASE WHEN humidity BETWEEN 50 \n  AND  60 THEN 2 WHEN humidity BETWEEN 45 \n  AND  65 THEN 1 ELSE 0 END AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  humidity IS NOT NULL \nORDER BY\n   time ASC",
+          "rawSql": "\nSELECT\n   time, eqp_id AS metric, CASE WHEN humidity BETWEEN 50 \n  AND  60 THEN 2 WHEN humidity BETWEEN 45 \n  AND  65 THEN 1 ELSE 0 END AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  humidity IS NOT NULL \n AND eqp_id IN ($Eqp) \nORDER BY\n   time ASC",
           "refId": "A"
         }
       ],
@@ -1176,7 +1176,7 @@
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time, eqp_id || ' - scan_speed' AS metric, scan_speed AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  scan_speed IS NOT NULL \nORDER BY\n   time",
+          "rawSql": "\nSELECT\n   time, eqp_id || ' - scan_speed' AS metric, scan_speed AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  eqp_id IN ($Eqp) \n  AND  scan_speed IS NOT NULL \nORDER BY\n   time",
           "refId": "A"
         },
         {
@@ -1186,7 +1186,7 @@
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time, eqp_id || ' - air_vacuum' AS metric, air_vacuum AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  air_vacuum IS NOT NULL \nORDER BY\n   time",
+          "rawSql": "\nSELECT\n   time, eqp_id || ' - air_vacuum' AS metric, air_vacuum AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  eqp_id IN ($Eqp) \n  AND  air_vacuum IS NOT NULL \nORDER BY\n   time",
           "refId": "B"
         }
       ],
@@ -1337,7 +1337,7 @@
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time, eqp_id || ' - thickness' AS metric, thickness AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  thickness IS NOT NULL \nORDER BY\n   time",
+          "rawSql": "\nSELECT\n   time, eqp_id || ' - thickness' AS metric, thickness AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  eqp_id IN ($Eqp) \n  AND  thickness IS NOT NULL \nORDER BY\n   time",
           "refId": "A"
         },
         {
@@ -1347,7 +1347,7 @@
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time, eqp_id || ' - resist_dosage' AS metric, resist_dosage AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  resist_dosage IS NOT NULL \nORDER BY\n   time",
+          "rawSql": "\nSELECT\n   time, eqp_id || ' - resist_dosage' AS metric, resist_dosage AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  eqp_id IN ($Eqp) \n  AND  resist_dosage IS NOT NULL \nORDER BY\n   time",
           "refId": "B"
         }
       ],
@@ -1498,7 +1498,7 @@
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time, eqp_id || ' - scale_x' AS metric, scale_x AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  scale_x IS NOT NULL \nORDER BY\n   time",
+          "rawSql": "\nSELECT\n   time, eqp_id || ' - scale_x' AS metric, scale_x AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  eqp_id IN ($Eqp) \n  AND  scale_x IS NOT NULL \nORDER BY\n   time",
           "refId": "A"
         },
         {
@@ -1508,7 +1508,7 @@
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time, eqp_id || ' - scale_y' AS metric, scale_y AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  scale_y IS NOT NULL \nORDER BY\n   time",
+          "rawSql": "\nSELECT\n   time, eqp_id || ' - scale_y' AS metric, scale_y AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  eqp_id IN ($Eqp) \n  AND  scale_y IS NOT NULL \nORDER BY\n   time",
           "refId": "B"
         }
       ],
@@ -1601,7 +1601,7 @@
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "WITH BaseSpeed AS (\n  SELECT\n    eqp_id,\n    -- 1. \u0e40\u0e18\u0e0b\u0e40\u0e18\u0e12\u0e40\u0e18\u0084\u0e40\u0e19\u0088\u0e40\u0e18\u0e12\u0e40\u0e18\u0e01\u0e40\u0e18\u0e12\u0e40\u0e18\u2022\u0e40\u0e18\u0e03\u0e40\u0e18\u0090\u0e40\u0e18\u0e12\u0e40\u0e18\u0099 (Median) \u0e40\u0e18\u0088\u0e40\u0e18\u0e12\u0e40\u0e18\u0081\u0e40\u0e19\u20ac\u0e40\u0e18\u0e07\u0e40\u0e18\u0e05\u0e40\u0e18\u0e12\u0e40\u0e18\u0082\u0e40\u0e18\u0e0d\u0e40\u0e18\u0087\u0e40\u0e19\u0081\u0e40\u0e18\u2022\u0e40\u0e19\u0088\u0e40\u0e18\u0e05\u0e40\u0e18\u0e10\u0e40\u0e19\u0081\u0e40\u0e18\u2013\u0e40\u0e18\u0e07\u0e40\u0e18\u2022\u0e40\u0e18\u0e12\u0e40\u0e18\u0e01\u0e40\u0e19\u20ac\u0e40\u0e18\u201d\u0e40\u0e18\u0e14\u0e40\u0e18\u0e01\n    percentile_cont(0.50) WITHIN GROUP (ORDER BY total_time) AS normal_speed\n  FROM public.ldi_data\n  WHERE \"time\" >= NOW() - INTERVAL '14 days'\n    AND total_time > 0\n    --AND eqp_id = (${Eqp:singlequote})\n  GROUP BY eqp_id\n)\nSELECT\n  time_bucket('5 minutes', d.\"time\") AS time,\n  d.eqp_id AS metric,\n  -- 2. \u0e40\u0e18\u0084\u0e40\u0e18\u0e13\u0e40\u0e18\u0099\u0e40\u0e18\u0e07\u0e40\u0e18\u201c\u0e40\u0e19\u20ac\u0e40\u0e18\u0089\u0e40\u0e18\u009e\u0e40\u0e18\u0e12\u0e40\u0e18\u0e10\u0e40\u0e18\u0e0a\u0e40\u0e18\u0e11\u0e40\u0e18\u201d\u0e40\u0e18\u0e0a\u0e40\u0e19\u0088\u0e40\u0e18\u0e07\u0e40\u0e18\u0099\u0e40\u0e18\u0084\u0e40\u0e18\u0e07\u0e40\u0e18\u0e12\u0e40\u0e18\u0e01\u0e40\u0e18\u008a\u0e40\u0e19\u0089\u0e40\u0e18\u0e12 (Ratio) \u0e40\u0e19\u20ac\u0e40\u0e18\u009e\u0e40\u0e18\u0e17\u0e40\u0e19\u0088\u0e40\u0e18\u0e0d\u0e40\u0e18\u0e0a\u0e40\u0e19\u0088\u0e40\u0e18\u0087\u0e40\u0e19\u0084\u0e40\u0e18\u009b\u0e40\u0e19\u0083\u0e40\u0e18\u0e0b\u0e40\u0e19\u0089 Grafana \u0e40\u0e19\u20ac\u0e40\u0e18\u2014\u0e40\u0e19\u0088\u0e40\u0e18\u0e12\u0e40\u0e18\u0099\u0e40\u0e18\u0e11\u0e40\u0e19\u0089\u0e40\u0e18\u0099\n  ROUND(\n    (AVG(d.total_time) / NULLIF(MAX(b.normal_speed), 0))::NUMERIC, 2\n  ) AS value\nFROM public.ldi_data d\nLEFT JOIN BaseSpeed b ON d.eqp_id = b.eqp_id\nWHERE d.factory IN ($Factory)\n  AND d.process IN ($process)\n  --AND d.eqp_id IN (${Eqp:singlequote})\n  AND $__timeFilter(d.\"time\")\n  AND d.total_time > 0\nGROUP BY 1, 2\nORDER BY 1;",
+          "rawSql": "WITH BaseSpeed AS (\n  SELECT\n    eqp_id,\n    -- 1. \u0e40\u0e18\u0e0b\u0e40\u0e18\u0e12\u0e40\u0e18\u0084\u0e40\u0e19\u0088\u0e40\u0e18\u0e12\u0e40\u0e18\u0e01\u0e40\u0e18\u0e12\u0e40\u0e18\u2022\u0e40\u0e18\u0e03\u0e40\u0e18\u0090\u0e40\u0e18\u0e12\u0e40\u0e18\u0099 (Median) \u0e40\u0e18\u0088\u0e40\u0e18\u0e12\u0e40\u0e18\u0081\u0e40\u0e19\u20ac\u0e40\u0e18\u0e07\u0e40\u0e18\u0e05\u0e40\u0e18\u0e12\u0e40\u0e18\u0082\u0e40\u0e18\u0e0d\u0e40\u0e18\u0087\u0e40\u0e19\u0081\u0e40\u0e18\u2022\u0e40\u0e19\u0088\u0e40\u0e18\u0e05\u0e40\u0e18\u0e10\u0e40\u0e19\u0081\u0e40\u0e18\u2013\u0e40\u0e18\u0e07\u0e40\u0e18\u2022\u0e40\u0e18\u0e12\u0e40\u0e18\u0e01\u0e40\u0e19\u20ac\u0e40\u0e18\u201d\u0e40\u0e18\u0e14\u0e40\u0e18\u0e01\n    percentile_cont(0.50) WITHIN GROUP (ORDER BY total_time) AS normal_speed\n  FROM public.ldi_data\n  WHERE \"time\" >= NOW() - INTERVAL '14 days'\n    AND total_time > 0\n    --AND eqp_id = (${Eqp:singlequote})\n  GROUP BY eqp_id\n)\nSELECT\n  time_bucket('5 minutes', d.\"time\") AS time,\n  d.eqp_id AS metric,\n  -- 2. \u0e40\u0e18\u0084\u0e40\u0e18\u0e13\u0e40\u0e18\u0099\u0e40\u0e18\u0e07\u0e40\u0e18\u201c\u0e40\u0e19\u20ac\u0e40\u0e18\u0089\u0e40\u0e18\u009e\u0e40\u0e18\u0e12\u0e40\u0e18\u0e10\u0e40\u0e18\u0e0a\u0e40\u0e18\u0e11\u0e40\u0e18\u201d\u0e40\u0e18\u0e0a\u0e40\u0e19\u0088\u0e40\u0e18\u0e07\u0e40\u0e18\u0099\u0e40\u0e18\u0084\u0e40\u0e18\u0e07\u0e40\u0e18\u0e12\u0e40\u0e18\u0e01\u0e40\u0e18\u008a\u0e40\u0e19\u0089\u0e40\u0e18\u0e12 (Ratio) \u0e40\u0e19\u20ac\u0e40\u0e18\u009e\u0e40\u0e18\u0e17\u0e40\u0e19\u0088\u0e40\u0e18\u0e0d\u0e40\u0e18\u0e0a\u0e40\u0e19\u0088\u0e40\u0e18\u0087\u0e40\u0e19\u0084\u0e40\u0e18\u009b\u0e40\u0e19\u0083\u0e40\u0e18\u0e0b\u0e40\u0e19\u0089 Grafana \u0e40\u0e19\u20ac\u0e40\u0e18\u2014\u0e40\u0e19\u0088\u0e40\u0e18\u0e12\u0e40\u0e18\u0099\u0e40\u0e18\u0e11\u0e40\u0e19\u0089\u0e40\u0e18\u0099\n  ROUND(\n    (AVG(d.total_time) / NULLIF(MAX(b.normal_speed), 0))::NUMERIC, 2\n  ) AS value\nFROM public.ldi_data d\nLEFT JOIN BaseSpeed b ON d.eqp_id = b.eqp_id\nWHERE d.factory IN ($Factory)\n  AND d.process IN ($process)\n  --AND d.eqp_id IN ($Eqp)\n  AND $__timeFilter(d.\"time\")\n  AND d.total_time > 0\nGROUP BY 1, 2\nORDER BY 1;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1932,7 +1932,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   a.logdate AS \"Time\", a.equipmentid AS \"Machine\", a.errorcode AS \"errorcode\", a.logdate AS \"errortime\", COALESCE(m.alarm_msg, a.errorcode::TEXT) AS \"Message\", COALESCE(m.alarm_type, 'WARN') AS \"Severity\", COALESCE(m.alarm_detail, '') AS \"Details\" \nFROM\n   public.ldi_alarm_log a \nLEFT JOIN\n   public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT \nWHERE\n   $__timeFilter(a.logdate) \nORDER BY\n   a.logdate DESC \nLIMIT\n   30",
+          "rawSql": "\nSELECT\n   a.logdate AS \"Time\", a.equipmentid AS \"Machine\", a.errorcode AS \"errorcode\", a.logdate AS \"errortime\", COALESCE(m.alarm_msg, a.errorcode::TEXT) AS \"Message\", COALESCE(m.alarm_type, 'WARN') AS \"Severity\", COALESCE(m.alarm_detail, '') AS \"Details\" \nFROM\n   public.ldi_alarm_log a \nLEFT JOIN\n   public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT \nWHERE\n   $__timeFilter(a.logdate) \n AND a.eqp_id IN ($Eqp) \nORDER BY\n   a.logdate DESC \nLIMIT\n   30",
           "refId": "A"
         }
       ],
@@ -2121,8 +2121,8 @@
         },
         "definition": "SELECT DISTINCT eqp_id \nFROM ldi_data \nWHERE factory IN ($Factory) AND process IN ($process) \nORDER BY eqp_id;",
         "hide": 0,
-        "includeAll": false,
-        "multi": false,
+        "includeAll": true,
+        "multi": true,
         "name": "Eqp",
         "options": [],
         "query": "\nSELECT\n   DISTINCT eqp_id \n\nFROM\n   ldi_data \n\nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n\nORDER BY\n   eqp_id;",
@@ -2131,7 +2131,8 @@
         "regexApplyTo": "value",
         "skipUrlSync": false,
         "sort": 0,
-        "type": "query"
+        "type": "query",
+        "allValue": ".*"
       },
       {
         "allowCustomValue": true,
