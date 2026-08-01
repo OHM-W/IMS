@@ -379,7 +379,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "SELECT DISTINCT ON (eqp_id) eqp_id AS metric, CASE WHEN state = true THEN 1 ELSE 0 END AS value \nFROM public.ldi_data \nWHERE factory IN ($Factory) AND process IN ($process) AND $__timeFilter(time) AND eqp_id IN ($Eqp) \nORDER BY eqp_id, time DESC",
+          "rawSql": "SELECT COUNT(DISTINCT eqp_id) FILTER (WHERE state = true) AS value \nFROM public.ldi_data \nWHERE factory IN ($Factory) AND process IN ($process) AND $__timeFilter(time) AND eqp_id IN ($Eqp)",
           "refId": "A"
         }
       ],
