@@ -16,41 +16,53 @@
     ]
   },
   "description": "Factory floor kiosk. ISA-101 compliant. Zero interaction, zero scrolling. 1920x1080.",
+  "editable": true,
   "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
   "id": null,
   "links": [
     {
+      "asDropdown": false,
       "icon": "external link",
       "includeVars": true,
       "keepTime": true,
+      "tags": [],
       "targetBlank": false,
       "title": "Apex Circuit Fleet Command Center",
+      "tooltip": "",
       "type": "link",
-      "url": "/d/ldi-pcb-manufacturing/ims-ldi-manufacturing"
+      "url": "/d/adqj59l/ims-ldi-manufacturing"
     },
     {
+      "asDropdown": false,
       "icon": "external link",
       "includeVars": true,
       "keepTime": true,
+      "tags": [],
       "targetBlank": false,
       "title": "Engineering Analytics & SPC",
+      "tooltip": "",
       "type": "link",
-      "url": "/d/ldi-engineering-analytics/ims-ldi-engineering-analytics"
+      "url": "/d/adtzgkr/ims-ldi-engineering-analytics"
     },
     {
+      "asDropdown": false,
       "icon": "external link",
       "includeVars": true,
       "keepTime": true,
+      "tags": [],
       "targetBlank": false,
       "title": "Incident Snapshot",
+      "tooltip": "",
       "type": "link",
-      "url": "/d/ldi-machine-snapshot/ims-ldi-machine-snapshot"
+      "url": "/d/adz27jl/ims-ldi-machine-snapshot"
     }
   ],
   "liveNow": true,
   "panels": [
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Fleet Availability: percentage of machines running and actively producing.",
@@ -64,7 +76,7 @@
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#22C55E",
@@ -73,8 +85,7 @@
             ]
           },
           "unit": "short"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -88,20 +99,28 @@
         "graphMode": "none",
         "justifyMode": "center",
         "noValue": "-",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
+          "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {
           "titleSize": 14,
           "valueSize": 48
-        }
+        },
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -115,6 +134,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Note: Alarm durations and MTTR are not calculated as the source EAP system currently does not broadcast explicit alarm-clear events. Only occurrence times are logged. Duration estimation requires EAP team confirmation of clear/reset event availability. Active Alarms: count of unresolved alarms in the last 5 minutes.",
@@ -128,7 +148,7 @@
             "steps": [
               {
                 "color": "#22C55E",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#EF4444",
@@ -137,8 +157,7 @@
             ]
           },
           "unit": "short"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -152,20 +171,28 @@
         "graphMode": "none",
         "justifyMode": "center",
         "noValue": "-",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
+          "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {
           "titleSize": 14,
           "valueSize": 48
-        }
+        },
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -179,6 +206,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Environmental Compliance: percentage of machines within safe temperature AND humidity.",
@@ -192,7 +220,7 @@
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -205,8 +233,7 @@
             ]
           },
           "unit": "short"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 4,
@@ -220,20 +247,28 @@
         "graphMode": "none",
         "justifyMode": "center",
         "noValue": "-",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
+          "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {
           "titleSize": 14,
           "valueSize": 48
-        }
+        },
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -247,6 +282,7 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Machine Run State: per-machine green/red timeline showing RUNNING vs STOPPED.",
@@ -254,6 +290,18 @@
         "defaults": {
           "color": {
             "mode": "thresholds"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
           },
           "mappings": [
             {
@@ -275,7 +323,7 @@
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -288,8 +336,7 @@
             ]
           },
           "unit": "short"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
@@ -300,17 +347,30 @@
       "id": 4,
       "options": {
         "alignValue": "center",
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
         "legend": {
           "displayMode": "list",
-          "placement": "bottom"
+          "overflow": "ellipsis",
+          "placement": "bottom",
+          "showLegend": true
         },
         "mergeValues": true,
         "rowHeight": 0.85,
-        "showValue": "auto"
+        "showValue": "auto",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "time_series",
@@ -325,13 +385,26 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
-      "description": "Temperature Compliance: per-machine 3-color matrix. Green=20-24°C, Amber=19-25°C, Red=outside.",
+      "description": "Temperature Compliance: per-machine 3-color matrix. Green=20-24\u0e22\u0e10C, Amber=19-25\u0e22\u0e10C, Red=outside.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
           },
           "mappings": [
             {
@@ -357,7 +430,7 @@
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -370,8 +443,7 @@
             ]
           },
           "unit": "short"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
@@ -382,17 +454,30 @@
       "id": 5,
       "options": {
         "alignValue": "center",
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
         "legend": {
           "displayMode": "list",
-          "placement": "bottom"
+          "overflow": "ellipsis",
+          "placement": "bottom",
+          "showLegend": true
         },
         "mergeValues": true,
         "rowHeight": 0.85,
-        "showValue": "auto"
+        "showValue": "auto",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "time_series",
@@ -401,12 +486,13 @@
           "refId": "A"
         }
       ],
-      "title": "Temperature Compliance (20-24°C)",
+      "title": "Temperature Compliance (20-24\u0e22\u0e10C)",
       "transparent": true,
       "type": "state-timeline"
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Humidity Compliance: per-machine 3-color matrix. Green=50-60%, Amber=45-65%, Red=outside.",
@@ -414,6 +500,18 @@
         "defaults": {
           "color": {
             "mode": "thresholds"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineWidth": 0,
+            "spanNulls": false
           },
           "mappings": [
             {
@@ -439,7 +537,7 @@
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -452,8 +550,7 @@
             ]
           },
           "unit": "short"
-        },
-        "overrides": []
+        }
       },
       "gridPos": {
         "h": 8,
@@ -464,17 +561,30 @@
       "id": 6,
       "options": {
         "alignValue": "center",
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
         "legend": {
           "displayMode": "list",
-          "placement": "bottom"
+          "overflow": "ellipsis",
+          "placement": "bottom",
+          "showLegend": true
         },
         "mergeValues": true,
         "rowHeight": 0.85,
-        "showValue": "auto"
+        "showValue": "auto",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "time_series",
@@ -483,17 +593,42 @@
           "refId": "A"
         }
       ],
-      "title": "Humidity Compliance (55±5%)",
+      "title": "Humidity Compliance (55\u0e22\u0e115%)",
       "transparent": true,
       "type": "state-timeline"
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Live Production: current MO, part, layer, and board progress per machine.",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
         "overrides": [
           {
             "matcher": {
@@ -537,6 +672,7 @@
       },
       "id": 7,
       "options": {
+        "cellHeight": "sm",
         "rowHeight": 0.7,
         "showHeader": true,
         "sortBy": [
@@ -546,9 +682,11 @@
           }
         ]
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -562,11 +700,36 @@
     },
     {
       "datasource": {
+        "type": "postgres",
         "uid": "LDI"
       },
       "description": "Note: Alarm durations and MTTR are not calculated as the source EAP system currently does not broadcast explicit alarm-clear events. Only occurrence times are logged. Duration estimation requires EAP team confirmation of clear/reset event availability. Alarm Stream: latest alarms with human-readable messages and color-coded severity.",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
         "overrides": [
           {
             "matcher": {
@@ -612,7 +775,7 @@
                   {
                     "targetBlank": false,
                     "title": "Incident Snapshot",
-                    "url": "/d/ldi-machine-snapshot/ims-ldi-machine-snapshot?var-machine_id=${__value.text}&from=${__from}&to=${__to}"
+                    "url": "/d/adz27jl/ims-ldi-machine-snapshot?var-Eqp=${__value.text}&from=${__from}&to=${__to}"
                   }
                 ]
               }
@@ -660,6 +823,7 @@
       },
       "id": 8,
       "options": {
+        "cellHeight": "sm",
         "rowHeight": 0.6,
         "showHeader": true,
         "sortBy": [
@@ -669,9 +833,11 @@
           }
         ]
       },
+      "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
+            "type": "postgres",
             "uid": "LDI"
           },
           "format": "table",
@@ -684,24 +850,15 @@
       "type": "table"
     }
   ],
+  "preload": false,
   "refresh": "5s",
-  "schemaVersion": 39,
-  "style": "dark",
-  "tags": [
-    "ims",
-    "ldi",
-    "andon",
-    "isa101",
-    "kiosk"
-  ],
+  "schemaVersion": 42,
   "templating": {
     "list": [
       {
+        "allowCustomValue": true,
         "current": {
-          "selected": false,
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -719,16 +876,15 @@
         "query": "\nSELECT\n   DISTINCT factory \n\nFROM\n   ldi_data \n\nORDER BY\n   factory;",
         "refresh": 1,
         "regex": "",
+        "regexApplyTo": "value",
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
       },
       {
+        "allowCustomValue": true,
         "current": {
-          "selected": false,
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -746,13 +902,14 @@
         "query": "\nSELECT\n   DISTINCT process \n\nFROM\n   ldi_data \n\nWHERE\n   factory IN ($Factory) \n\nORDER BY\n   process;",
         "refresh": 1,
         "regex": "",
+        "regexApplyTo": "value",
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
       },
       {
+        "allowCustomValue": true,
         "current": {
-          "selected": false,
           "text": "LDI-C-02",
           "value": "LDI-C-02"
         },
@@ -769,6 +926,7 @@
         "query": "\nSELECT\n   DISTINCT eqp_id \n\nFROM\n   ldi_data \n\nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n\nORDER BY\n   eqp_id;",
         "refresh": 1,
         "regex": "",
+        "regexApplyTo": "value",
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
@@ -779,8 +937,22 @@
     "from": "2026-07-20T23:00:00.000Z",
     "to": "2026-07-21T05:00:00.000Z"
   },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
   "timezone": "browser",
-  "title": "IMS LDI — Operator Andon Board",
-  "uid": "ldi-operator-andon",
-  "version": null
+  "title": "IMS LDI - Operator Andon Board",
+  "uid": "ad7nwgb",
+  "version": 4
 }

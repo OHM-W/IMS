@@ -31,7 +31,7 @@
       "title": "Engineering Analytics & SPC",
       "tooltip": "",
       "type": "link",
-      "url": "/d/ldi-engineering-analytics/ims-ldi-engineering-analytics"
+      "url": "/d/adtzgkr/ims-ldi-engineering-analytics"
     },
     {
       "asDropdown": false,
@@ -43,7 +43,7 @@
       "title": "Operator Andon Board",
       "tooltip": "",
       "type": "link",
-      "url": "/d/ldi-operator-andon/ims-ldi-operator-andon"
+      "url": "/d/ad7nwgb/ims-ldi-operator-andon"
     },
     {
       "asDropdown": false,
@@ -55,7 +55,7 @@
       "title": "Incident Snapshot",
       "tooltip": "",
       "type": "link",
-      "url": "/d/ldi-machine-snapshot/ims-ldi-machine-snapshot"
+      "url": "/d/adz27jl/ims-ldi-machine-snapshot"
     }
   ],
   "liveNow": true,
@@ -392,7 +392,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "Mean of max absolute PE deviation across 6 fiducial points. Green < 10µm, Amber 10-20µm, Red > 20µm.",
+      "description": "Mean of max absolute PE deviation across 6 fiducial points. Green < 10\u0e22\u0e15m, Amber 10-20\u0e22\u0e15m, Red > 20\u0e22\u0e15m.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -457,7 +457,7 @@
           "refId": "A"
         }
       ],
-      "title": "Position Error Deviation (pe_1 ~ pe_6 µm)",
+      "title": "Position Error Deviation (pe_1 ~ pe_6 \u0e22\u0e15m)",
       "transparent": true,
       "type": "stat"
     },
@@ -466,7 +466,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "Fleet-wide average temperature. Target 22±2°C. Red outside 20-24°C, Amber 20-24°C, Green 22-24°C.",
+      "description": "Fleet-wide average temperature. Target 22\u0e22\u0e112\u0e22\u0e10C. Red outside 20-24\u0e22\u0e10C, Amber 20-24\u0e22\u0e10C, Green 22-24\u0e22\u0e10C.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -542,7 +542,7 @@
           "refId": "A"
         }
       ],
-      "title": "temperature (°C)",
+      "title": "temperature (\u0e22\u0e10C)",
       "transparent": true,
       "type": "stat"
     },
@@ -551,7 +551,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "Fleet-wide average humidity. Target 55±5%RH. Red outside 50-60%, Amber 50-60%, Green 55-60%.",
+      "description": "Fleet-wide average humidity. Target 55\u0e22\u0e115%RH. Red outside 50-60%, Amber 50-60%, Green 55-60%.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -750,7 +750,7 @@
                     "keepTime": true,
                     "targetBlank": true,
                     "title": "Analyze Process Trend",
-                    "url": "/d/ldi-engineering-analytics/ims-ldi-engineering-analytics?var-Eqp=${__value.text}&from=${__from}&to=${__to}"
+                    "url": "/d/adtzgkr/ims-ldi-engineering-analytics?var-Eqp=${__value.text}&from=${__from}&to=${__to}"
                   }
                 ]
               }
@@ -801,12 +801,7 @@
         "cellHeight": "sm",
         "rowHeight": 0.6,
         "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Machine"
-          }
-        ]
+        "sortBy": []
       },
       "pluginVersion": "13.1.0",
       "targets": [
@@ -816,7 +811,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   DISTINCT ON (eqp_id) eqp_id AS \"Machine\", mo AS \"Job (MO)\", fpn AS \"Part (FPN)\", layer_name AS \"Layer\", (board_no::TEXT || '/' || total_board::TEXT) AS \"Progress\", ROUND(temperature::NUMERIC, 1) AS \"temperature (°C)\", ROUND(humidity::NUMERIC, 1) AS \"humidity (%RH)\", ROUND(scan_speed::NUMERIC, 1) AS \"scan_speed (mm/s)\", ROUND(thickness::NUMERIC, 3) AS \"thickness (mm)\", ROUND(resist_dosage::NUMERIC, 1) AS \"resist_dosage\", state AS \"state\" \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \nORDER BY\n   eqp_id, time DESC \nLIMIT\n   50",
+          "rawSql": "\nSELECT\n   DISTINCT ON (eqp_id) eqp_id AS \"Machine\", mo AS \"Job (MO)\", fpn AS \"Part (FPN)\", layer_name AS \"Layer\", (board_no::TEXT || '/' || total_board::TEXT) AS \"Progress\", ROUND(temperature::NUMERIC, 1) AS \"temperature (\u0e22\u0e10C)\", ROUND(humidity::NUMERIC, 1) AS \"humidity (%RH)\", ROUND(scan_speed::NUMERIC, 1) AS \"scan_speed (mm/s)\", ROUND(thickness::NUMERIC, 3) AS \"thickness (mm)\", ROUND(resist_dosage::NUMERIC, 1) AS \"resist_dosage\", state AS \"state\" \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \nORDER BY\n   eqp_id, time DESC \nLIMIT\n   50",
           "refId": "A"
         }
       ],
@@ -829,7 +824,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "3-color compliance matrix per machine. Green 20-24°C, Amber 19-25°C, Red outside.",
+      "description": "3-color compliance matrix per machine. Green 20-24\u0e22\u0e10C, Amber 19-25\u0e22\u0e10C, Red outside.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -927,7 +922,7 @@
           "refId": "A"
         }
       ],
-      "title": "temperature Compliance (20-24°C)",
+      "title": "temperature Compliance (20-24\u0e22\u0e10C)",
       "transparent": true,
       "type": "state-timeline"
     },
@@ -1204,7 +1199,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "Dual Y-axis: thickness (left, mm) and resist_dosage (right, mJ/cm²) per machine.",
+      "description": "Dual Y-axis: thickness (left, mm) and resist_dosage (right, mJ/cm\u0e22\u0e12) per machine.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1293,7 +1288,7 @@
               },
               {
                 "id": "custom.axisLabel",
-                "value": "resist_dosage (mJ/cm²)"
+                "value": "resist_dosage (mJ/cm\u0e22\u0e12)"
               },
               {
                 "id": "unit",
@@ -1547,7 +1542,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "View Incident Snapshot",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__field.name}&var-clicked_time=${__value.time}&var-exact_time=&var-bucket_size=5 minutes&from=${__from}&to=${__to}"
+              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__field.name}&var-clicked_time=${__value.time}&var-exact_time=&var-bucket_size=5 minutes&from=${__from}&to=${__to}"
             }
           ],
           "thresholds": {
@@ -1603,125 +1598,33 @@
             "type": "postgres",
             "uid": "LDI"
           },
+          "editorMode": "code",
           "format": "time_series",
-          "rawSql": "\nSELECT\n   time_bucket('5 minutes', time) AS time, eqp_id AS metric, ROUND(AVG(total_time / NULLIF(total_board, 0))::NUMERIC, 2) AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  total_board > 0 \nGROUP BY\n   1, 2 \nORDER BY\n   time",
-          "refId": "A"
+          "rawQuery": true,
+          "rawSql": "WITH BaseSpeed AS (\n  SELECT\n    eqp_id,\n    -- 1. \u0e40\u0e18\u0e0b\u0e40\u0e18\u0e12\u0e40\u0e18\u0084\u0e40\u0e19\u0088\u0e40\u0e18\u0e12\u0e40\u0e18\u0e01\u0e40\u0e18\u0e12\u0e40\u0e18\u2022\u0e40\u0e18\u0e03\u0e40\u0e18\u0090\u0e40\u0e18\u0e12\u0e40\u0e18\u0099 (Median) \u0e40\u0e18\u0088\u0e40\u0e18\u0e12\u0e40\u0e18\u0081\u0e40\u0e19\u20ac\u0e40\u0e18\u0e07\u0e40\u0e18\u0e05\u0e40\u0e18\u0e12\u0e40\u0e18\u0082\u0e40\u0e18\u0e0d\u0e40\u0e18\u0087\u0e40\u0e19\u0081\u0e40\u0e18\u2022\u0e40\u0e19\u0088\u0e40\u0e18\u0e05\u0e40\u0e18\u0e10\u0e40\u0e19\u0081\u0e40\u0e18\u2013\u0e40\u0e18\u0e07\u0e40\u0e18\u2022\u0e40\u0e18\u0e12\u0e40\u0e18\u0e01\u0e40\u0e19\u20ac\u0e40\u0e18\u201d\u0e40\u0e18\u0e14\u0e40\u0e18\u0e01\n    percentile_cont(0.50) WITHIN GROUP (ORDER BY total_time) AS normal_speed\n  FROM public.ldi_data\n  WHERE \"time\" >= NOW() - INTERVAL '14 days'\n    AND total_time > 0\n    --AND eqp_id = (${Eqp:singlequote})\n  GROUP BY eqp_id\n)\nSELECT\n  time_bucket('5 minutes', d.\"time\") AS time,\n  d.eqp_id AS metric,\n  -- 2. \u0e40\u0e18\u0084\u0e40\u0e18\u0e13\u0e40\u0e18\u0099\u0e40\u0e18\u0e07\u0e40\u0e18\u201c\u0e40\u0e19\u20ac\u0e40\u0e18\u0089\u0e40\u0e18\u009e\u0e40\u0e18\u0e12\u0e40\u0e18\u0e10\u0e40\u0e18\u0e0a\u0e40\u0e18\u0e11\u0e40\u0e18\u201d\u0e40\u0e18\u0e0a\u0e40\u0e19\u0088\u0e40\u0e18\u0e07\u0e40\u0e18\u0099\u0e40\u0e18\u0084\u0e40\u0e18\u0e07\u0e40\u0e18\u0e12\u0e40\u0e18\u0e01\u0e40\u0e18\u008a\u0e40\u0e19\u0089\u0e40\u0e18\u0e12 (Ratio) \u0e40\u0e19\u20ac\u0e40\u0e18\u009e\u0e40\u0e18\u0e17\u0e40\u0e19\u0088\u0e40\u0e18\u0e0d\u0e40\u0e18\u0e0a\u0e40\u0e19\u0088\u0e40\u0e18\u0087\u0e40\u0e19\u0084\u0e40\u0e18\u009b\u0e40\u0e19\u0083\u0e40\u0e18\u0e0b\u0e40\u0e19\u0089 Grafana \u0e40\u0e19\u20ac\u0e40\u0e18\u2014\u0e40\u0e19\u0088\u0e40\u0e18\u0e12\u0e40\u0e18\u0099\u0e40\u0e18\u0e11\u0e40\u0e19\u0089\u0e40\u0e18\u0099\n  ROUND(\n    (AVG(d.total_time) / NULLIF(MAX(b.normal_speed), 0))::NUMERIC, 2\n  ) AS value\nFROM public.ldi_data d\nLEFT JOIN BaseSpeed b ON d.eqp_id = b.eqp_id\nWHERE d.factory IN ($Factory)\n  AND d.process IN ($process)\n  --AND d.eqp_id IN (${Eqp:singlequote})\n  AND $__timeFilter(d.\"time\")\n  AND d.total_time > 0\nGROUP BY 1, 2\nORDER BY 1;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "total_time / total_board (s/board)",
       "transparent": true,
       "type": "status-history"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "LDI"
-      },
-      "description": "3-sigma Z-Score on temperature per machine. Green ±2 (normal), Amber 2.5 (watch), Red 3+ (anomaly).",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 15,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "decimals": 2,
-          "max": 4,
-          "min": -4,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        }
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 12,
-        "y": 29
-      },
-      "id": 13,
-      "options": {
-        "annotations": {
-          "clustering": -1,
-          "multiLane": false
-        },
-        "connectNullPoints": true,
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "enableFacetedFilter": false,
-          "overflow": "ellipsis",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "pluginVersion": "13.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "LDI"
-          },
-          "format": "time_series",
-          "legendFormat": "{{metric}}",
-          "rawSql": "WITH stats AS (\nSELECT\n   eqp_id, AVG(temperature) AS mu, STDDEV(temperature) AS sigma \nFROM\n   public.ldi_data \nWHERE\n   time > NOW() - INTERVAL '24 hours' \nGROUP BY\n   eqp_id) \nSELECT\n   d.time, d.eqp_id AS metric, ROUND(((d.temperature - s.mu) / NULLIF(s.sigma, 0))::NUMERIC, 2) AS \"Z-Score\" \nFROM\n   public.ldi_data d JOIN stats s ON d.eqp_id = s.eqp_id \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  d.temperature IS NOT NULL \n  AND  s.sigma > 0 \nORDER BY\n   d.time ASC",
-          "refId": "A"
-        }
-      ],
-      "title": "Z-Score: temperature",
-      "transparent": true,
-      "type": "timeseries"
     },
     {
       "datasource": {
@@ -1770,7 +1673,7 @@
                     "keepTime": true,
                     "targetBlank": true,
                     "title": "Analyze Process Trend",
-                    "url": "/d/ldi-engineering-analytics/ims-ldi-engineering-analytics?var-Eqp=${__value.text}&from=${__from}&to=${__to}"
+                    "url": "/d/adtzgkr/ims-ldi-engineering-analytics?var-Eqp=${__value.text}&from=${__from}&to=${__to}"
                   }
                 ]
               }
@@ -1831,8 +1734,8 @@
       "gridPos": {
         "h": 6,
         "w": 12,
-        "x": 0,
-        "y": 35
+        "x": 12,
+        "y": 29
       },
       "id": 18,
       "options": {
@@ -1961,13 +1864,52 @@
                 "value": 6
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "errorcode",
+              "scope": "series"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 102
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Machine",
+              "scope": "series"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 111
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Message",
+              "scope": "series"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 239
+              }
+            ]
           }
         ]
       },
       "gridPos": {
         "h": 6,
-        "w": 12,
-        "x": 12,
+        "w": 24,
+        "x": 0,
         "y": 35
       },
       "id": 14,
@@ -1997,18 +1939,122 @@
       "title": "Alarm Stream",
       "transparent": true,
       "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "LDI"
+      },
+      "description": "3-sigma Z-Score on temperature per machine. Green \u0e22\u0e112 (normal), Amber 2.5 (watch), Red 3+ (anomaly).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 2,
+          "max": 4,
+          "min": -4,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 41
+      },
+      "id": 13,
+      "options": {
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
+        "connectNullPoints": true,
+        "legend": {
+          "calcs": [
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "enableFacetedFilter": false,
+          "overflow": "ellipsis",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "13.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "LDI"
+          },
+          "format": "time_series",
+          "legendFormat": "{{metric}}",
+          "rawSql": "WITH stats AS (\nSELECT\n   eqp_id, AVG(temperature) AS mu, STDDEV(temperature) AS sigma \nFROM\n   public.ldi_data \nWHERE\n   time > NOW() - INTERVAL '24 hours' \nGROUP BY\n   eqp_id) \nSELECT\n   d.time, d.eqp_id AS metric, ROUND(((d.temperature - s.mu) / NULLIF(s.sigma, 0))::NUMERIC, 2) AS \"Z-Score\" \nFROM\n   public.ldi_data d JOIN stats s ON d.eqp_id = s.eqp_id \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  d.temperature IS NOT NULL \n  AND  s.sigma > 0 \nORDER BY\n   d.time ASC",
+          "refId": "A"
+        }
+      ],
+      "title": "Z-Score: temperature",
+      "transparent": true,
+      "type": "timeseries"
     }
   ],
   "preload": false,
   "refresh": "5s",
   "schemaVersion": 42,
-  "tags": [
-    "ims",
-    "ldi",
-    "executive",
-    "spc",
-    "rca"
-  ],
   "templating": {
     "list": [
       {
@@ -2134,7 +2180,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "IMS LDI — Apex Circuit Fleet Command Center",
-  "uid": "ldi-pcb-manufacturing",
-  "version": null
+  "title": "IMS LDI - Apex Circuit Fleet Command Center",
+  "uid": "adqj59l",
+  "version": 9
 }

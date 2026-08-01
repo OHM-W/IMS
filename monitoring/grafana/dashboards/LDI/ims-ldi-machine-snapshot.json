@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "360° machine snapshot at the exact millisecond clicked from Process Timeline. Shows job context, physical variables, PE alignment, Cpk, and alarm proximity.",
+  "description": "360\u0e22\u0e10 machine snapshot at the exact millisecond clicked from Process Timeline. Shows job context, physical variables, PE alignment, Cpk, and alarm proximity.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
@@ -31,7 +31,7 @@
       "title": "Apex Circuit Fleet Command Center",
       "tooltip": "",
       "type": "link",
-      "url": "/d/ldi-pcb-manufacturing/ims-ldi-manufacturing"
+      "url": "/d/adqj59l/ims-ldi-manufacturing"
     },
     {
       "asDropdown": false,
@@ -43,7 +43,7 @@
       "title": "Engineering Analytics & SPC",
       "tooltip": "",
       "type": "link",
-      "url": "/d/ldi-engineering-analytics/ims-ldi-engineering-analytics"
+      "url": "/d/adtzgkr/ims-ldi-engineering-analytics"
     },
     {
       "asDropdown": false,
@@ -55,7 +55,7 @@
       "title": "Operator Andon Board",
       "tooltip": "",
       "type": "link",
-      "url": "/d/ldi-operator-andon/ims-ldi-operator-andon"
+      "url": "/d/ad7nwgb/ims-ldi-operator-andon"
     }
   ],
   "liveNow": false,
@@ -153,7 +153,7 @@
                   {
                     "targetBlank": false,
                     "title": "Set as Snapshot Time",
-                    "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${Eqp}&var-clicked_time=${clicked_time}&var-exact_time=${__data.fields.UnixTime}&var-bucket_size=${bucket_size}&from=${__from}&to=${__to}"
+                    "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${Eqp}&var-clicked_time=${clicked_time}&var-exact_time=${__data.fields.UnixTime}&var-bucket_size=${bucket_size}&from=${__from}&to=${__to}"
                   }
                 ]
               },
@@ -319,7 +319,7 @@
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "center",
-        "noValue": "—",
+        "noValue": "\u0e42\u20ac\u201d",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
@@ -368,7 +368,7 @@
           }
         }
       ],
-      "title": "temperature (°C)",
+      "title": "temperature (\u0e22\u0e10C)",
       "transparent": true,
       "type": "stat"
     },
@@ -411,7 +411,7 @@
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "center",
-        "noValue": "—",
+        "noValue": "\u0e42\u20ac\u201d",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
@@ -484,7 +484,7 @@
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "center",
-        "noValue": "—",
+        "noValue": "\u0e42\u20ac\u201d",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
@@ -557,7 +557,7 @@
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "center",
-        "noValue": "—",
+        "noValue": "\u0e42\u20ac\u201d",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
@@ -630,7 +630,7 @@
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "center",
-        "noValue": "—",
+        "noValue": "\u0e42\u20ac\u201d",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
@@ -703,7 +703,7 @@
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "center",
-        "noValue": "—",
+        "noValue": "\u0e42\u20ac\u201d",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
@@ -733,7 +733,7 @@
           "refId": "A"
         }
       ],
-      "title": "resist_dosage (mJ/cm²)",
+      "title": "resist_dosage (mJ/cm\u0e22\u0e12)",
       "transparent": true,
       "type": "stat"
     },
@@ -1182,7 +1182,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "Alarms within ±5 minutes of the clicked timestamp. Proves causality: data drift → alarm.",
+      "description": "Alarms within \u0e22\u0e115 minutes of the clicked timestamp. Proves causality: data drift \u0e42\u0086\u2019 alarm.",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1310,7 +1310,7 @@
           "refId": "A"
         }
       ],
-      "title": "Alarm Context (±5 min of clicked timestamp)",
+      "title": "Alarm Context (\u0e22\u0e115 min of clicked timestamp)",
       "transparent": true,
       "type": "table"
     },
@@ -1491,13 +1491,6 @@
   "preload": false,
   "refresh": "5s",
   "schemaVersion": 42,
-  "tags": [
-    "ims",
-    "ldi",
-    "snapshot",
-    "rca",
-    "drilldown"
-  ],
   "templating": {
     "list": [
       {
@@ -1630,7 +1623,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "IMS LDI — Incident Snapshot",
-  "uid": "ldi-machine-snapshot",
-  "version": null
+  "title": "IMS LDI - Incident Snapshot",
+  "uid": "adz27jl",
+  "version": 4
 }

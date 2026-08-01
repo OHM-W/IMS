@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Layer 3 Process Timeline: synchronized multi-parameter RCA. temperature → humidity → scan_speed → air_vacuum → scale_x/y → pe_1~6 → je_1~4 → state. Shared crosshair + tooltip. Fixed axis scaling.",
+  "description": "Layer 3 Process Timeline: synchronized multi-parameter RCA. temperature \u0e42\u0086\u2019 humidity \u0e42\u0086\u2019 scan_speed \u0e42\u0086\u2019 air_vacuum \u0e42\u0086\u2019 scale_x/y \u0e42\u0086\u2019 pe_1~6 \u0e42\u0086\u2019 je_1~4 \u0e42\u0086\u2019 state. Shared crosshair + tooltip. Fixed axis scaling.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 2,
@@ -31,7 +31,7 @@
       "title": "Apex Circuit Fleet Command Center",
       "tooltip": "",
       "type": "link",
-      "url": "/d/ldi-pcb-manufacturing/ims-ldi-manufacturing"
+      "url": "/d/adqj59l/ims-ldi-manufacturing"
     },
     {
       "asDropdown": false,
@@ -43,7 +43,7 @@
       "title": "Operator Andon Board",
       "tooltip": "",
       "type": "link",
-      "url": "/d/ldi-operator-andon/ims-ldi-operator-andon"
+      "url": "/d/ad7nwgb/ims-ldi-operator-andon"
     },
     {
       "asDropdown": false,
@@ -55,7 +55,7 @@
       "title": "Incident Snapshot",
       "tooltip": "",
       "type": "link",
-      "url": "/d/ldi-machine-snapshot/ims-ldi-machine-snapshot"
+      "url": "/d/adz27jl/ims-ldi-machine-snapshot"
     }
   ],
   "liveNow": true,
@@ -65,7 +65,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "temperature per machine. Fixed axis 18-28°C (target 22±2°C). Shared crosshair syncs with all panels below.",
+      "description": "temperature per machine. Fixed axis 18-28\u0e22\u0e10C (target 22\u0e22\u0e112\u0e22\u0e10C). Shared crosshair syncs with all panels below.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -111,7 +111,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "max": 28,
@@ -194,7 +194,7 @@
           }
         }
       ],
-      "title": "temperature (°C)",
+      "title": "temperature (\u0e22\u0e10C)",
       "transparent": true,
       "type": "timeseries"
     },
@@ -203,7 +203,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "humidity per machine. Fixed axis 40-70%RH (target 55±5%RH). Shared crosshair syncs with all panels below.",
+      "description": "humidity per machine. Fixed axis 40-70%RH (target 55\u0e22\u0e115%RH). Shared crosshair syncs with all panels below.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -249,7 +249,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "max": 70,
@@ -368,7 +368,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "thresholds": {
@@ -485,7 +485,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "thresholds": {
@@ -602,7 +602,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "thresholds": {
@@ -719,7 +719,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "thresholds": {
@@ -790,7 +790,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "Individual PE values (pe_1 through pe_6) per machine. Raw signed positional error in µm. Fixed axis ±30µm.",
+      "description": "Individual PE values (pe_1 through pe_6) per machine. Raw signed positional error in \u0e22\u0e15m. Fixed axis \u0e22\u0e1130\u0e22\u0e15m.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -836,7 +836,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "max": 80,
@@ -950,7 +950,7 @@
           "refId": "F"
         }
       ],
-      "title": "pe_1 ~ pe_6 (µm)",
+      "title": "pe_1 ~ pe_6 (\u0e22\u0e15m)",
       "transparent": true,
       "type": "timeseries"
     },
@@ -959,7 +959,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "Individual JE values (je_1 through je_4) per machine. Raw signed junction error in µm. Fixed axis ±30µm.",
+      "description": "Individual JE values (je_1 through je_4) per machine. Raw signed junction error in \u0e22\u0e15m. Fixed axis \u0e22\u0e1130\u0e22\u0e15m.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1005,7 +1005,7 @@
               "oneClick": true,
               "targetBlank": false,
               "title": "Incident Snapshot (by log_id)",
-              "url": "/d/ldi-machine-snapshot/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
             }
           ],
           "max": 45,
@@ -1099,7 +1099,7 @@
           "refId": "D"
         }
       ],
-      "title": "je_1 ~ je_4 (µm)",
+      "title": "je_1 ~ je_4 (\u0e22\u0e15m)",
       "transparent": true,
       "type": "timeseries"
     },
@@ -1521,7 +1521,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "All 3 recipes: DF OUTER=15, DF INNER=71, SM=500-1200 mJ/cm²",
+      "description": "All 3 recipes: DF OUTER=15, DF INNER=71, SM=500-1200 mJ/cm\u0e22\u0e12",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1602,7 +1602,7 @@
           "refId": "A"
         }
       ],
-      "title": "Resist Dosage (mJ/cm²)",
+      "title": "Resist Dosage (mJ/cm\u0e22\u0e12)",
       "transparent": true,
       "type": "bargauge"
     }
@@ -1610,14 +1610,6 @@
   "preload": false,
   "refresh": "10s",
   "schemaVersion": 42,
-  "tags": [
-    "ims",
-    "ldi",
-    "engineering",
-    "spc",
-    "analytics",
-    "rca"
-  ],
   "templating": {
     "list": [
       {
@@ -1743,7 +1735,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "IMS LDI — Engineering Analytics & SPC",
-  "uid": "ldi-engineering-analytics",
-  "version": null
+  "title": "IMS LDI - Engineering Analytics & SPC",
+  "uid": "adtzgkr",
+  "version": 4
 }
