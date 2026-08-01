@@ -392,7 +392,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "Mean of max absolute PE deviation across 6 fiducial points. Green < 10\u0e22\u0e15m, Amber 10-20\u0e22\u0e15m, Red > 20\u0e22\u0e15m.",
+      "description": "Mean of max absolute PE deviation across 6 fiducial points. Green < 10, Amber 10-20, Red > 20.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -430,7 +430,7 @@
       "id": 2,
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
+        "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
@@ -457,7 +457,7 @@
           "refId": "A"
         }
       ],
-      "title": "Position Error Deviation (pe_1 ~ pe_6 \u0e22\u0e15m)",
+      "title": "Position Error Deviation (pe_1 ~ pe_6 )",
       "transparent": true,
       "type": "stat"
     },
@@ -466,7 +466,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "Fleet-wide average temperature. Target 22\u0e22\u0e112\u0e22\u0e10C. Red outside 20-24\u0e22\u0e10C, Amber 20-24\u0e22\u0e10C, Green 22-24\u0e22\u0e10C.",
+      "description": "Fleet-wide average temperature. Target 22+-2\u00b0C. Red outside 20-24\u00b0C, Amber 20-24\u0e22\u0e10C, Green 22-24\u00b0C.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -537,12 +537,31 @@
             "type": "postgres",
             "uid": "LDI"
           },
+          "editorMode": "code",
           "format": "table",
-          "rawSql": "SELECT eqp_id AS metric, ROUND(AVG(temperature)::NUMERIC, 1) AS value \nFROM public.ldi_data \nWHERE factory IN ($Factory) AND process IN ($process) AND $__timeFilter(time) AND eqp_id IN ($Eqp) AND temperature IS NOT NULL\nGROUP BY eqp_id",
-          "refId": "A"
+          "rawQuery": true,
+          "rawSql": "SELECT\n  eqp_id AS metric,\n  ROUND(AVG(temperature) :: NUMERIC, 1) AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN ($Factory)\n  AND process IN ($process)\n  AND $__timeFilter(time)\n  AND eqp_id IN ($Eqp)\n  AND temperature IS NOT NULL\nGROUP BY\n  eqp_id",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
-      "title": "temperature (\u0e22\u0e10C)",
+      "title": "temperature (\u00b0C)",
       "transparent": true,
       "type": "stat"
     },
@@ -810,9 +829,28 @@
             "type": "postgres",
             "uid": "LDI"
           },
+          "editorMode": "code",
           "format": "table",
-          "rawSql": "SELECT DISTINCT ON (eqp_id) eqp_id AS \"Machine\", mo AS \"Job (MO)\", fpn AS \"Part (FPN)\", layer_name AS \"Layer\", (board_no::TEXT || '/' || total_board::TEXT) AS \"Progress\", ROUND(temperature::NUMERIC, 1) AS \"temperature (\u00b0C)\", ROUND(humidity::NUMERIC, 1) AS \"humidity (%RH)\", ROUND(scan_speed::NUMERIC, 1) AS \"scan_speed (mm/s)\", ROUND(thickness::NUMERIC, 3) AS \"thickness (mm)\", ROUND(resist_dosage::NUMERIC, 1) AS \"resist_dosage\", state AS \"state\" \nFROM public.ldi_data \nWHERE factory IN ($Factory) AND process IN ($process) AND $__timeFilter(time) AND eqp_id IN ($Eqp)\nORDER BY eqp_id, time DESC \nLIMIT 50",
-          "refId": "A"
+          "rawQuery": true,
+          "rawSql": "SELECT\n  DISTINCT ON (eqp_id) eqp_id AS \"Machine\",\n  mo AS \"Job (MO)\",\n  fpn AS \"Part (FPN)\",\n  layer_name AS \"Layer\",\n  (board_no :: TEXT || '/' || total_board :: TEXT) AS \"Progress\",\n  ROUND(temperature :: NUMERIC, 1) AS \"temperature (\u00b0C)\",\n  ROUND(humidity :: NUMERIC, 1) AS \"humidity (%RH)\",\n  ROUND(scan_speed :: NUMERIC, 1) AS \"scan_speed (mm/s)\",\n  ROUND(thickness :: NUMERIC, 3) AS \"thickness (mm)\",\n  ROUND(resist_dosage :: NUMERIC, 1) AS \"resist_dosage\",\n  state AS \"state\"\nFROM\n  public.ldi_data\nWHERE\n  factory IN ($Factory)\n  AND process IN ($process)\n  AND $__timeFilter(time)\n  AND eqp_id IN ($Eqp)\nORDER BY\n  eqp_id,\n  time DESC\nLIMIT\n  50",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "Production & Process Table",
@@ -824,7 +862,7 @@
         "type": "postgres",
         "uid": "LDI"
       },
-      "description": "3-color compliance matrix per machine. Green 20-24\u0e22\u0e10C, Amber 19-25\u0e22\u0e10C, Red outside.",
+      "description": "3-color compliance matrix per machine. Green 20-24\u00b0C, Amber 19-25\u00b0C, Red outside.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -902,7 +940,7 @@
         },
         "mergeValues": true,
         "rowHeight": 0.85,
-        "showValue": "auto",
+        "showValue": "never",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
@@ -922,7 +960,7 @@
           "refId": "A"
         }
       ],
-      "title": "temperature Compliance (20-24\u0e22\u0e10C)",
+      "title": "temperature Compliance (20-24\u00b0C)",
       "transparent": true,
       "type": "state-timeline"
     },
@@ -1009,7 +1047,7 @@
         },
         "mergeValues": true,
         "rowHeight": 0.85,
-        "showValue": "auto",
+        "showValue": "never",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
@@ -1023,10 +1061,29 @@
             "type": "postgres",
             "uid": "LDI"
           },
+          "editorMode": "code",
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time, eqp_id AS metric, CASE WHEN humidity BETWEEN 50 \n  AND  60 THEN 2 WHEN humidity BETWEEN 45 \n  AND  65 THEN 1 ELSE 0 END AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n  AND  $__timeFilter(time) \n  AND  humidity IS NOT NULL \n AND eqp_id IN ($Eqp) \nORDER BY\n   time ASC",
-          "refId": "A"
+          "rawQuery": true,
+          "rawSql": "SELECT\n  time,\n  eqp_id AS metric,\n  CASE\n    WHEN humidity BETWEEN 50\n    AND 60 THEN 2\n    WHEN humidity BETWEEN 45\n    AND 65 THEN 1\n    ELSE 0\n  END AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN ($Factory)\n  AND process IN ($process)\n  AND $__timeFilter(time)\n  AND humidity IS NOT NULL\n  AND eqp_id IN ($Eqp)\nORDER BY\n  time ASC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "humidity Compliance (50-60%RH)",
@@ -1584,7 +1641,7 @@
           "showLegend": true
         },
         "rowHeight": 0.9,
-        "showValue": "auto",
+        "showValue": "never",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
@@ -1601,7 +1658,7 @@
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "WITH BaseSpeed AS (\n  SELECT\n    eqp_id,\n    -- 1. \u0e40\u0e18\u0e0b\u0e40\u0e18\u0e12\u0e40\u0e18\u0084\u0e40\u0e19\u0088\u0e40\u0e18\u0e12\u0e40\u0e18\u0e01\u0e40\u0e18\u0e12\u0e40\u0e18\u2022\u0e40\u0e18\u0e03\u0e40\u0e18\u0090\u0e40\u0e18\u0e12\u0e40\u0e18\u0099 (Median) \u0e40\u0e18\u0088\u0e40\u0e18\u0e12\u0e40\u0e18\u0081\u0e40\u0e19\u20ac\u0e40\u0e18\u0e07\u0e40\u0e18\u0e05\u0e40\u0e18\u0e12\u0e40\u0e18\u0082\u0e40\u0e18\u0e0d\u0e40\u0e18\u0087\u0e40\u0e19\u0081\u0e40\u0e18\u2022\u0e40\u0e19\u0088\u0e40\u0e18\u0e05\u0e40\u0e18\u0e10\u0e40\u0e19\u0081\u0e40\u0e18\u2013\u0e40\u0e18\u0e07\u0e40\u0e18\u2022\u0e40\u0e18\u0e12\u0e40\u0e18\u0e01\u0e40\u0e19\u20ac\u0e40\u0e18\u201d\u0e40\u0e18\u0e14\u0e40\u0e18\u0e01\n    percentile_cont(0.50) WITHIN GROUP (ORDER BY total_time) AS normal_speed\n  FROM public.ldi_data\n  WHERE \"time\" >= NOW() - INTERVAL '14 days'\n    AND total_time > 0\n    --AND eqp_id = (${Eqp:singlequote})\n  GROUP BY eqp_id\n)\nSELECT\n  time_bucket('5 minutes', d.\"time\") AS time,\n  d.eqp_id AS metric,\n  -- 2. \u0e40\u0e18\u0084\u0e40\u0e18\u0e13\u0e40\u0e18\u0099\u0e40\u0e18\u0e07\u0e40\u0e18\u201c\u0e40\u0e19\u20ac\u0e40\u0e18\u0089\u0e40\u0e18\u009e\u0e40\u0e18\u0e12\u0e40\u0e18\u0e10\u0e40\u0e18\u0e0a\u0e40\u0e18\u0e11\u0e40\u0e18\u201d\u0e40\u0e18\u0e0a\u0e40\u0e19\u0088\u0e40\u0e18\u0e07\u0e40\u0e18\u0099\u0e40\u0e18\u0084\u0e40\u0e18\u0e07\u0e40\u0e18\u0e12\u0e40\u0e18\u0e01\u0e40\u0e18\u008a\u0e40\u0e19\u0089\u0e40\u0e18\u0e12 (Ratio) \u0e40\u0e19\u20ac\u0e40\u0e18\u009e\u0e40\u0e18\u0e17\u0e40\u0e19\u0088\u0e40\u0e18\u0e0d\u0e40\u0e18\u0e0a\u0e40\u0e19\u0088\u0e40\u0e18\u0087\u0e40\u0e19\u0084\u0e40\u0e18\u009b\u0e40\u0e19\u0083\u0e40\u0e18\u0e0b\u0e40\u0e19\u0089 Grafana \u0e40\u0e19\u20ac\u0e40\u0e18\u2014\u0e40\u0e19\u0088\u0e40\u0e18\u0e12\u0e40\u0e18\u0099\u0e40\u0e18\u0e11\u0e40\u0e19\u0089\u0e40\u0e18\u0099\n  ROUND(\n    (AVG(d.total_time) / NULLIF(MAX(b.normal_speed), 0))::NUMERIC, 2\n  ) AS value\nFROM public.ldi_data d\nLEFT JOIN BaseSpeed b ON d.eqp_id = b.eqp_id\nWHERE d.factory IN ($Factory)\n  AND d.process IN ($process)\n  --AND d.eqp_id IN ($Eqp)\n  AND $__timeFilter(d.\"time\")\n  AND d.total_time > 0\nGROUP BY 1, 2\nORDER BY 1;",
+          "rawSql": "WITH BaseSpeed AS (\n  SELECT\n    eqp_id,\n    percentile_cont(0.50) WITHIN GROUP (\n      ORDER BY\n        total_time\n    ) AS normal_speed\n  FROM\n    public.ldi_data\n  WHERE\n    \"time\" >= NOW() - INTERVAL '14 days'\n    AND total_time > 0 --AND eqp_id = (${Eqp:singlequote})\n  GROUP BY\n    eqp_id\n)\nSELECT\n  time_bucket('5 minutes', d.\"time\") AS time,\n  d.eqp_id AS metric,\n  ROUND(\n    (\n      AVG(d.total_time) / NULLIF(MAX(b.normal_speed), 0)\n    ) :: NUMERIC,\n    2\n  ) AS value\nFROM\n  public.ldi_data d\n  LEFT JOIN BaseSpeed b ON d.eqp_id = b.eqp_id\nWHERE\n  d.factory IN ($Factory)\n  AND d.process IN ($process) --AND d.eqp_id IN ($Eqp)\n  AND $__timeFilter(d.\"time\")\n  AND d.total_time > 0\nGROUP BY\n  1,\n  2\nORDER BY\n  1;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2112,8 +2169,10 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "LDI-C-02",
-          "value": "LDI-C-02"
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": {
           "type": "grafana-postgresql-datasource",
@@ -2181,6 +2240,5 @@
   },
   "timezone": "browser",
   "title": "IMS LDI - Apex Circuit Fleet Command Center",
-  "uid": "adqj59l",
-  "version": 9
+  "uid": "adqj59l"
 }

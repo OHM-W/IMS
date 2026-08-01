@@ -255,7 +255,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "\nSELECT\n   \"time\" AS \"Timestamp\", log_id AS \"Log ID\", eqp_id AS \"Machine\", state AS \"State\", \n   mo AS \"MO\", fpn AS \"FPN\", layer_name AS \"Layer\", (board_no::TEXT || '/' || total_board::TEXT) AS \"Board\", \n   filmno AS \"Film\", resist AS \"Resist\", scale_mode AS \"Scale Mode\",  \n   FLOOR(extract(epoch from \"time\") * 1000) AS \"UnixTime\" \nFROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n   AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0)\n   AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}'\nORDER BY \"time\" DESC;\n",
+          "rawSql": "SELECT\n  \"time\" AS \"Timestamp\",\n  log_id AS \"Log ID\",\n  eqp_id AS \"Machine\",\n  state AS \"State\",\n  mo AS \"MO\",\n  fpn AS \"FPN\",\n  layer_name AS \"Layer\",\n  (board_no :: TEXT || '/' || total_board :: TEXT) AS \"Board\",\n  filmno AS \"Film\",\n  resist AS \"Resist\",\n  scale_mode AS \"Scale Mode\",\n  FLOOR(\n    extract(\n      epoch\n      from\n        \"time\"\n    ) * 1000\n  ) AS \"UnixTime\"\nFROM\n  public.ldi_data\nWHERE\n  eqp_id IN (${Eqp:singlequote})\n  AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '') :: numeric / 1000.0)\n  AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '') :: numeric / 1000.0) + interval '${bucket_size}'\nORDER BY\n  \"time\" DESC;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -368,7 +368,7 @@
           }
         }
       ],
-      "title": "temperature (\u0e22\u0e10C)",
+      "title": "temperature (\u00b0C)",
       "transparent": true,
       "type": "stat"
     },
@@ -475,7 +475,7 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 4,
+        "w": 3,
         "x": 8,
         "y": 8
       },
@@ -548,8 +548,8 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 4,
-        "x": 12,
+        "w": 3,
+        "x": 11,
         "y": 8
       },
       "id": 5,
@@ -621,8 +621,8 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 4,
-        "x": 16,
+        "w": 3,
+        "x": 14,
         "y": 8
       },
       "id": 6,
@@ -669,6 +669,98 @@
         "type": "postgres",
         "uid": "LDI"
       },
+      "description": "temperature at clicked moment",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#EF4444",
+                "value": 0
+              },
+              {
+                "color": "#22C55E",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 17,
+        "y": 8
+      },
+      "id": 14,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "noValue": "\u0e42\u20ac\u201d",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "titleSize": 12,
+          "valueSize": 28
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "LDI"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  ROUND(total_time :: NUMERIC, 3) AS value\nFROM\n  public.ldi_data\nWHERE\n  eqp_id IN (${Eqp:singlequote})\n  AND (\n    (\n      NULLIF('${exact_time}', '') IS NOT NULL\n      AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '') :: numeric / 1000.0) - interval '10 milliseconds'\n      AND \"time\" < to_timestamp(NULLIF('${exact_time}', '') :: numeric / 1000.0) + interval '1 second'\n    )\n    OR (\n      NULLIF('${exact_time}', '') IS NULL\n      AND \"time\" = (\n        SELECT\n          MAX(\"time\")\n        FROM\n          public.ldi_data\n        WHERE\n          eqp_id IN (${Eqp:singlequote})\n          AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '') :: numeric / 1000.0)\n          AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '') :: numeric / 1000.0) + interval '${bucket_size}'\n      )\n    )\n  )",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "time-per-board",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "LDI"
+      },
       "description": "resist dosage at clicked moment",
       "fieldConfig": {
         "defaults": {
@@ -694,7 +786,7 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 4,
+        "w": 3,
         "x": 20,
         "y": 8
       },
@@ -1496,7 +1588,9 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
@@ -1571,23 +1665,23 @@
       },
       {
         "current": {
-          "text": "1784602200000",
-          "value": "1784602200000"
+          "text": "1784598660000",
+          "value": "1784598660000"
         },
         "hide": 2,
         "name": "clicked_time",
-        "query": "1784602200000",
+        "query": "1784598660000",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "current": {
-          "text": "1784602251851",
-          "value": "1784602251851"
+          "text": "",
+          "value": ""
         },
         "hide": 2,
         "name": "exact_time",
-        "query": "1784602251851",
+        "query": "",
         "skipUrlSync": false,
         "type": "textbox"
       },
@@ -1624,6 +1718,5 @@
   },
   "timezone": "browser",
   "title": "IMS LDI - Incident Snapshot",
-  "uid": "adz27jl",
-  "version": 4
+  "uid": "adz27jl"
 }
