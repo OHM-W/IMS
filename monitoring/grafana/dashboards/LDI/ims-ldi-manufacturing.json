@@ -696,7 +696,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "SELECT a.eqp_id AS metric, COUNT(*)::NUMERIC AS value \nFROM public.ldi_alarm_log a \nLEFT JOIN public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT \nWHERE a.logdate >= NOW() - INTERVAL '5 minutes' AND m.alarm_type ILIKE '%Critical%' AND a.eqp_id IN ($Eqp)\nGROUP BY a.eqp_id",
+          "rawSql": "SELECT a.equipmentid AS metric, COUNT(*)::NUMERIC AS value \nFROM public.ldi_alarm_log a \nLEFT JOIN public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT \nWHERE a.logdate >= NOW() - INTERVAL '5 minutes' AND m.alarm_type ILIKE '%Critical%' AND a.equipmentid IN ($Eqp)\nGROUP BY a.equipmentid",
           "refId": "A"
         }
       ],
@@ -1932,7 +1932,7 @@
             "uid": "LDI"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   a.logdate AS \"Time\", a.equipmentid AS \"Machine\", a.errorcode AS \"errorcode\", a.logdate AS \"errortime\", COALESCE(m.alarm_msg, a.errorcode::TEXT) AS \"Message\", COALESCE(m.alarm_type, 'WARN') AS \"Severity\", COALESCE(m.alarm_detail, '') AS \"Details\" \nFROM\n   public.ldi_alarm_log a \nLEFT JOIN\n   public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT \nWHERE\n   $__timeFilter(a.logdate) \n AND a.eqp_id IN ($Eqp) \nORDER BY\n   a.logdate DESC \nLIMIT\n   30",
+          "rawSql": "\nSELECT\n   a.logdate AS \"Time\", a.equipmentid AS \"Machine\", a.errorcode AS \"errorcode\", a.logdate AS \"errortime\", COALESCE(m.alarm_msg, a.errorcode::TEXT) AS \"Message\", COALESCE(m.alarm_type, 'WARN') AS \"Severity\", COALESCE(m.alarm_detail, '') AS \"Details\" \nFROM\n   public.ldi_alarm_log a \nLEFT JOIN\n   public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT \nWHERE\n   $__timeFilter(a.logdate) \n AND a.equipmentid IN ($Eqp) \nORDER BY\n   a.logdate DESC \nLIMIT\n   30",
           "refId": "A"
         }
       ],
@@ -2131,8 +2131,7 @@
         "regexApplyTo": "value",
         "skipUrlSync": false,
         "sort": 0,
-        "type": "query",
-        "allValue": ""
+        "type": "query"
       },
       {
         "allowCustomValue": true,
