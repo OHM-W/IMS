@@ -1901,9 +1901,28 @@
             "type": "postgres",
             "uid": "${DS_LDI}"
           },
+          "editorMode": "code",
           "format": "table",
-          "rawSql": "SELECT\n  a.logid, a.logdate, a.errorcode, a.errortime, a.equipmentid, a.factory, a.process,\n  COALESCE(m.alarm_id, 'UNMAPPED') AS alarm_id,\n  COALESCE(m.alarm_type, 'UNMAPPED') AS alarm_type,\n  COALESCE(m.alarm_code, a.errorcode::TEXT) AS alarm_code,\n  COALESCE(m.alarm_msg, a.errorcode::TEXT) AS alarm_msg,\n  CASE WHEN m.alarm_code IS NULL THEN 'No master record' ELSE COALESCE(m.alarm_detail, 'No detail') END AS alarm_detail,\n  CASE WHEN m.alarm_code IS NULL THEN 'UNMAPPED' ELSE 'MAPPED' END AS mapping_status\nFROM public.ldi_alarm_log a\nLEFT JOIN public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT\nWHERE a.equipmentid = split_part(${clicked_series:sqlstring}, ' - ', 1)\n  AND a.logdate BETWEEN \n    to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) - INTERVAL '5 minutes' \n    AND \n    to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) + INTERVAL '5 minutes'\nORDER BY a.logdate DESC;",
-          "refId": "A"
+          "rawQuery": true,
+          "rawSql": "SELECT\n  a.logid,\n  a.logdate,\n  a.errorcode,\n  a.errortime,\n  a.equipmentid,\n  a.factory,\n  a.process,\n  COALESCE(m.alarm_id, 'UNMAPPED') AS alarm_id,\n  COALESCE(m.alarm_type, 'UNMAPPED') AS alarm_type,\n  COALESCE(m.alarm_code, a.errorcode :: TEXT) AS alarm_code,\n  COALESCE(m.alarm_msg, a.errorcode :: TEXT) AS alarm_msg,\n  CASE\n    WHEN m.alarm_code IS NULL THEN 'No master record'\n    ELSE COALESCE(m.alarm_detail, 'No detail')\n  END AS alarm_detail,\n  CASE\n    WHEN m.alarm_code IS NULL THEN 'UNMAPPED'\n    ELSE 'MAPPED'\n  END AS mapping_status\nFROM\n  public.ldi_alarm_log a\n  LEFT JOIN public.ldi_alarm_ms_code m ON a.errorcode :: TEXT = m.alarm_code :: TEXT\nWHERE\n  a.equipmentid = split_part(${clicked_series:sqlstring}, ' - ', 1)\n  AND a.logdate BETWEEN to_timestamp(\n    COALESCE(NULLIF('${event_time_ms:raw}', ''), '0') :: NUMERIC / 1000.0\n  ) - INTERVAL '5 minutes'\n  AND to_timestamp(\n    COALESCE(NULLIF('${event_time_ms:raw}', ''), '0') :: NUMERIC / 1000.0\n  ) + INTERVAL '5 minutes'\nORDER BY\n  a.logdate DESC;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "Alarm Context ±5 min — ldi_alarm_log + Master",
@@ -2164,7 +2183,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  d.\"time\" AS \"Event Time\",\n  d.eqp_id AS \"Machine\",\n  'STATE' AS \"Event Type\",\n  'ldi_data' AS \"Source\",\n  CASE WHEN d.state THEN 'RUNNING' ELSE 'DOWN' END AS \"Description\",\n  'NOT APPLICABLE' AS mapping_status,\n  d.log_id::TEXT AS logid,\n  NULL AS errorcode,\n  NULL AS errortime,\n  d.factory,\n  d.process,\n  'NOT APPLICABLE' AS alarm_id,\n  'TELEMETRY' AS alarm_type,\n  'NOT APPLICABLE' AS alarm_code,\n  'State sample; no alarm event' AS alarm_msg,\n  'Alarm fields apply only to ALARM rows' AS alarm_detail\nFROM public.ldi_data d\nWHERE d.eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\n  AND d.\"time\" BETWEEN \n      to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) - INTERVAL '5 minutes'\n      AND \n      to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) + INTERVAL '5 minutes'\nUNION ALL\nSELECT\n  a.logdate AS \"Event Time\",\n  a.equipmentid AS \"Machine\",\n  'ALARM' AS \"Event Type\",\n  'ldi_alarm_log' AS \"Source\",\n  COALESCE(m.alarm_msg, a.errorcode::TEXT) AS \"Description\",\n  CASE WHEN m.alarm_code IS NULL THEN 'UNMAPPED' ELSE 'MAPPED' END AS mapping_status,\n  a.logid,\n  a.errorcode::TEXT,\n  a.errortime::TEXT,\n  a.factory,\n  a.process,\n  COALESCE(m.alarm_id, 'UNMAPPED') AS alarm_id,\n  COALESCE(m.alarm_type, 'UNMAPPED') AS alarm_type,\n  COALESCE(m.alarm_code, a.errorcode::TEXT) AS alarm_code,\n  COALESCE(m.alarm_msg, a.errorcode::TEXT) AS alarm_msg,\n  CASE WHEN m.alarm_code IS NULL THEN 'No master record' ELSE COALESCE(m.alarm_detail, 'No detail') END AS alarm_detail\nFROM public.ldi_alarm_log a\nLEFT JOIN public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT\nWHERE a.equipmentid = split_part(${clicked_series:sqlstring}, ' - ', 1)\n  AND a.logdate BETWEEN \n      to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) - INTERVAL '5 minutes'\n      AND \n      to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) + INTERVAL '5 minutes'\nORDER BY \"Event Time\" DESC;",
+          "rawSql": "SELECT\n  d.\"time\" AS \"Event Time\",\n  d.eqp_id AS \"Machine\",\n  'STATE' AS \"Event Type\",\n  'ldi_data' AS \"Source\",\n  CASE\n    WHEN d.state THEN 'RUNNING'\n    ELSE 'DOWN'\n  END AS \"Description\",\n  'NOT APPLICABLE' AS mapping_status,\n  d.log_id :: TEXT AS logid,\n  NULL AS errorcode,\n  NULL AS errortime,\n  d.factory,\n  d.process,\n  'NOT APPLICABLE' AS alarm_id,\n  'TELEMETRY' AS alarm_type,\n  'NOT APPLICABLE' AS alarm_code,\n  'State sample; no alarm event' AS alarm_msg,\n  'Alarm fields apply only to ALARM rows' AS alarm_detail\nFROM\n  public.ldi_data d\nWHERE\n  d.eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\n  AND d.\"time\" BETWEEN to_timestamp(\n    COALESCE(NULLIF('${event_time_ms:raw}', ''), '0') :: NUMERIC / 1000.0\n  ) - INTERVAL '5 minutes'\n  AND to_timestamp(\n    COALESCE(NULLIF('${event_time_ms:raw}', ''), '0') :: NUMERIC / 1000.0\n  ) + INTERVAL '5 minutes'\nUNION\nALL\nSELECT\n  a.logdate AS \"Event Time\",\n  a.equipmentid AS \"Machine\",\n  'ALARM' AS \"Event Type\",\n  'ldi_alarm_log' AS \"Source\",\n  COALESCE(m.alarm_msg, a.errorcode :: TEXT) AS \"Description\",\n  CASE\n    WHEN m.alarm_code IS NULL THEN 'UNMAPPED'\n    ELSE 'MAPPED'\n  END AS mapping_status,\n  a.logid,\n  a.errorcode :: TEXT,\n  a.errortime :: TEXT,\n  a.factory,\n  a.process,\n  COALESCE(m.alarm_id, 'UNMAPPED') AS alarm_id,\n  COALESCE(m.alarm_type, 'UNMAPPED') AS alarm_type,\n  COALESCE(m.alarm_code, a.errorcode :: TEXT) AS alarm_code,\n  COALESCE(m.alarm_msg, a.errorcode :: TEXT) AS alarm_msg,\n  CASE\n    WHEN m.alarm_code IS NULL THEN 'No master record'\n    ELSE COALESCE(m.alarm_detail, 'No detail')\n  END AS alarm_detail\nFROM\n  public.ldi_alarm_log a\n  LEFT JOIN public.ldi_alarm_ms_code m ON a.errorcode :: TEXT = m.alarm_code :: TEXT\nWHERE\n  a.equipmentid = split_part(${clicked_series:sqlstring}, ' - ', 1)\n  AND a.logdate BETWEEN to_timestamp(\n    COALESCE(NULLIF('${event_time_ms:raw}', ''), '0') :: NUMERIC / 1000.0\n  ) - INTERVAL '5 minutes'\n  AND to_timestamp(\n    COALESCE(NULLIF('${event_time_ms:raw}', ''), '0') :: NUMERIC / 1000.0\n  ) + INTERVAL '5 minutes'\nORDER BY\n  \"Event Time\" DESC;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2457,7 +2476,7 @@
   "timezone": "browser",
   "title": "IMS LDI - Machine Snapshot (Set 2 Real DB)",
   "uid": "ims-ldi-set2-machine-snapshot-real-db",
-  "version": 47,
+  "version": 49,
   "__inputs": [
     {
       "name": "DS_LDI",
