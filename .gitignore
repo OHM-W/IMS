@@ -15,6 +15,7 @@ secrets/
 .mimocode/
 .playwright-mcp/
 .ai/
+.agents/
 AGENTS.md
 MEMORY.md
 checkpoint.md
