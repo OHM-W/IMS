@@ -1478,7 +1478,7 @@
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "WITH BaseStats AS (\n  SELECT \n    eqp_id, \n    AVG(total_time) AS overall_avg, \n    COALESCE(NULLIF(STDDEV(total_time), 0), 1) AS overall_stddev\n  FROM public.ldi_data \n  WHERE \"time\" >= NOW() - INTERVAL '30 days' \n    AND total_time > 0 \n  GROUP BY eqp_id \n),\nBucketStats AS (\n  SELECT \n    time_bucket('5 minutes', d.\"time\") AS time, \n    d.eqp_id, \n    AVG(d.total_time) AS bucket_avg\n  FROM public.ldi_data d \n  WHERE d.factory IN (${factory:sqlstring}) \n    AND d.process IN (${process:sqlstring}) \n    AND $__timeFilter(d.\"time\") \n    AND d.total_time > 0 \n  GROUP BY 1, 2 \n)\nSELECT \n  bk.time, \n  bk.eqp_id AS metric, \n  CASE \n    WHEN ((bk.bucket_avg - b.overall_avg) / b.overall_stddev) <= -2.5 THEN 1\n    WHEN ((bk.bucket_avg - b.overall_avg) / b.overall_stddev) <= -1.5 THEN 2\n    WHEN ((bk.bucket_avg - b.overall_avg) / b.overall_stddev) >= 2.5 THEN 5\n    WHEN ((bk.bucket_avg - b.overall_avg) / b.overall_stddev) >= 1.5 THEN 4\n    ELSE 3\n  END AS value \nFROM BucketStats bk \nJOIN BaseStats b ON bk.eqp_id = b.eqp_id \nORDER BY 1;",
+          "rawSql": "WITH BaseStats AS (\n  SELECT \n    eqp_id, \n    AVG(total_time) AS overall_avg, \n    COALESCE(NULLIF(STDDEV(total_time), 0), 1) AS overall_stddev\n  FROM public.ldi_data \n  WHERE \"time\" >= NOW() - INTERVAL '30 days' \n    AND total_time > 0 \n    AND eqp_id IN (${eqp_id:sqlstring})\n  GROUP BY eqp_id \n),\nBucketStats AS (\n  SELECT \n    time_bucket('5 minutes', d.\"time\") AS time, \n    d.eqp_id, \n    AVG(d.total_time) AS bucket_avg\n  FROM public.ldi_data d \n  WHERE d.factory IN (${factory:sqlstring}) \n    AND d.mo IN (${mo:sqlstring})\n    AND d.eqp_id IN (${eqp_id:sqlstring})\n    AND d.layer_name IN (${layer_name:sqlstring})\n    AND d.log_id IN (${log_id:sqlstring})\n    AND $__timeFilter(d.\"time\") \n    AND d.total_time > 0 \n  GROUP BY 1, 2 \n)\nSELECT \n  bk.time, \n  bk.eqp_id AS metric, \n  CASE \n    WHEN ((bk.bucket_avg - b.overall_avg) / b.overall_stddev) <= -2.5 THEN 1\n    WHEN ((bk.bucket_avg - b.overall_avg) / b.overall_stddev) <= -1.5 THEN 2\n    WHEN ((bk.bucket_avg - b.overall_avg) / b.overall_stddev) >= 2.5 THEN 5\n    WHEN ((bk.bucket_avg - b.overall_avg) / b.overall_stddev) >= 1.5 THEN 4\n    ELSE 3\n  END AS value \nFROM BucketStats bk \nJOIN BaseStats b ON bk.eqp_id = b.eqp_id \nORDER BY 1;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2831,7 +2831,7 @@
   "timezone": "browser",
   "title": "IMS LDI - Manufacturing Command Center (Set 2 Real DB)",
   "uid": "ims-ldi-set2-manufacturing-real-db",
-  "version": 62,
+  "version": 63,
   "__inputs": [
     {
       "name": "DS_LDI",
