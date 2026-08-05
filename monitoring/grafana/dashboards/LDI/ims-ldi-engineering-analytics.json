@@ -725,6 +725,95 @@
         "type": "postgres",
         "uid": "${DS_LDI}"
       },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "showPoints": "auto",
+            "spanNulls": false
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 17,
+      "options": {
+        "annotations": {
+          "clustering": -1,
+          "multiLane": false
+        },
+        "connectNullPoints": true,
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "table",
+          "enableFacetedFilter": false,
+          "overflow": "ellipsis",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "13.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_LDI}"
+          },
+          "editorMode": "code",
+          "format": "time_series",
+          "legendFormat": "{{metric}}",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  time_bucket('1 minute', time) AS time, \n  eqp_id AS metric, \n  AVG(total_time / NULLIF(total_board, 0))::NUMERIC AS value \nFROM public.ldi_data \nWHERE factory IN (${factory:sqlstring}) \n  AND process IN (${process:sqlstring}) \n  AND mo IN (${mo:sqlstring}) \n  AND fpn IN (${fpn:sqlstring}) \n  AND $__timeFilter(time) \n  AND eqp_id IN (${eqp_id:sqlstring}) \n  AND layer_name IN (${layer_name:sqlstring}) \n  AND log_id IN (${log_id:sqlstring}) \n  AND total_time > 0 \n  AND total_board > 0\nGROUP BY 1, 2 \nORDER BY 1",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "cycletime per board",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_LDI}"
+      },
       "description": "Individual signed PE values. Soft scale covers the observed range (about -67 to +75 µm) without clipping future outliers.",
       "fieldConfig": {
         "defaults": {
@@ -2005,8 +2094,8 @@
     ]
   },
   "time": {
-    "from": "2026-07-20T20:00:00.000Z",
-    "to": "2026-07-21T08:00:00.000Z"
+    "from": "2026-07-20T23:00:00.000Z",
+    "to": "2026-07-21T05:00:00.000Z"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -2025,7 +2114,7 @@
   "timezone": "browser",
   "title": "IMS LDI - Engineering Analytics & SPC (Set 2 Real DB)",
   "uid": "ims-ldi-set2-engineering-real-db",
-  "version": 29,
+  "version": 32,
   "__inputs": [
     {
       "name": "DS_LDI",
