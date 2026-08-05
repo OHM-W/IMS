@@ -1208,9 +1208,7 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -1237,9 +1235,7 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -1266,9 +1262,7 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -1295,9 +1289,7 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -1324,9 +1316,7 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -1353,9 +1343,7 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -1382,9 +1370,7 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -1431,7 +1417,7 @@
   "timezone": "browser",
   "title": "IMS LDI - Operator Andon Board (Set 2 Real DB)",
   "uid": "ims-ldi-set2-operator-andon-real-db",
-  "version": 9,
+  "version": 10,
   "__inputs": [
     {
       "name": "DS_LDI",

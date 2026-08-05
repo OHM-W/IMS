@@ -88,9 +88,28 @@
             "type": "postgres",
             "uid": "${DS_LDI}"
           },
+          "editorMode": "code",
           "format": "table",
-          "rawSql": "SELECT ROUND(100.0 * COUNT(*) FILTER (\n  WHERE GREATEST(ABS(pe_1),ABS(pe_2),ABS(pe_3),ABS(pe_4),ABS(pe_5),ABS(pe_6)) <= pe_setting\n) / NULLIF(COUNT(*) FILTER (WHERE pe_1 IS NOT NULL), 0), 1) AS value\nFROM public.ldi_data\nWHERE $__timeFilter(\"time\")\n  AND factory IN (${factory:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring});",
-          "refId": "A"
+          "rawQuery": true,
+          "rawSql": "SELECT\n  ROUND(100.0 * COUNT(*) FILTER (\n      WHERE\n        GREATEST(\n          ABS(pe_1),\n          ABS(pe_2),\n          ABS(pe_3),\n          ABS(pe_4),\n          ABS(pe_5),\n          ABS(pe_6)\n        ) <= pe_setting\n    ) / NULLIF(\n      COUNT(*) FILTER (\n        WHERE\n          pe_1 IS NOT NULL\n      ),\n      0\n    ),\n    1\n  ) AS value\nFROM\n  public.ldi_data\nWHERE\n  $__timeFilter(\"time\")\n  AND factory IN (${factory:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring});",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "PE Yield",
@@ -2622,7 +2641,9 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
@@ -2649,7 +2670,9 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
@@ -2676,7 +2699,9 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
@@ -2703,7 +2728,9 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
@@ -2730,7 +2757,9 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
@@ -2757,7 +2786,9 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
@@ -2831,7 +2862,7 @@
   "timezone": "browser",
   "title": "IMS LDI - Manufacturing Command Center (Set 2 Real DB)",
   "uid": "ims-ldi-set2-manufacturing-real-db",
-  "version": 63,
+  "version": 66,
   "__inputs": [
     {
       "name": "DS_LDI",

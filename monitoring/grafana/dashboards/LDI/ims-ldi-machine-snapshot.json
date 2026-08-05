@@ -20,14 +20,14 @@
     {
       "asDropdown": false,
       "icon": "external link",
-      "includeVars": true,
+      "includeVars": false,
       "keepTime": false,
       "tags": [],
       "targetBlank": false,
       "title": "Apex Circuit Fleet Command Center",
       "tooltip": "",
       "type": "link",
-      "url": "/d/ims-ldi-set2-manufacturing-real-db/set2-manufacturing?time=1784505600000&time.window=21600000"
+      "url": "/d/ims-ldi-set2-manufacturing-real-db/ims-ldi-manufacturing-command-center-set-2-real-db"
     },
     {
       "asDropdown": false,
@@ -44,14 +44,14 @@
     {
       "asDropdown": false,
       "icon": "external link",
-      "includeVars": true,
+      "includeVars": false,
       "keepTime": false,
       "tags": [],
       "targetBlank": false,
       "title": "Operator Andon Board",
       "tooltip": "",
       "type": "link",
-      "url": "/d/ims-ldi-set2-operator-andon-real-db/set2-operator-andon?time=1784505600000&time.window=21600000"
+      "url": "/d/ims-ldi-set2-operator-andon-real-db/ims-ldi-operator-andon-board-set-2-real-db"
     }
   ],
   "liveNow": false,
@@ -2292,10 +2292,10 @@
         "allowCustomValue": true,
         "current": {
           "text": [
-            "EXPOSURE LDI-2B"
+            "EXPOSURE LDI-2"
           ],
           "value": [
-            "EXPOSURE LDI-2B"
+            "EXPOSURE LDI-2"
           ]
         },
         "datasource": {
@@ -2379,10 +2379,10 @@
         "allowCustomValue": true,
         "current": {
           "text": [
-            "l3"
+            "l2"
           ],
           "value": [
-            "l3"
+            "l2"
           ]
         },
         "datasource": {
@@ -2433,31 +2433,31 @@
       },
       {
         "current": {
-          "text": "1784607962410",
-          "value": "1784607962410"
+          "text": "1784607600000",
+          "value": "1784607600000"
         },
         "hide": 2,
         "name": "event_time_ms",
-        "query": "1784607962410",
+        "query": "1784607600000",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "current": {
-          "text": "EXPOSURE LDI-2B - ldi_data",
-          "value": "EXPOSURE LDI-2B - ldi_data"
+          "text": "EXPOSURE LDI-2",
+          "value": "EXPOSURE LDI-2"
         },
         "hide": 2,
         "name": "clicked_series",
-        "query": "EXPOSURE LDI-2B - ldi_data",
+        "query": "EXPOSURE LDI-2",
         "skipUrlSync": false,
         "type": "textbox"
       }
     ]
   },
   "time": {
-    "from": "2026-07-21T04:21:00.000Z",
-    "to": "2026-07-21T04:31:00.000Z"
+    "from": "2026-07-21T04:15:00.000Z",
+    "to": "2026-07-21T04:25:00.000Z"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -2476,7 +2476,7 @@
   "timezone": "browser",
   "title": "IMS LDI - Machine Snapshot (Set 2 Real DB)",
   "uid": "ims-ldi-set2-machine-snapshot-real-db",
-  "version": 49,
+  "version": 51,
   "__inputs": [
     {
       "name": "DS_LDI",
