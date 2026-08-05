@@ -21,18 +21,6 @@
       "asDropdown": false,
       "icon": "external link",
       "includeVars": true,
-      "keepTime": true,
-      "tags": [],
-      "targetBlank": false,
-      "title": "Engineering Raw Data",
-      "tooltip": "",
-      "type": "link",
-      "url": "/d/ims-ldi-set2-engineering-raw-db/set2-engineering-raw"
-    },
-    {
-      "asDropdown": false,
-      "icon": "external link",
-      "includeVars": true,
       "keepTime": false,
       "tags": [],
       "targetBlank": false,
@@ -262,6 +250,7 @@
           "decimals": 2,
           "links": [
             {
+              "oneClick": true,
               "targetBlank": false,
               "title": "Drilldown to Snapshot",
               "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?${factory:queryparam}&${process:queryparam}&${mo:queryparam}&${fpn:queryparam}&${layer_name:queryparam}&var-eqp_id=${__series.name}&var-clicked_series=${__series.name}&var-log_id=$__all&var-event_time_ms=${__value.time}&time=${__value.time}&time.window=600000&var-time_group=1 minute"
@@ -405,6 +394,7 @@
           "decimals": 2,
           "links": [
             {
+              "oneClick": true,
               "targetBlank": false,
               "title": "Drilldown to Snapshot",
               "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?${factory:queryparam}&${process:queryparam}&${mo:queryparam}&${fpn:queryparam}&${layer_name:queryparam}&var-eqp_id=${__series.name}&var-clicked_series=${__series.name}&var-log_id=$__all&var-event_time_ms=${__value.time}&time=${__value.time}&time.window=600000&var-time_group=1 minute"
@@ -523,6 +513,7 @@
           "decimals": 2,
           "links": [
             {
+              "oneClick": true,
               "targetBlank": false,
               "title": "Drilldown to Snapshot",
               "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?${factory:queryparam}&${process:queryparam}&${mo:queryparam}&${fpn:queryparam}&${layer_name:queryparam}&var-eqp_id=${__series.name}&var-clicked_series=${__series.name}&var-log_id=$__all&var-event_time_ms=${__value.time}&time=${__value.time}&time.window=600000&var-time_group=1 minute"
@@ -945,30 +936,87 @@
             "type": "postgres",
             "uid": "${DS_LDI}"
           },
+          "editorMode": "code",
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - pe_2' AS metric, AVG(pe_2)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_2 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
-          "refId": "B"
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id || ' - pe_2' AS metric,\r\n  AVG(pe_2) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_2 IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         },
         {
           "datasource": {
             "type": "postgres",
             "uid": "${DS_LDI}"
           },
+          "editorMode": "code",
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - pe_3' AS metric, AVG(pe_3)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_3 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
-          "refId": "C"
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id || ' - pe_3' AS metric,\r\n  AVG(pe_3) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_3 IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+          "refId": "C",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         },
         {
           "datasource": {
             "type": "postgres",
             "uid": "${DS_LDI}"
           },
+          "editorMode": "code",
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - pe_4' AS metric, AVG(pe_4)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_4 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
-          "refId": "D"
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id || ' - pe_4' AS metric,\r\n  AVG(pe_4) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_4 IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+          "refId": "D",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         },
         {
           "datasource": {
@@ -985,10 +1033,29 @@
             "type": "postgres",
             "uid": "${DS_LDI}"
           },
+          "editorMode": "code",
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - pe_6' AS metric, AVG(pe_6)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_6 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
-          "refId": "F"
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id || ' - pe_6' AS metric,\r\n  AVG(pe_6) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_6 IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+          "refId": "F",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "pe_1–pe_6 — 1-min AVG (µm)",
@@ -1045,6 +1112,7 @@
           "decimals": 3,
           "links": [
             {
+              "oneClick": true,
               "targetBlank": false,
               "title": "Drilldown to Snapshot",
               "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?${factory:queryparam}&${process:queryparam}&${mo:queryparam}&${fpn:queryparam}&${layer_name:queryparam}&var-eqp_id=${__series.name}&var-clicked_series=${__series.name}&var-log_id=$__all&var-event_time_ms=${__value.time}&time=${__value.time}&time.window=600000&var-time_group=1 minute"
@@ -1113,10 +1181,29 @@
             "type": "postgres",
             "uid": "${DS_LDI}"
           },
+          "editorMode": "code",
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - je_2' AS metric, AVG(je_2)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND je_2 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
-          "refId": "B"
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id || ' - je_2' AS metric,\r\n  AVG(je_2) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND je_2 IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         },
         {
           "datasource": {
@@ -1133,10 +1220,29 @@
             "type": "postgres",
             "uid": "${DS_LDI}"
           },
+          "editorMode": "code",
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - je_4' AS metric, AVG(je_4)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND je_4 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
-          "refId": "D"
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id || ' - je_4' AS metric,\r\n  AVG(je_4) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND je_4 IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+          "refId": "D",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "je_1–je_4 — 1-min AVG (µm)",
@@ -1520,10 +1626,29 @@
             "type": "postgres",
             "uid": "${DS_LDI}"
           },
+          "editorMode": "code",
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "SELECT time, eqp_id || ' - pe_1' AS metric, pe_1 AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_1 IS NOT NULL UNION ALL SELECT time, eqp_id || ' - pe_2', pe_2 FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_2 IS NOT NULL UNION ALL SELECT time, eqp_id || ' - pe_3', pe_3 FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_3 IS NOT NULL UNION ALL SELECT time, eqp_id || ' - pe_4', pe_4 FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_4 IS NOT NULL UNION ALL SELECT time, eqp_id || ' - pe_5', pe_5 FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_5 IS NOT NULL UNION ALL SELECT time, eqp_id || ' - pe_6', pe_6 FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_6 IS NOT NULL ORDER BY time",
-          "refId": "A"
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  time,\r\n  eqp_id || ' - pe_1' AS metric,\r\n  pe_1 AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_1 IS NOT NULL\r\nUNION\r\nALL\r\nSELECT\r\n  time,\r\n  eqp_id || ' - pe_2',\r\n  pe_2\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_2 IS NOT NULL\r\nUNION\r\nALL\r\nSELECT\r\n  time,\r\n  eqp_id || ' - pe_3',\r\n  pe_3\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_3 IS NOT NULL\r\nUNION\r\nALL\r\nSELECT\r\n  time,\r\n  eqp_id || ' - pe_4',\r\n  pe_4\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_4 IS NOT NULL\r\nUNION\r\nALL\r\nSELECT\r\n  time,\r\n  eqp_id || ' - pe_5',\r\n  pe_5\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_5 IS NOT NULL\r\nUNION\r\nALL\r\nSELECT\r\n  time,\r\n  eqp_id || ' - pe_6',\r\n  pe_6\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_6 IS NOT NULL\r\nORDER BY\r\n  time",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "pe_1–pe_6 — Histogram",
@@ -1998,7 +2123,7 @@
   "timezone": "browser",
   "title": "IMS LDI - Engineering Analytics & SPC (Set 2 Real DB)",
   "uid": "ims-ldi-set2-engineering-real-db",
-  "version": 19,
+  "version": 23,
   "__inputs": [
     {
       "name": "DS_LDI",

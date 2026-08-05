@@ -122,7 +122,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 145
+                "value": 204
               }
             ]
           },
@@ -217,7 +217,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 122
+                "value": 163
               }
             ]
           },
@@ -229,7 +229,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 60
+                "value": 85
               }
             ]
           },
@@ -265,7 +265,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 100
+                "value": 159
               }
             ]
           },
@@ -525,7 +525,6 @@
         "type": "postgres",
         "uid": "${DS_LDI}"
       },
-      "description": "vacuum pressure at clicked moment",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -609,7 +608,7 @@
           }
         }
       ],
-      "title": "air_vacuum (kPa)",
+      "title": "cycle_time",
       "transparent": true,
       "type": "stat"
     },
@@ -718,7 +717,7 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 7,
+        "w": 6,
         "x": 7,
         "y": 13
       },
@@ -791,9 +790,9 @@
         }
       },
       "gridPos": {
-        "h": 3,
+        "h": 4,
         "w": 6,
-        "x": 14,
+        "x": 13,
         "y": 13
       },
       "id": 17,
@@ -866,8 +865,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
-        "x": 20,
+        "w": 5,
+        "x": 19,
         "y": 13
       },
       "id": 7,
@@ -978,6 +977,10 @@
                 "value": {
                   "type": "color-background"
                 }
+              },
+              {
+                "id": "custom.width",
+                "value": 322
               }
             ]
           },
@@ -989,7 +992,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 110
+                "value": 200
               }
             ]
           },
@@ -1001,7 +1004,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 80
+                "value": 200
               }
             ]
           },
@@ -1013,7 +1016,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 90
+                "value": 200
               }
             ]
           },
@@ -1025,7 +1028,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 80
+                "value": 200
               }
             ]
           },
@@ -1037,7 +1040,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 80
+                "value": 200
               }
             ]
           },
@@ -1049,7 +1052,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 90
+                "value": 200
               }
             ]
           },
@@ -1061,7 +1064,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 80
+                "value": 200
               }
             ]
           },
@@ -1073,7 +1076,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 80
+                "value": 200
               }
             ]
           },
@@ -1085,14 +1088,14 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 80
+                "value": 200
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 6,
+        "h": 4,
         "w": 24,
         "x": 0,
         "y": 17
@@ -1102,7 +1105,13 @@
         "cellHeight": "sm",
         "enablePagination": false,
         "rowHeight": 0.8,
-        "showHeader": true
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "PE Status"
+          }
+        ]
       },
       "pluginVersion": "13.1.0",
       "targets": [
@@ -1189,6 +1198,10 @@
                 "value": {
                   "type": "color-background"
                 }
+              },
+              {
+                "id": "custom.width",
+                "value": 206
               }
             ]
           },
@@ -1200,7 +1213,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 90
+                "value": 250
               }
             ]
           },
@@ -1212,7 +1225,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 90
+                "value": 250
               }
             ]
           },
@@ -1224,7 +1237,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 100
+                "value": 250
               }
             ]
           },
@@ -1236,7 +1249,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 90
+                "value": 250
               }
             ]
           },
@@ -1248,7 +1261,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 100
+                "value": 250
               }
             ]
           },
@@ -1260,7 +1273,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 90
+                "value": 250
               }
             ]
           },
@@ -1272,24 +1285,30 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 110
+                "value": 250
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 6,
+        "h": 4,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 21
       },
       "id": 16,
       "options": {
         "cellHeight": "sm",
         "enablePagination": false,
         "rowHeight": 0.8,
-        "showHeader": true
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "je_setting"
+          }
+        ]
       },
       "pluginVersion": "13.1.0",
       "targets": [
@@ -1425,7 +1444,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 75
+                "value": 187
               }
             ]
           },
@@ -1437,7 +1456,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 75
+                "value": 172
               }
             ]
           },
@@ -1449,7 +1468,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 70
+                "value": 188
               }
             ]
           },
@@ -1461,7 +1480,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 70
+                "value": 200
               }
             ]
           },
@@ -1473,24 +1492,25 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 120
+                "value": 200
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 6,
+        "h": 4,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 25
       },
       "id": 9,
       "options": {
         "cellHeight": "sm",
         "enablePagination": false,
         "rowHeight": 0.8,
-        "showHeader": true
+        "showHeader": true,
+        "sortBy": []
       },
       "pluginVersion": "13.1.0",
       "targets": [
@@ -1499,9 +1519,28 @@
             "type": "postgres",
             "uid": "${DS_LDI}"
           },
+          "editorMode": "code",
           "format": "table",
-          "rawSql": "WITH selected_machines AS (\n  SELECT DISTINCT eqp_id FROM public.ldi_data\n  WHERE eqp_id=split_part(${clicked_series:sqlstring},' - ',1)\n), pe_samples AS (\n  SELECT d.eqp_id,d.pe_setting,p.pe FROM public.ldi_data d JOIN selected_machines sm ON sm.eqp_id=d.eqp_id\n  CROSS JOIN LATERAL (VALUES(d.pe_1),(d.pe_2),(d.pe_3),(d.pe_4),(d.pe_5),(d.pe_6)) p(pe)\n  WHERE $__timeFilter(d.\"time\") AND p.pe IS NOT NULL AND d.pe_setting IS NOT NULL\n), stats AS (\n  SELECT eqp_id,COUNT(*) sample_count,AVG(pe) mean_pe,STDDEV_SAMP(pe) stddev_pe,AVG(pe_setting) lim FROM pe_samples GROUP BY eqp_id\n)\nSELECT sm.eqp_id AS \"Machine\",COALESCE(stats.sample_count,0) AS \"Samples\",ROUND(stats.mean_pe::NUMERIC,2) AS \"Mean PE\",\n ROUND((lim/NULLIF(3*stddev_pe,0))::NUMERIC,2) AS \"Cp\",\n ROUND(LEAST((lim-mean_pe)/NULLIF(3*stddev_pe,0),(mean_pe+lim)/NULLIF(3*stddev_pe,0))::NUMERIC,2) AS \"Cpk\"\nFROM selected_machines sm LEFT JOIN stats ON stats.eqp_id=sm.eqp_id;",
-          "refId": "A"
+          "rawQuery": true,
+          "rawSql": "WITH selected_machines AS (\n  SELECT\n    DISTINCT eqp_id\n  FROM\n    public.ldi_data\n  WHERE\n    eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\n),\npe_samples AS (\n  SELECT\n    d.eqp_id,\n    d.pe_setting,\n    p.pe\n  FROM\n    public.ldi_data d\n    JOIN selected_machines sm ON sm.eqp_id = d.eqp_id\n    CROSS JOIN LATERAL (\n      VALUES\n(d.pe_1),\n(d.pe_2),\n(d.pe_3),\n(d.pe_4),\n(d.pe_5),\n(d.pe_6)\n    ) p(pe)\n  WHERE\n    $__timeFilter(d.\"time\")\n    AND p.pe IS NOT NULL\n    AND d.pe_setting IS NOT NULL\n),\nstats AS (\n  SELECT\n    eqp_id,\n    COUNT(*) sample_count,\n    AVG(pe) mean_pe,\n    STDDEV_SAMP(pe) stddev_pe,\n    AVG(pe_setting) lim\n  FROM\n    pe_samples\n  GROUP BY\n    eqp_id\n)\nSELECT\n  sm.eqp_id AS \"Machine\",\n  COALESCE(stats.sample_count, 0) AS \"Samples\",\n  ROUND(stats.mean_pe :: NUMERIC, 2) AS \"Mean PE\",\n  ROUND((lim / NULLIF(3 * stddev_pe, 0)) :: NUMERIC, 2) AS \"Cp\",\n  ROUND(\n    LEAST(\n      (lim - mean_pe) / NULLIF(3 * stddev_pe, 0),\n(mean_pe + lim) / NULLIF(3 * stddev_pe, 0)\n    ) :: NUMERIC,\n    2\n  ) AS \"Cpk\"\nFROM\n  selected_machines sm\n  LEFT JOIN stats ON stats.eqp_id = sm.eqp_id;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "pe_1–pe_6 / pe_setting — Capability",
@@ -1533,10 +1572,10 @@
         }
       },
       "gridPos": {
-        "h": 6,
+        "h": 4,
         "w": 12,
         "x": 12,
-        "y": 29
+        "y": 25
       },
       "id": 11,
       "options": {
@@ -1837,15 +1876,15 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 6,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 29
       },
       "id": 10,
       "options": {
         "cellHeight": "sm",
-        "enablePagination": true,
+        "enablePagination": false,
         "frozenColumns": 2,
         "showHeader": true,
         "sortBy": [
@@ -1863,7 +1902,7 @@
             "uid": "${DS_LDI}"
           },
           "format": "table",
-          "rawSql": "WITH target AS (\n  SELECT to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) AS \"time\"\n),\nall_machines AS (\n  SELECT d.eqp_id, d.factory::TEXT AS factory, d.process::TEXT AS process\n  FROM public.ldi_data d\n  UNION ALL\n  SELECT a.equipmentid, a.factory::TEXT, a.process::TEXT\n  FROM public.ldi_alarm_log a\n  WHERE a.equipmentid IS NOT NULL\n),\nselected_machines AS (\n  SELECT\n    am.eqp_id,\n    MIN(am.factory) AS factory,\n    MIN(am.process) AS process\n  FROM all_machines am\n  WHERE am.eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\n  GROUP BY am.eqp_id\n),\nalarm_rows AS (\n  SELECT\n    al.logid, al.logdate, al.errorcode, al.errortime, al.equipmentid, al.factory, al.process,\n    COALESCE(m.alarm_id, 'UNMAPPED') AS alarm_id,\n    COALESCE(m.alarm_type, 'UNMAPPED') AS alarm_type,\n    COALESCE(m.alarm_code, al.errorcode::TEXT) AS alarm_code,\n    COALESCE(m.alarm_msg, al.errorcode::TEXT) AS alarm_msg,\n    CASE WHEN m.alarm_code IS NULL THEN 'No master record' ELSE COALESCE(m.alarm_detail, 'No detail') END AS alarm_detail,\n    CASE WHEN m.alarm_code IS NULL THEN 'UNMAPPED' ELSE 'MAPPED' END AS mapping_status\n  FROM public.ldi_alarm_log al\n  JOIN selected_machines sm ON sm.eqp_id = al.equipmentid\n  LEFT JOIN public.ldi_alarm_ms_code m ON al.errorcode::TEXT = m.alarm_code::TEXT\n  WHERE al.logdate BETWEEN (SELECT \"time\" - INTERVAL '5 minutes' FROM target) AND (SELECT \"time\" + INTERVAL '5 minutes' FROM target)\n)\nSELECT * FROM alarm_rows\nUNION ALL\nSELECT\n  'NO-ALARM-' || sm.eqp_id, target.\"time\", NULL::TEXT, NULL::TEXT, sm.eqp_id, sm.factory, sm.process,\n  'NOT APPLICABLE', 'NO ALARM', 'NOT APPLICABLE', 'No alarm event within ±5 minutes',\n  'Telemetry exists at the selected point, but no alarm event exists for this machine in the ±5-minute window', 'NO ALARM'\nFROM selected_machines sm CROSS JOIN target\nWHERE target.\"time\" IS NOT NULL AND NOT EXISTS (SELECT 1 FROM alarm_rows ar WHERE ar.equipmentid = sm.eqp_id)\nORDER BY logdate DESC, equipmentid;",
+          "rawSql": "SELECT\n  a.logid, a.logdate, a.errorcode, a.errortime, a.equipmentid, a.factory, a.process,\n  COALESCE(m.alarm_id, 'UNMAPPED') AS alarm_id,\n  COALESCE(m.alarm_type, 'UNMAPPED') AS alarm_type,\n  COALESCE(m.alarm_code, a.errorcode::TEXT) AS alarm_code,\n  COALESCE(m.alarm_msg, a.errorcode::TEXT) AS alarm_msg,\n  CASE WHEN m.alarm_code IS NULL THEN 'No master record' ELSE COALESCE(m.alarm_detail, 'No detail') END AS alarm_detail,\n  CASE WHEN m.alarm_code IS NULL THEN 'UNMAPPED' ELSE 'MAPPED' END AS mapping_status\nFROM public.ldi_alarm_log a\nLEFT JOIN public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT\nWHERE a.equipmentid = split_part(${clicked_series:sqlstring}, ' - ', 1)\n  AND a.logdate BETWEEN \n    to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) - INTERVAL '5 minutes' \n    AND \n    to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) + INTERVAL '5 minutes'\nORDER BY a.logdate DESC;",
           "refId": "A"
         }
       ],
@@ -1977,7 +2016,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 125
+                "value": 97
               }
             ]
           },
@@ -1989,7 +2028,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 300
+                "value": 137
               }
             ]
           },
@@ -2013,7 +2052,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 250
+                "value": 339
               }
             ]
           },
@@ -2040,6 +2079,58 @@
                 "value": 420
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "errorcode",
+              "scope": "series"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 138
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "errortime",
+              "scope": "series"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 142
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "factory",
+              "scope": "series"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 82
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "process",
+              "scope": "series"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 115
+              }
+            ]
           }
         ]
       },
@@ -2047,12 +2138,12 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 35
       },
       "id": 12,
       "options": {
         "cellHeight": "sm",
-        "enablePagination": true,
+        "enablePagination": false,
         "frozenColumns": 2,
         "rowHeight": 0.6,
         "showHeader": true,
@@ -2070,9 +2161,28 @@
             "type": "postgres",
             "uid": "${DS_LDI}"
           },
+          "editorMode": "code",
           "format": "table",
-          "rawSql": "WITH target AS (\n  SELECT to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) AS t\n),\nevents AS (\n  SELECT\n    d.\"time\" AS event_time, d.eqp_id AS machine, 'STATE'::TEXT AS event_type, 'ldi_data'::TEXT AS source,\n    d.log_id::TEXT AS logid, NULL::TEXT AS errorcode, NULL::TEXT AS errortime, d.factory::TEXT AS factory, d.process::TEXT AS process,\n    'NOT APPLICABLE'::TEXT AS alarm_id, 'TELEMETRY'::TEXT AS alarm_type, 'NOT APPLICABLE'::TEXT AS alarm_code,\n    'State sample; no alarm event'::TEXT AS alarm_msg, 'Alarm fields apply only to ALARM rows'::TEXT AS alarm_detail,\n    'NOT APPLICABLE'::TEXT AS mapping_status, CASE WHEN d.state THEN 'RUNNING' ELSE 'DOWN' END AS description\n  FROM public.ldi_data d CROSS JOIN target\n  WHERE d.eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\n    AND d.\"time\" BETWEEN target.t - INTERVAL '5 minutes' AND target.t + INTERVAL '5 minutes'\n  UNION ALL\n  SELECT\n    a.logdate, a.equipmentid, 'ALARM', 'ldi_alarm_log', a.logid, a.errorcode::TEXT, a.errortime::TEXT,\n    a.factory::TEXT, a.process::TEXT, COALESCE(m.alarm_id, 'UNMAPPED'), COALESCE(m.alarm_type, 'UNMAPPED'),\n    COALESCE(m.alarm_code, a.errorcode::TEXT), COALESCE(m.alarm_msg, a.errorcode::TEXT),\n    CASE WHEN m.alarm_code IS NULL THEN 'No master record' ELSE COALESCE(m.alarm_detail, 'No detail') END,\n    CASE WHEN m.alarm_code IS NULL THEN 'UNMAPPED' ELSE 'MAPPED' END, COALESCE(m.alarm_msg, a.errorcode::TEXT)\n  FROM public.ldi_alarm_log a LEFT JOIN public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT CROSS JOIN target\n  WHERE a.equipmentid = split_part(${clicked_series:sqlstring}, ' - ', 1)\n    AND a.logdate BETWEEN target.t - INTERVAL '5 minutes' AND target.t + INTERVAL '5 minutes'\n)\nSELECT event_time AS \"Event Time\", machine AS \"Machine\", event_type AS \"Event Type\", source AS \"Source\", description AS \"Description\",\n  mapping_status, logid, errorcode, errortime, factory, process, alarm_id, alarm_type, alarm_code, alarm_msg, alarm_detail\nFROM events ORDER BY event_time DESC;",
-          "refId": "A"
+          "rawQuery": true,
+          "rawSql": "SELECT\n  d.\"time\" AS \"Event Time\",\n  d.eqp_id AS \"Machine\",\n  'STATE' AS \"Event Type\",\n  'ldi_data' AS \"Source\",\n  CASE WHEN d.state THEN 'RUNNING' ELSE 'DOWN' END AS \"Description\",\n  'NOT APPLICABLE' AS mapping_status,\n  d.log_id::TEXT AS logid,\n  NULL AS errorcode,\n  NULL AS errortime,\n  d.factory,\n  d.process,\n  'NOT APPLICABLE' AS alarm_id,\n  'TELEMETRY' AS alarm_type,\n  'NOT APPLICABLE' AS alarm_code,\n  'State sample; no alarm event' AS alarm_msg,\n  'Alarm fields apply only to ALARM rows' AS alarm_detail\nFROM public.ldi_data d\nWHERE d.eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\n  AND d.\"time\" BETWEEN \n      to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) - INTERVAL '5 minutes'\n      AND \n      to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) + INTERVAL '5 minutes'\nUNION ALL\nSELECT\n  a.logdate AS \"Event Time\",\n  a.equipmentid AS \"Machine\",\n  'ALARM' AS \"Event Type\",\n  'ldi_alarm_log' AS \"Source\",\n  COALESCE(m.alarm_msg, a.errorcode::TEXT) AS \"Description\",\n  CASE WHEN m.alarm_code IS NULL THEN 'UNMAPPED' ELSE 'MAPPED' END AS mapping_status,\n  a.logid,\n  a.errorcode::TEXT,\n  a.errortime::TEXT,\n  a.factory,\n  a.process,\n  COALESCE(m.alarm_id, 'UNMAPPED') AS alarm_id,\n  COALESCE(m.alarm_type, 'UNMAPPED') AS alarm_type,\n  COALESCE(m.alarm_code, a.errorcode::TEXT) AS alarm_code,\n  COALESCE(m.alarm_msg, a.errorcode::TEXT) AS alarm_msg,\n  CASE WHEN m.alarm_code IS NULL THEN 'No master record' ELSE COALESCE(m.alarm_detail, 'No detail') END AS alarm_detail\nFROM public.ldi_alarm_log a\nLEFT JOIN public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT\nWHERE a.equipmentid = split_part(${clicked_series:sqlstring}, ' - ', 1)\n  AND a.logdate BETWEEN \n      to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) - INTERVAL '5 minutes'\n      AND \n      to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) + INTERVAL '5 minutes'\nORDER BY \"Event Time\" DESC;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
       "title": "Unified Event Timeline ±5 min — ldi_data + ldi_alarm_log",
@@ -2088,8 +2198,8 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "5 minutes",
-          "value": "5 minutes"
+          "text": "1 minute",
+          "value": "1 minute"
         },
         "hide": 2,
         "includeAll": false,
@@ -2133,9 +2243,11 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "DF INNER"
+          ],
           "value": [
-            "$__all"
+            "DF INNER"
           ]
         },
         "datasource": {
@@ -2161,10 +2273,10 @@
         "allowCustomValue": true,
         "current": {
           "text": [
-            "LDIA-01"
+            "EXPOSURE LDI-2B"
           ],
           "value": [
-            "LDIA-01"
+            "EXPOSURE LDI-2B"
           ]
         },
         "datasource": {
@@ -2189,9 +2301,11 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "B68005287"
+          ],
           "value": [
-            "$__all"
+            "B68005287"
           ]
         },
         "datasource": {
@@ -2216,9 +2330,11 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "W048E-139B"
+          ],
           "value": [
-            "$__all"
+            "W048E-139B"
           ]
         },
         "datasource": {
@@ -2243,9 +2359,11 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "l3"
+          ],
           "value": [
-            "$__all"
+            "l3"
           ]
         },
         "datasource": {
@@ -2270,11 +2388,9 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": [
-            "__auto__"
-          ],
+          "text": "All",
           "value": [
-            "__auto__"
+            "$__all"
           ]
         },
         "datasource": {
@@ -2298,31 +2414,31 @@
       },
       {
         "current": {
-          "text": "1784607413550",
-          "value": "1784607413550"
+          "text": "1784607962410",
+          "value": "1784607962410"
         },
         "hide": 2,
         "name": "event_time_ms",
-        "query": "1784607413550",
+        "query": "1784607962410",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "current": {
-          "text": "LDIA-01 - ldi_data",
-          "value": "LDIA-01 - ldi_data"
+          "text": "EXPOSURE LDI-2B - ldi_data",
+          "value": "EXPOSURE LDI-2B - ldi_data"
         },
         "hide": 2,
         "name": "clicked_series",
-        "query": "LDIA-01 - ldi_data",
+        "query": "EXPOSURE LDI-2B - ldi_data",
         "skipUrlSync": false,
         "type": "textbox"
       }
     ]
   },
   "time": {
-    "from": "2026-07-21T04:12:30.000Z",
-    "to": "2026-07-21T04:17:30.000Z"
+    "from": "2026-07-21T04:21:00.000Z",
+    "to": "2026-07-21T04:31:00.000Z"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -2341,7 +2457,7 @@
   "timezone": "browser",
   "title": "IMS LDI - Machine Snapshot (Set 2 Real DB)",
   "uid": "ims-ldi-set2-machine-snapshot-real-db",
-  "version": 31,
+  "version": 47,
   "__inputs": [
     {
       "name": "DS_LDI",

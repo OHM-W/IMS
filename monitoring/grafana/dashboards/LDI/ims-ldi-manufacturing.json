@@ -1637,13 +1637,12 @@
             "lineWidth": 0,
             "spanNulls": false
           },
-          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -1705,7 +1704,7 @@
           "format": "time_series",
           "legendFormat": "{{metric}}",
           "rawQuery": true,
-          "rawSql": "SELECT time, eqp_id AS metric, temperature AS value \nFROM public.ldi_data \nWHERE factory IN (${factory:sqlstring}) \n  AND mo IN (${mo:sqlstring}) \n  AND eqp_id IN (${eqp_id:sqlstring}) \n  AND layer_name IN (${layer_name:sqlstring}) \n  AND log_id IN (${log_id:sqlstring}) \n  AND $__timeFilter(time) \n  AND temperature IS NOT NULL \nORDER BY time ASC",
+          "rawSql": "SELECT\n  time,\n  eqp_id AS metric,\n  temperature AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND $__timeFilter(time)\n  AND temperature IS NOT NULL\nORDER BY\n  time ASC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1753,13 +1752,12 @@
             "lineWidth": 0,
             "spanNulls": false
           },
-          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "#EF4444",
-                "value": null
+                "value": 0
               },
               {
                 "color": "#FACC15",
@@ -2863,7 +2861,7 @@
   "timezone": "browser",
   "title": "IMS LDI - Manufacturing Command Center (Set 2 Real DB)",
   "uid": "ims-ldi-set2-manufacturing-real-db",
-  "version": 57,
+  "version": 60,
   "__inputs": [
     {
       "name": "DS_LDI",
