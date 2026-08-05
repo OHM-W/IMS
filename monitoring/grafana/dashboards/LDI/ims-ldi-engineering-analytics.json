@@ -3,10 +3,6 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": {
-          "type": "grafana",
-          "uid": "LDI"
-        },
         "enable": true,
         "hide": false,
         "iconColor": "rgba(255, 96, 96, 1)",
@@ -15,7 +11,7 @@
       }
     ]
   },
-  "description": "Layer 3 Process Timeline: synchronized multi-parameter RCA. temperature \u0e42\u0086\u2019 humidity \u0e42\u0086\u2019 scan_speed \u0e42\u0086\u2019 air_vacuum \u0e42\u0086\u2019 scale_x/y \u0e42\u0086\u2019 pe_1~6 \u0e42\u0086\u2019 je_1~4 \u0e42\u0086\u2019 state. Shared crosshair + tooltip. Fixed axis scaling.",
+  "description": "Detailed Engineering Analytics & SPC using only measured ldi_data. Symmetric two-column analysis, explicit units/axes, exact point drilldown, capability statistics, distributions, and full production-cycle records.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 2,
@@ -28,34 +24,46 @@
       "keepTime": true,
       "tags": [],
       "targetBlank": false,
-      "title": "Apex Circuit Fleet Command Center",
+      "title": "Engineering Raw Data",
       "tooltip": "",
       "type": "link",
-      "url": "/d/adqj59l/ims-ldi-manufacturing"
+      "url": "/d/ims-ldi-set2-engineering-raw-db/set2-engineering-raw"
     },
     {
       "asDropdown": false,
       "icon": "external link",
       "includeVars": true,
-      "keepTime": true,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": false,
+      "title": "Apex Circuit Fleet Command Center",
+      "tooltip": "",
+      "type": "link",
+      "url": "/d/ims-ldi-set2-manufacturing-real-db/set2-manufacturing?time=1784505600000&time.window=21600000"
+    },
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": false,
       "tags": [],
       "targetBlank": false,
       "title": "Operator Andon Board",
       "tooltip": "",
       "type": "link",
-      "url": "/d/ad7nwgb/ims-ldi-operator-andon"
+      "url": "/d/ims-ldi-set2-operator-andon-real-db/set2-operator-andon?time=1784505600000&time.window=21600000"
     },
     {
       "asDropdown": false,
       "icon": "external link",
       "includeVars": true,
-      "keepTime": true,
+      "keepTime": false,
       "tags": [],
       "targetBlank": false,
       "title": "Incident Snapshot",
       "tooltip": "",
       "type": "link",
-      "url": "/d/adz27jl/ims-ldi-machine-snapshot"
+      "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?time=1784505600000&time.window=21600000"
     }
   ],
   "liveNow": true,
@@ -63,20 +71,22 @@
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "temperature per machine. Fixed axis 18-28\u0e22\u0e10C (target 22\u0e22\u0e112\u0e22\u0e10C). Shared crosshair syncs with all panels below.",
+      "description": "Temperature per machine on the operational scale 18-28°C. Invalid zero sensor rows are monitored separately in Data Readiness.",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "",
+            "axisLabel": "Temperature (°C)",
             "axisPlacement": "auto",
+            "axisSoftMax": 26,
+            "axisSoftMin": 18,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
@@ -102,16 +112,16 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "line"
             }
           },
-          "decimals": 1,
+          "decimals": 2,
           "links": [
             {
               "oneClick": true,
               "targetBlank": false,
-              "title": "Incident Snapshot (by log_id)",
-              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "title": "Drilldown to Snapshot",
+              "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?${factory:queryparam}&${process:queryparam}&${mo:queryparam}&${fpn:queryparam}&${layer_name:queryparam}&var-eqp_id=${__series.name}&var-clicked_series=${__series.name}&var-log_id=$__all&var-event_time_ms=${__value.time}&time=${__value.time}&time.window=600000&var-time_group=1 minute"
             }
           ],
           "max": 28,
@@ -120,12 +130,16 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#EF4444",
                 "value": 0
               },
               {
-                "color": "red",
-                "value": 80
+                "color": "#22C55E",
+                "value": 20
+              },
+              {
+                "color": "#EF4444",
+                "value": 24
               }
             ]
           },
@@ -133,7 +147,7 @@
         }
       },
       "gridPos": {
-        "h": 6,
+        "h": 8,
         "w": 12,
         "x": 0,
         "y": 0
@@ -147,8 +161,8 @@
         "connectNullPoints": true,
         "legend": {
           "calcs": [
-            "mean",
-            "lastNotNull"
+            "lastNotNull",
+            "mean"
           ],
           "displayMode": "table",
           "enableFacetedFilter": false,
@@ -167,13 +181,13 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "editorMode": "code",
           "format": "time_series",
           "legendFormat": "{{metric}}",
           "rawQuery": true,
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, \r\neqp_id AS metric, \r\nAVG(temperature)::NUMERIC AS value \r\n\nFROM\n   public.ldi_data \r\n\nWHERE\n   factory IN ($Factory) \r\n\n  AND  $__timeFilter(time) \r\n\n  AND  process IN ($process) \r\n\n  AND  eqp_id IN (${Eqp:singlequote}) \r\n\n  AND  temperature IS NOT NULL \r\n\nGROUP BY\n   1, 2 \r\n\nORDER BY\n   1",
+          "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id AS metric,\r\n  AVG(temperature) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND temperature IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
           "refId": "A",
           "sql": {
             "columns": [
@@ -194,27 +208,29 @@
           }
         }
       ],
-      "title": "temperature (\u0e22\u0e10C)",
+      "title": "temperature — 1-min AVG (22±2°C)",
       "transparent": true,
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "humidity per machine. Fixed axis 40-70%RH (target 55\u0e22\u0e115%RH). Shared crosshair syncs with all panels below.",
+      "description": "Relative humidity per machine on the operational scale 40-70%RH. Invalid zero sensor rows are monitored separately in Data Readiness.",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
           "custom": {
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "",
+            "axisLabel": "Humidity (%RH)",
             "axisPlacement": "auto",
+            "axisSoftMax": 65,
+            "axisSoftMin": 45,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
@@ -240,16 +256,15 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "line"
             }
           },
-          "decimals": 1,
+          "decimals": 2,
           "links": [
             {
-              "oneClick": true,
               "targetBlank": false,
-              "title": "Incident Snapshot (by log_id)",
-              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "title": "Drilldown to Snapshot",
+              "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?${factory:queryparam}&${process:queryparam}&${mo:queryparam}&${fpn:queryparam}&${layer_name:queryparam}&var-eqp_id=${__series.name}&var-clicked_series=${__series.name}&var-log_id=$__all&var-event_time_ms=${__value.time}&time=${__value.time}&time.window=600000&var-time_group=1 minute"
             }
           ],
           "max": 70,
@@ -258,20 +273,24 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "#EF4444",
                 "value": 0
               },
               {
-                "color": "red",
-                "value": 80
+                "color": "#22C55E",
+                "value": 50
+              },
+              {
+                "color": "#EF4444",
+                "value": 60
               }
             ]
           },
-          "unit": "humidity"
+          "unit": "suffix: %RH"
         }
       },
       "gridPos": {
-        "h": 6,
+        "h": 8,
         "w": 12,
         "x": 12,
         "y": 0
@@ -285,8 +304,8 @@
         "connectNullPoints": true,
         "legend": {
           "calcs": [
-            "mean",
-            "lastNotNull"
+            "lastNotNull",
+            "mean"
           ],
           "displayMode": "table",
           "enableFacetedFilter": false,
@@ -305,22 +324,41 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
+          "editorMode": "code",
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id AS metric, AVG(humidity)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  humidity IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
-          "refId": "B"
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id AS metric,\r\n  AVG(humidity) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND humidity IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
         }
       ],
-      "title": "humidity (%RH)",
+      "title": "humidity — 1-min AVG (55±5%RH)",
       "transparent": true,
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
       "description": "Laser scan speed in mm/s. Monitor for scan speed drift that affects dose delivery.",
       "fieldConfig": {
@@ -332,8 +370,10 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "",
+            "axisLabel": "Scan speed (mm/s)",
             "axisPlacement": "auto",
+            "axisSoftMax": 450,
+            "axisSoftMin": 0,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
@@ -365,10 +405,9 @@
           "decimals": 2,
           "links": [
             {
-              "oneClick": true,
               "targetBlank": false,
-              "title": "Incident Snapshot (by log_id)",
-              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "title": "Drilldown to Snapshot",
+              "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?${factory:queryparam}&${process:queryparam}&${mo:queryparam}&${fpn:queryparam}&${layer_name:queryparam}&var-eqp_id=${__series.name}&var-clicked_series=${__series.name}&var-log_id=$__all&var-event_time_ms=${__value.time}&time=${__value.time}&time.window=600000&var-time_group=1 minute"
             }
           ],
           "thresholds": {
@@ -384,14 +423,14 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "suffix: mm/s"
         }
       },
       "gridPos": {
-        "h": 6,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 6
+        "y": 8
       },
       "id": 3,
       "options": {
@@ -402,8 +441,8 @@
         "connectNullPoints": true,
         "legend": {
           "calcs": [
-            "mean",
-            "lastNotNull"
+            "lastNotNull",
+            "mean"
           ],
           "displayMode": "table",
           "enableFacetedFilter": false,
@@ -422,22 +461,22 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id AS metric, AVG(scan_speed)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  scan_speed IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id AS metric, AVG(scan_speed)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND scan_speed IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "A"
         }
       ],
-      "title": "scan_speed (mm/s)",
+      "title": "scan_speed — 1-min AVG (mm/s)",
       "transparent": true,
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
       "description": "Vacuum pressure in kPa. Abnormal vacuum indicates chuck seal failure.",
       "fieldConfig": {
@@ -449,8 +488,10 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "",
+            "axisLabel": "Air vacuum (kPa)",
             "axisPlacement": "auto",
+            "axisSoftMax": 5,
+            "axisSoftMin": -25,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
@@ -482,10 +523,9 @@
           "decimals": 2,
           "links": [
             {
-              "oneClick": true,
               "targetBlank": false,
-              "title": "Incident Snapshot (by log_id)",
-              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "title": "Drilldown to Snapshot",
+              "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?${factory:queryparam}&${process:queryparam}&${mo:queryparam}&${fpn:queryparam}&${layer_name:queryparam}&var-eqp_id=${__series.name}&var-clicked_series=${__series.name}&var-log_id=$__all&var-event_time_ms=${__value.time}&time=${__value.time}&time.window=600000&var-time_group=1 minute"
             }
           ],
           "thresholds": {
@@ -505,10 +545,10 @@
         }
       },
       "gridPos": {
-        "h": 6,
+        "h": 8,
         "w": 12,
         "x": 12,
-        "y": 6
+        "y": 8
       },
       "id": 4,
       "options": {
@@ -519,8 +559,8 @@
         "connectNullPoints": true,
         "legend": {
           "calcs": [
-            "mean",
-            "lastNotNull"
+            "lastNotNull",
+            "mean"
           ],
           "displayMode": "table",
           "enableFacetedFilter": false,
@@ -539,24 +579,24 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id AS metric, AVG(air_vacuum)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  air_vacuum IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id AS metric, AVG(air_vacuum)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND air_vacuum IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "B"
         }
       ],
-      "title": "air_vacuum (kPa)",
+      "title": "air_vacuum — 1-min AVG (kPa)",
       "transparent": true,
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "X-axis magnification ratio. Nominal 1.000000. Drift indicates lens thermal expansion.",
+      "description": "Scale factor near 1.000000. Fixed engineering range preserves drift detail; invalid zero rows are monitored in Data Readiness.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -566,7 +606,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "",
+            "axisLabel": "Scale X",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -596,15 +636,16 @@
               "mode": "off"
             }
           },
-          "decimals": 6,
+          "decimals": 4,
           "links": [
             {
-              "oneClick": true,
               "targetBlank": false,
-              "title": "Incident Snapshot (by log_id)",
-              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "title": "Drilldown to Snapshot",
+              "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?${factory:queryparam}&${process:queryparam}&${mo:queryparam}&${fpn:queryparam}&${layer_name:queryparam}&var-eqp_id=${__series.name}&var-clicked_series=${__series.name}&var-log_id=$__all&var-event_time_ms=${__value.time}&time=${__value.time}&time.window=600000&var-time_group=1 minute"
             }
           ],
+          "max": 1.0007,
+          "min": 0.9995,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -618,14 +659,14 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "none"
         }
       },
       "gridPos": {
-        "h": 6,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 12
+        "y": 16
       },
       "id": 5,
       "options": {
@@ -636,8 +677,8 @@
         "connectNullPoints": true,
         "legend": {
           "calcs": [
-            "mean",
-            "lastNotNull"
+            "lastNotNull",
+            "mean"
           ],
           "displayMode": "table",
           "enableFacetedFilter": false,
@@ -656,24 +697,24 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id AS metric, AVG(scale_x)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  scale_x IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id AS metric, AVG(scale_x)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND scale_x IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "A"
         }
       ],
-      "title": "scale_x",
+      "title": "scale_x — 1-min AVG",
       "transparent": true,
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "Y-axis magnification ratio. Nominal 1.000000. Drift indicates lens thermal expansion.",
+      "description": "Scale factor near 1.000000. Fixed engineering range preserves drift detail; invalid zero rows are monitored in Data Readiness.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -683,7 +724,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "",
+            "axisLabel": "Scale Y",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
@@ -713,15 +754,16 @@
               "mode": "off"
             }
           },
-          "decimals": 6,
+          "decimals": 4,
           "links": [
             {
-              "oneClick": true,
               "targetBlank": false,
-              "title": "Incident Snapshot (by log_id)",
-              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "title": "Drilldown to Snapshot",
+              "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?${factory:queryparam}&${process:queryparam}&${mo:queryparam}&${fpn:queryparam}&${layer_name:queryparam}&var-eqp_id=${__series.name}&var-clicked_series=${__series.name}&var-log_id=$__all&var-event_time_ms=${__value.time}&time=${__value.time}&time.window=600000&var-time_group=1 minute"
             }
           ],
+          "max": 1.0007,
+          "min": 0.9995,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -735,14 +777,14 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "none"
         }
       },
       "gridPos": {
-        "h": 6,
+        "h": 8,
         "w": 12,
         "x": 12,
-        "y": 12
+        "y": 16
       },
       "id": 6,
       "options": {
@@ -753,8 +795,8 @@
         "connectNullPoints": true,
         "legend": {
           "calcs": [
-            "mean",
-            "lastNotNull"
+            "lastNotNull",
+            "mean"
           ],
           "displayMode": "table",
           "enableFacetedFilter": false,
@@ -773,24 +815,24 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id AS metric, AVG(scale_y)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  scale_y IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id AS metric, AVG(scale_y)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND scale_y IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "B"
         }
       ],
-      "title": "scale_y",
+      "title": "scale_y — 1-min AVG",
       "transparent": true,
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "Individual PE values (pe_1 through pe_6) per machine. Raw signed positional error in \u0e22\u0e15m. Fixed axis \u0e22\u0e1130\u0e22\u0e15m.",
+      "description": "Individual signed PE values. Soft scale covers the observed range (about -67 to +75 µm) without clipping future outliers.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -800,12 +842,14 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "",
+            "axisLabel": "PE (µm)",
             "axisPlacement": "auto",
+            "axisSoftMax": 80,
+            "axisSoftMin": -80,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
-            "drawStyle": "points",
-            "fillOpacity": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
             "gradientMode": "opacity",
             "hideFrom": {
               "legend": false,
@@ -815,7 +859,7 @@
             "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineWidth": 2,
-            "pointSize": 3,
+            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
             },
@@ -830,17 +874,14 @@
               "mode": "off"
             }
           },
-          "decimals": 2,
+          "decimals": 3,
           "links": [
             {
-              "oneClick": true,
               "targetBlank": false,
-              "title": "Incident Snapshot (by log_id)",
-              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "title": "Drilldown to Snapshot",
+              "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?${factory:queryparam}&${process:queryparam}&${mo:queryparam}&${fpn:queryparam}&${layer_name:queryparam}&var-eqp_id=${__series.name}&var-clicked_series=${__series.name}&var-log_id=$__all&var-event_time_ms=${__value.time}&time=${__value.time}&time.window=600000&var-time_group=1 minute"
             }
           ],
-          "max": 80,
-          "min": -80,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -854,14 +895,14 @@
               }
             ]
           },
-          "unit": "lengthum"
+          "unit": "suffix: µm"
         }
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 12,
         "x": 0,
-        "y": 18
+        "y": 24
       },
       "id": 7,
       "options": {
@@ -872,8 +913,8 @@
         "connectNullPoints": true,
         "legend": {
           "calcs": [
-            "mean",
-            "lastNotNull"
+            "lastNotNull",
+            "mean"
           ],
           "displayMode": "table",
           "enableFacetedFilter": false,
@@ -892,74 +933,74 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id || ' - pe_1' AS metric, AVG(pe_1)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  pe_1 IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - pe_1' AS metric, AVG(pe_1)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_1 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "A"
         },
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id || ' - pe_2' AS metric, AVG(pe_2)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  pe_2 IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - pe_2' AS metric, AVG(pe_2)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_2 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "B"
         },
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id || ' - pe_3' AS metric, AVG(pe_3)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  pe_3 IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - pe_3' AS metric, AVG(pe_3)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_3 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "C"
         },
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id || ' - pe_4' AS metric, AVG(pe_4)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  pe_4 IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - pe_4' AS metric, AVG(pe_4)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_4 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "D"
         },
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id || ' - pe_5' AS metric, AVG(pe_5)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  pe_5 IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - pe_5' AS metric, AVG(pe_5)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_5 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "E"
         },
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id || ' - pe_6' AS metric, AVG(pe_6)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  pe_6 IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - pe_6' AS metric, AVG(pe_6)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_6 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "F"
         }
       ],
-      "title": "pe_1 ~ pe_6 (\u0e22\u0e15m)",
+      "title": "pe_1–pe_6 — 1-min AVG (µm)",
       "transparent": true,
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "Individual JE values (je_1 through je_4) per machine. Raw signed junction error in \u0e22\u0e15m. Fixed axis \u0e22\u0e1130\u0e22\u0e15m.",
+      "description": "Individual JE values. Soft scale covers the observed range (0 to about 43 µm) while retaining out-of-range visibility.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -969,12 +1010,14 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "",
+            "axisLabel": "JE (µm)",
             "axisPlacement": "auto",
+            "axisSoftMax": 50,
+            "axisSoftMin": -5,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
-            "drawStyle": "points",
-            "fillOpacity": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
             "gradientMode": "opacity",
             "hideFrom": {
               "legend": false,
@@ -984,7 +1027,7 @@
             "insertNulls": false,
             "lineInterpolation": "smooth",
             "lineWidth": 2,
-            "pointSize": 3,
+            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
             },
@@ -999,17 +1042,14 @@
               "mode": "off"
             }
           },
-          "decimals": 2,
+          "decimals": 3,
           "links": [
             {
-              "oneClick": true,
               "targetBlank": false,
-              "title": "Incident Snapshot (by log_id)",
-              "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${__series.name}&var-clicked_time=${__data.fields[0].numeric}&var-exact_time=&var-bucket_size=1 minute&from=${__from}&to=${__to}"
+              "title": "Drilldown to Snapshot",
+              "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?${factory:queryparam}&${process:queryparam}&${mo:queryparam}&${fpn:queryparam}&${layer_name:queryparam}&var-eqp_id=${__series.name}&var-clicked_series=${__series.name}&var-log_id=$__all&var-event_time_ms=${__value.time}&time=${__value.time}&time.window=600000&var-time_group=1 minute"
             }
           ],
-          "max": 45,
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1023,14 +1063,14 @@
               }
             ]
           },
-          "unit": "lengthum"
+          "unit": "suffix: µm"
         }
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 24
       },
       "id": 8,
       "options": {
@@ -1041,8 +1081,8 @@
         "connectNullPoints": true,
         "legend": {
           "calcs": [
-            "mean",
-            "lastNotNull"
+            "lastNotNull",
+            "mean"
           ],
           "displayMode": "table",
           "enableFacetedFilter": false,
@@ -1061,52 +1101,52 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id || ' - je_1' AS metric, AVG(je_1)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  je_1 IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - je_1' AS metric, AVG(je_1)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND je_1 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "A"
         },
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id || ' - je_2' AS metric, AVG(je_2)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  je_2 IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - je_2' AS metric, AVG(je_2)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND je_2 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "B"
         },
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id || ' - je_3' AS metric, AVG(je_3)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  je_3 IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - je_3' AS metric, AVG(je_3)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND je_3 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "C"
         },
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id || ' - je_4' AS metric, AVG(je_4)::NUMERIC AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  je_4 IS NOT NULL \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - je_4' AS metric, AVG(je_4)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND je_4 IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
           "refId": "D"
         }
       ],
-      "title": "je_1 ~ je_4 (\u0e22\u0e15m)",
+      "title": "je_1–je_4 — 1-min AVG (µm)",
       "transparent": true,
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
       "description": "Machine lifesign: GREEN = RUNNING (state=true), RED = DOWN (state=false). Full-width panel for instant visibility of machine availability.",
       "fieldConfig": {
@@ -1126,6 +1166,14 @@
             "lineWidth": 0,
             "spanNulls": false
           },
+          "links": [
+            {
+              "oneClick": true,
+              "targetBlank": false,
+              "title": "Click to Open Snapshot at this point",
+              "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?var-clicked_series=${__field.name}&var-event_time_ms=${__value.time}&var-eqp_id=${__field.name}&var-log_id=__auto__&time=${__value.time}&time.window=600000"
+            }
+          ],
           "mappings": [
             {
               "options": {
@@ -1158,10 +1206,10 @@
         }
       },
       "gridPos": {
-        "h": 4,
+        "h": 5,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 34
       },
       "id": 9,
       "options": {
@@ -1177,8 +1225,8 @@
           "showLegend": true
         },
         "mergeValues": true,
-        "rowHeight": 0.85,
-        "showValue": "auto",
+        "rowHeight": 0.75,
+        "showValue": "always",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
@@ -1190,36 +1238,52 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time_bucket('1 minute', time) AS time, eqp_id AS metric, MAX(CASE WHEN state THEN 1 ELSE 0 END) AS value \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \n  AND  $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \nGROUP BY\n   1, 2 \nORDER BY\n   1",
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id AS metric, MAX(CASE WHEN state THEN 1 ELSE 0 END) AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) GROUP BY 1, 2 ORDER BY 1",
           "refId": "A"
         }
       ],
-      "title": "state",
+      "title": "state — 1-min",
       "transparent": true,
       "type": "state-timeline"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "Source: v_machine_spc_ranking. PE and JE process capability. Cpk >= 1.33 = Capable.",
+      "description": "Calculated from real PE1-PE6 samples in the selected time, Factory, MO and Machine filters. Assumes symmetric +/- pe_setting limits.",
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "footer": {
-              "reducers": []
-            },
-            "inspect": false
+          "color": {
+            "mode": "palette-classic"
           },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 2,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1232,149 +1296,100 @@
                 "value": 80
               }
             ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Capability"
-            },
-            "properties": [
-              {
-                "id": "mappings",
-                "value": [
-                  {
-                    "options": {
-                      "Capable": {
-                        "color": "#FACC15",
-                        "text": "Capable"
-                      },
-                      "Excellent": {
-                        "color": "#22C55E",
-                        "text": "Excellent"
-                      },
-                      "Marginally Capable": {
-                        "color": "#FACC15",
-                        "text": "Marginal"
-                      },
-                      "Not Capable": {
-                        "color": "#EF4444",
-                        "text": "Not Capable"
-                      },
-                      "World Class": {
-                        "color": "#22C55E",
-                        "text": "World Class"
-                      }
-                    },
-                    "type": "value"
-                  }
-                ]
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background"
-                }
-              }
-            ]
           },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Timestamp"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "dateTimeAsIso"
-              },
-              {
-                "id": "decimals",
-                "value": 6
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Time"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "dateTimeAsIso"
-              },
-              {
-                "id": "decimals",
-                "value": 6
-              }
-            ]
-          }
-        ]
+          "unit": "short"
+        }
       },
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 30
+        "y": 39
       },
       "id": 10,
       "options": {
-        "cellHeight": "sm",
-        "rowHeight": 0.65,
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Cpk"
-          }
-        ]
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "overflow": "ellipsis",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
       },
       "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   eqp_id AS \"Machine\", sample_count AS \"Samples\", mean_pe AS \"Mean PE\", cpk AS \"Cpk\", capability_class AS \"Capability\", mean_je AS \"Mean JE\", cpk_je AS \"Cpk (JE)\", capability_class_je AS \"JE Capability\" \nFROM\n   public.v_machine_spc_ranking \nORDER BY\n   cpk DESC",
+          "rawSql": "WITH pe_samples AS (\n  SELECT d.eqp_id, d.pe_setting, p.pe\n  FROM public.ldi_data d\n  CROSS JOIN LATERAL (VALUES (d.pe_1),(d.pe_2),(d.pe_3),(d.pe_4),(d.pe_5),(d.pe_6)) p(pe)\n  WHERE $__timeFilter(d.\"time\")\n    AND d.factory IN (${factory:sqlstring})\n    AND d.process IN (${process:sqlstring})\n    AND d.mo IN (${mo:sqlstring})\n    AND d.fpn IN (${fpn:sqlstring})\n    AND d.layer_name IN (${layer_name:sqlstring})\n    AND d.eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring})\n    AND p.pe IS NOT NULL AND d.pe_setting IS NOT NULL\n), stats AS (\n  SELECT eqp_id, AVG(pe) AS mean_pe, STDDEV_SAMP(pe) AS stddev_pe, AVG(pe_setting) AS pe_limit\n  FROM pe_samples GROUP BY eqp_id\n), capability AS (\n  SELECT *, pe_limit / NULLIF(3 * stddev_pe, 0) AS cp,\n    LEAST((pe_limit - mean_pe) / NULLIF(3 * stddev_pe, 0), (mean_pe + pe_limit) / NULLIF(3 * stddev_pe, 0)) AS cpk\n  FROM stats\n)\nSELECT eqp_id AS \"Machine\", ROUND(cp::NUMERIC, 3) AS \"Cp\", ROUND(cpk::NUMERIC, 3) AS \"Cpk\"\nFROM capability ORDER BY cpk DESC NULLS LAST;",
           "refId": "A"
         }
       ],
-      "title": "Machine SPC Ranking",
+      "title": "pe_1–pe_6 / pe_setting — Cp & Cpk",
       "transparent": true,
-      "type": "table"
+      "type": "barchart"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "Composite stability score (0-100) combining temperature, humidity, and PE stability. Green >= 70, Amber >= 40, Red < 40.",
+      "description": "Real PE1-PE6 standard deviation for the selected filters. Replaces the missing v_process_stability view.",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
-          "decimals": 1,
-          "max": 100,
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 2,
           "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#EF4444",
+                "color": "green",
                 "value": 0
               },
               {
-                "color": "#FACC15",
-                "value": 40
-              },
-              {
-                "color": "#22C55E",
-                "value": 70
+                "color": "red",
+                "value": 80
               }
             ]
           },
@@ -1385,11 +1400,14 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 30
+        "y": 39
       },
       "id": 11,
       "options": {
-        "displayMode": "gradient",
+        "barRadius": 0,
+        "barWidth": 0.8,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
         "legend": {
           "calcs": [],
           "displayMode": "list",
@@ -1397,42 +1415,37 @@
           "placement": "bottom",
           "showLegend": false
         },
-        "maxVizHeight": 300,
-        "minVizHeight": 16,
-        "minVizWidth": 8,
-        "namePlacement": "auto",
         "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
         },
-        "showUnfilled": true,
-        "sizing": "auto",
-        "valueMode": "color"
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
       },
       "pluginVersion": "13.1.0",
       "targets": [
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   eqp_id AS metric, stability_index AS value \nFROM\n   public.v_process_stability \nORDER BY\n   stability_index DESC",
+          "rawSql": "WITH pe_samples AS (\n  SELECT d.eqp_id, p.pe\n  FROM public.ldi_data d\n  CROSS JOIN LATERAL (VALUES (d.pe_1),(d.pe_2),(d.pe_3),(d.pe_4),(d.pe_5),(d.pe_6)) p(pe)\n  WHERE $__timeFilter(d.\"time\")\n    AND d.factory IN (${factory:sqlstring})\n    AND d.process IN (${process:sqlstring})\n    AND d.mo IN (${mo:sqlstring})\n    AND d.fpn IN (${fpn:sqlstring})\n    AND d.layer_name IN (${layer_name:sqlstring})\n    AND d.eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring})\n    AND p.pe IS NOT NULL\n)\nSELECT eqp_id AS \"Machine\", ROUND(STDDEV_SAMP(pe)::NUMERIC, 3) AS \"StdDev\"\nFROM pe_samples GROUP BY eqp_id HAVING STDDEV_SAMP(pe) IS NOT NULL ORDER BY \"StdDev\" DESC;",
           "refId": "A"
         }
       ],
-      "title": "v_process_stability",
+      "title": "pe_1–pe_6 — Standard Deviation",
       "transparent": true,
-      "type": "bargauge"
+      "type": "barchart"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
       "description": "Statistical distribution of alignment errors. Shows skewness and process centering for SPC analysis.",
       "fieldConfig": {
@@ -1454,6 +1467,7 @@
               "mode": "none"
             }
           },
+          "decimals": 1,
           "max": 80,
           "min": -80,
           "thresholds": {
@@ -1465,22 +1479,22 @@
               },
               {
                 "color": "#FACC15",
-                "value": 50
+                "value": 15
               },
               {
                 "color": "#EF4444",
-                "value": 70
+                "value": 25
               }
             ]
           },
-          "unit": "lengthum"
+          "unit": "suffix: µm"
         }
       },
       "gridPos": {
-        "h": 6,
+        "h": 9,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 47
       },
       "id": 13,
       "options": {
@@ -1504,31 +1518,30 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "\nSELECT\n   time, eqp_id || ' - pe_1' AS metric, pe_1 AS value \nFROM\n   public.ldi_data \nWHERE\n   $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  pe_1 IS NOT NULL UNION ALL \nSELECT\n   time, eqp_id || ' - pe_2', pe_2 \nFROM\n   public.ldi_data \nWHERE\n   $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  pe_2 IS NOT NULL UNION ALL \nSELECT\n   time, eqp_id || ' - pe_3', pe_3 \nFROM\n   public.ldi_data \nWHERE\n   $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  pe_3 IS NOT NULL UNION ALL \nSELECT\n   time, eqp_id || ' - pe_4', pe_4 \nFROM\n   public.ldi_data \nWHERE\n   $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  pe_4 IS NOT NULL UNION ALL \nSELECT\n   time, eqp_id || ' - pe_5', pe_5 \nFROM\n   public.ldi_data \nWHERE\n   $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  pe_5 IS NOT NULL UNION ALL \nSELECT\n   time, eqp_id || ' - pe_6', pe_6 \nFROM\n   public.ldi_data \nWHERE\n   $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  pe_6 IS NOT NULL \nORDER BY\n   time",
+          "rawSql": "SELECT time, eqp_id || ' - pe_1' AS metric, pe_1 AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_1 IS NOT NULL UNION ALL SELECT time, eqp_id || ' - pe_2', pe_2 FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_2 IS NOT NULL UNION ALL SELECT time, eqp_id || ' - pe_3', pe_3 FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_3 IS NOT NULL UNION ALL SELECT time, eqp_id || ' - pe_4', pe_4 FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_4 IS NOT NULL UNION ALL SELECT time, eqp_id || ' - pe_5', pe_5 FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_5 IS NOT NULL UNION ALL SELECT time, eqp_id || ' - pe_6', pe_6 FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_6 IS NOT NULL ORDER BY time",
           "refId": "A"
         }
       ],
-      "title": "Alignment Error Distribution (PE Histogram)",
+      "title": "pe_1–pe_6 — Histogram",
       "transparent": true,
       "type": "histogram"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "All 3 recipes: DF OUTER=15, DF INNER=71, SM=500-1200 mJ/cm\u0e22\u0e12",
+      "description": "Latest resist dosage per selected machine. Auto-ranging is used because observed machine settings span 15 to 1,200 mJ/cm².",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
           "decimals": 1,
-          "max": 1200,
           "min": 0,
           "thresholds": {
             "mode": "absolute",
@@ -1539,30 +1552,30 @@
               },
               {
                 "color": "#FACC15",
-                "value": 500
+                "value": 10
               },
               {
                 "color": "#22C55E",
-                "value": 600
+                "value": 14
               },
               {
                 "color": "#FACC15",
-                "value": 700
+                "value": 22
               },
               {
                 "color": "#EF4444",
-                "value": 800
+                "value": 30
               }
             ]
           },
-          "unit": "short"
+          "unit": "suffix: mJ/cm²"
         }
       },
       "gridPos": {
-        "h": 5,
-        "w": 12,
+        "h": 6,
+        "w": 24,
         "x": 0,
-        "y": 44
+        "y": 56
       },
       "id": 15,
       "options": {
@@ -1595,16 +1608,165 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   eqp_id AS metric, ROUND(AVG(resist_dosage)::NUMERIC, 1) AS value \nFROM\n   public.ldi_data \nWHERE\n   $__timeFilter(time) \n  AND  process IN ($process) \n  AND  eqp_id IN (${Eqp:singlequote}) \n  AND  resist_dosage IS NOT NULL \nGROUP BY\n   1 \nORDER BY\n   1",
+          "rawSql": "SELECT eqp_id AS metric, ROUND(AVG(resist_dosage)::NUMERIC, 1) AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND resist_dosage IS NOT NULL GROUP BY 1 ORDER BY 1",
           "refId": "A"
         }
       ],
-      "title": "Resist Dosage (mJ/cm\u0e22\u0e12)",
+      "title": "resist_dosage — AVG (mJ/cm²)",
       "transparent": true,
       "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_LDI}"
+      },
+      "description": "Detailed selected-cycle records. Click Time to open the exact Machine Snapshot record.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cycle Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "decimals",
+                "value": 3
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Factory"
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom.viz",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Log ID"
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom.viz",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsIso"
+              },
+              {
+                "id": "custom.width",
+                "value": 185
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "oneClick": true,
+                    "targetBlank": false,
+                    "title": "Open Snapshot at this record",
+                    "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?var-clicked_series=__none__&var-event_time_ms=0&var-factory=${__data.fields[\"Factory\"]}&var-eqp_id=${__data.fields[\"Machine\"]}&var-log_id=${__data.fields[\"Log ID\"]}&time=${__value.time}&time.window=600000"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Machine"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 62
+      },
+      "id": 16,
+      "options": {
+        "cellHeight": "sm",
+        "enablePagination": true,
+        "frozenColumns": 2,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Time"
+          }
+        ]
+      },
+      "pluginVersion": "13.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_LDI}"
+          },
+          "format": "table",
+          "rawSql": "SELECT time AS \"Time\", eqp_id AS \"Machine\", factory AS \"Factory\", factory AS \"Factory\", factory AS \"Factory\", factory AS \"Factory\", factory AS \"Factory\", mo AS \"MO\", fpn AS \"Part\", layer_name AS \"Layer\", board_no AS \"Board\", total_board AS \"Total Boards\", ROUND((total_time / NULLIF(total_board, 0))::NUMERIC, 3) AS \"Cycle Time\", CASE WHEN state THEN 'RUNNING' ELSE 'STOPPED' END AS \"State\", board_id AS \"Board ID\", log_id AS \"Log ID\" FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND $__timeFilter(time) ORDER BY time DESC LIMIT 50",
+          "refId": "A"
+        }
+      ],
+      "title": "Production Cycle — Full ldi_data Records",
+      "transparent": true,
+      "type": "table"
     }
   ],
   "preload": false,
@@ -1615,77 +1777,175 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "2"
+          ],
           "value": [
-            "$__all"
+            "2"
           ]
         },
         "datasource": {
           "type": "postgres",
-          "uid": "LDI"
+          "uid": "${DS_LDI}"
         },
-        "definition": "SELECT DISTINCT factory \nFROM ldi_data \nORDER BY factory;",
+        "definition": "SELECT DISTINCT factory AS __text, factory AS __value FROM public.ldi_data ORDER BY factory",
         "hide": 0,
         "includeAll": true,
+        "label": "Factory",
         "multi": true,
-        "name": "Factory",
+        "name": "factory",
         "options": [],
-        "query": "\nSELECT\n   DISTINCT factory \n\nFROM\n   ldi_data \n\nORDER BY\n   factory;",
+        "query": "SELECT DISTINCT factory AS __text, factory AS __value FROM public.ldi_data ORDER BY factory",
         "refresh": 1,
         "regex": "",
         "regexApplyTo": "value",
         "skipUrlSync": false,
-        "sort": 0,
+        "sort": 1,
         "type": "query"
       },
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "DF INNER"
+          ],
           "value": [
-            "$__all"
+            "DF INNER"
           ]
         },
         "datasource": {
           "type": "postgres",
-          "uid": "LDI"
+          "uid": "${DS_LDI}"
         },
-        "definition": "SELECT DISTINCT process \nFROM ldi_data \nWHERE factory IN ($Factory) \nORDER BY process;",
+        "definition": "SELECT DISTINCT process AS __text, process AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) ORDER BY process",
         "hide": 0,
         "includeAll": true,
+        "label": "Process",
         "multi": true,
         "name": "process",
         "options": [],
-        "query": "\nSELECT\n   DISTINCT process \n\nFROM\n   ldi_data \n\nWHERE\n   factory IN ($Factory) \n\nORDER BY\n   process;",
+        "query": "SELECT DISTINCT process AS __text, process AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) ORDER BY process",
         "refresh": 1,
         "regex": "",
         "regexApplyTo": "value",
         "skipUrlSync": false,
-        "sort": 0,
+        "sort": 1,
         "type": "query"
       },
       {
         "allowCustomValue": true,
         "current": {
-          "text": "EXPOSURE LDI-2",
-          "value": "EXPOSURE LDI-2"
+          "text": [
+            "EXPOSURE LDI-2"
+          ],
+          "value": [
+            "EXPOSURE LDI-2"
+          ]
         },
         "datasource": {
           "type": "postgres",
-          "uid": "LDI"
+          "uid": "${DS_LDI}"
         },
-        "definition": "SELECT DISTINCT eqp_id \nFROM ldi_data \nWHERE factory IN ($Factory) AND process IN ($process) \nORDER BY eqp_id;",
+        "definition": "SELECT DISTINCT eqp_id AS __text, eqp_id AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) ORDER BY eqp_id",
         "hide": 0,
-        "includeAll": false,
-        "multi": false,
-        "name": "Eqp",
+        "includeAll": true,
+        "label": "Eqp ID",
+        "multi": true,
+        "name": "eqp_id",
         "options": [],
-        "query": "\nSELECT\n   DISTINCT eqp_id \n\nFROM\n   ldi_data \n\nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n\nORDER BY\n   eqp_id;",
+        "query": "SELECT DISTINCT eqp_id AS __text, eqp_id AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) ORDER BY eqp_id",
         "refresh": 1,
         "regex": "",
         "regexApplyTo": "value",
         "skipUrlSync": false,
-        "sort": 0,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": [
+            "B68005287"
+          ],
+          "value": [
+            "B68005287"
+          ]
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_LDI}"
+        },
+        "definition": "SELECT DISTINCT mo AS __text, mo AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) ORDER BY mo",
+        "hide": 0,
+        "includeAll": true,
+        "label": "MO",
+        "multi": true,
+        "name": "mo",
+        "options": [],
+        "query": "SELECT DISTINCT mo AS __text, mo AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) ORDER BY mo",
+        "refresh": 1,
+        "regex": "",
+        "regexApplyTo": "value",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": [
+            "W048E-139B"
+          ],
+          "value": [
+            "W048E-139B"
+          ]
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_LDI}"
+        },
+        "definition": "SELECT DISTINCT fpn AS __text, fpn AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) ORDER BY fpn",
+        "hide": 0,
+        "includeAll": true,
+        "label": "FPN",
+        "multi": true,
+        "name": "fpn",
+        "options": [],
+        "query": "SELECT DISTINCT fpn AS __text, fpn AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) ORDER BY fpn",
+        "refresh": 1,
+        "regex": "",
+        "regexApplyTo": "value",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": [
+            "l2"
+          ],
+          "value": [
+            "l2"
+          ]
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_LDI}"
+        },
+        "definition": "SELECT DISTINCT layer_name AS __text, layer_name AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) ORDER BY layer_name",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Layer Name",
+        "multi": true,
+        "name": "layer_name",
+        "options": [],
+        "query": "SELECT DISTINCT layer_name AS __text, layer_name AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) ORDER BY layer_name",
+        "refresh": 1,
+        "regex": "",
+        "regexApplyTo": "value",
+        "skipUrlSync": false,
+        "sort": 1,
         "type": "query"
       },
       {
@@ -1698,16 +1958,17 @@
         },
         "datasource": {
           "type": "postgres",
-          "uid": "LDI"
+          "uid": "${DS_LDI}"
         },
+        "definition": "SELECT DISTINCT log_id AS __text, log_id AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) ORDER BY log_id DESC",
         "hide": 0,
         "includeAll": true,
-        "label": "MO (Work Order)",
+        "label": "Log ID",
         "multi": true,
-        "name": "mo",
+        "name": "log_id",
         "options": [],
-        "query": "\nSELECT\n   DISTINCT mo \nFROM\n   public.ldi_data \nWHERE\n   factory IN ($Factory) \nORDER BY\n   mo",
-        "refresh": 2,
+        "query": "SELECT DISTINCT log_id AS __text, log_id AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) ORDER BY log_id DESC",
+        "refresh": 1,
         "regex": "",
         "regexApplyTo": "value",
         "skipUrlSync": false,
@@ -1735,6 +1996,31 @@
     ]
   },
   "timezone": "browser",
-  "title": "IMS LDI - Engineering Analytics & SPC",
-  "uid": "adtzgkr"
+  "title": "IMS LDI - Engineering Analytics & SPC (Set 2 Real DB)",
+  "uid": "ims-ldi-set2-engineering-real-db",
+  "version": 19,
+  "__inputs": [
+    {
+      "name": "DS_LDI",
+      "label": "LDI",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "postgres",
+      "pluginName": "PostgreSQL"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "10.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "postgres",
+      "name": "PostgreSQL",
+      "version": "1.0.0"
+    }
+  ]
 }

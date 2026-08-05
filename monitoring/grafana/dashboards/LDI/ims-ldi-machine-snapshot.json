@@ -3,10 +3,6 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": {
-          "type": "grafana",
-          "uid": "LDI"
-        },
         "enable": true,
         "hide": false,
         "iconColor": "rgba(255, 96, 96, 1)",
@@ -15,7 +11,7 @@
       }
     ]
   },
-  "description": "360\u0e22\u0e10 machine snapshot at the exact millisecond clicked from Process Timeline. Shows job context, physical variables, PE alignment, Cpk, and alarm proximity.",
+  "description": "Record-precise Machine Snapshot. Telemetry panels show only ldi_data; alarm panels show only ldi_alarm_log joined to the verified master. Alarm-only machines are explicitly labeled rather than receiving invented telemetry values.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
@@ -25,37 +21,37 @@
       "asDropdown": false,
       "icon": "external link",
       "includeVars": true,
-      "keepTime": true,
+      "keepTime": false,
       "tags": [],
       "targetBlank": false,
       "title": "Apex Circuit Fleet Command Center",
       "tooltip": "",
       "type": "link",
-      "url": "/d/adqj59l/ims-ldi-manufacturing"
+      "url": "/d/ims-ldi-set2-manufacturing-real-db/set2-manufacturing?time=1784505600000&time.window=21600000"
     },
     {
       "asDropdown": false,
       "icon": "external link",
       "includeVars": true,
-      "keepTime": true,
+      "keepTime": false,
       "tags": [],
       "targetBlank": false,
       "title": "Engineering Analytics & SPC",
       "tooltip": "",
       "type": "link",
-      "url": "/d/adtzgkr/ims-ldi-engineering-analytics"
+      "url": "/d/ims-ldi-set2-engineering-real-db/set2-engineering?time=1784505600000&time.window=21600000"
     },
     {
       "asDropdown": false,
       "icon": "external link",
       "includeVars": true,
-      "keepTime": true,
+      "keepTime": false,
       "tags": [],
       "targetBlank": false,
       "title": "Operator Andon Board",
       "tooltip": "",
       "type": "link",
-      "url": "/d/ad7nwgb/ims-ldi-operator-andon"
+      "url": "/d/ims-ldi-set2-operator-andon-real-db/set2-operator-andon?time=1784505600000&time.window=21600000"
     }
   ],
   "liveNow": false,
@@ -63,9 +59,9 @@
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "Exact machine state at the clicked timestamp. Shows job context (MO, FPN, Layer, Board).",
+      "description": "The table keeps every telemetry record from the selected machine and minute. Clicking a blue Timestamp changes only the exact-record detail panels below; it does not collapse this table to one row.",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -78,6 +74,7 @@
             },
             "inspect": false
           },
+          "noValue": "N/A",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -122,6 +119,41 @@
                 "value": {
                   "type": "color-background"
                 }
+              },
+              {
+                "id": "custom.width",
+                "value": 145
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Timestamp"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsIso"
+              },
+              {
+                "id": "decimals",
+                "value": 6
+              },
+              {
+                "id": "custom.width",
+                "value": 210
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "oneClick": true,
+                    "targetBlank": false,
+                    "title": "Update detail panels and keep all records in this minute",
+                    "url": "/d/ims-ldi-set2-machine-snapshot-real-db/set2-machine-snapshot?var-clicked_series=${__data.fields[\"Machine\"]}%20-%20ldi_data&var-event_time_ms=${__value.time}&var-factory=${__data.fields[\"Factory\"]}&var-eqp_id=${__data.fields[\"Machine\"]}&var-log_id=__auto__&from=${__from}&to=${__to}"
+                  }
+                ]
               }
             ]
           },
@@ -144,33 +176,115 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Timestamp"
+              "options": "Machine"
             },
             "properties": [
               {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": false,
-                    "title": "Set as Snapshot Time",
-                    "url": "/d/adz27jl/ims-ldi-e28094-incident-snapshot?var-Eqp=${Eqp}&var-clicked_time=${clicked_time}&var-exact_time=${__data.fields.UnixTime}&var-bucket_size=${bucket_size}&from=${__from}&to=${__to}"
-                  }
-                ]
-              },
-              {
-                "id": "unit",
-                "value": "dateTimeAsIso"
-              },
-              {
                 "id": "custom.width",
-                "value": 177
+                "value": 164
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "UnixTime"
+              "options": "Layer"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "FPN"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 118
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Scale Mode"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 122
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Film"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "MO"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 114
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "State"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Resist"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Board"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Factory"
             },
             "properties": [
               {
@@ -178,63 +292,11 @@
                 "value": true
               }
             ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Layer",
-              "scope": "series"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 79
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Board",
-              "scope": "series"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 91
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Resist",
-              "scope": "series"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 93
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Scale Mode",
-              "scope": "series"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 138
-              }
-            ]
           }
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 24,
         "x": 0,
         "y": 0
@@ -242,6 +304,8 @@
       "id": 1,
       "options": {
         "cellHeight": "sm",
+        "enablePagination": false,
+        "frozenColumns": 2,
         "rowHeight": 0.8,
         "showHeader": true
       },
@@ -250,12 +314,12 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  \"time\" AS \"Timestamp\",\n  log_id AS \"Log ID\",\n  eqp_id AS \"Machine\",\n  state AS \"State\",\n  mo AS \"MO\",\n  fpn AS \"FPN\",\n  layer_name AS \"Layer\",\n  (board_no :: TEXT || '/' || total_board :: TEXT) AS \"Board\",\n  filmno AS \"Film\",\n  resist AS \"Resist\",\n  scale_mode AS \"Scale Mode\",\n  FLOOR(\n    extract(\n      epoch\n      from\n        \"time\"\n    ) * 1000\n  ) AS \"UnixTime\"\nFROM\n  public.ldi_data\nWHERE\n  eqp_id IN (${Eqp:singlequote})\n  AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '') :: numeric / 1000.0)\n  AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '') :: numeric / 1000.0) + interval '${bucket_size}'\nORDER BY\n  \"time\" DESC;",
+          "rawSql": "SELECT \"time\" AS \"Timestamp\", eqp_id AS \"Machine\", state AS \"State\", mo AS \"MO\", fpn AS \"FPN\", layer_name AS \"Layer\", (board_no::TEXT || '/' || total_board::TEXT) AS \"Board\", filmno AS \"Film\", resist AS \"Resist\", scale_mode AS \"Scale Mode\", factory AS \"Factory\", log_id AS \"Log ID\"\nFROM public.ldi_data\nWHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\n  AND \"time\" >= time_bucket('${time_group:raw}'::INTERVAL, to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0))\n  AND \"time\" < time_bucket('${time_group:raw}'::INTERVAL, to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)) + '${time_group:raw}'::INTERVAL\nORDER BY \"time\" ASC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -276,14 +340,14 @@
           }
         }
       ],
-      "title": "Machine Context",
+      "title": "STEP 1 — Click a blue Timestamp (all records in the minute stay visible)",
       "transparent": true,
       "type": "table"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
       "description": "temperature at clicked moment",
       "fieldConfig": {
@@ -292,6 +356,183 @@
             "mode": "thresholds"
           },
           "decimals": 2,
+          "max": 28,
+          "min": 16,
+          "noValue": "N/A",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#EF4444",
+                "value": 0
+              },
+              {
+                "color": "#F59E0B",
+                "value": 18
+              },
+              {
+                "color": "#22C55E",
+                "value": 20
+              },
+              {
+                "color": "#F59E0B",
+                "value": 24
+              },
+              {
+                "color": "#EF4444",
+                "value": 26
+              }
+            ]
+          },
+          "unit": "celsius"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 0,
+        "y": 9
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "noValue": "NO TELEMETRY",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "titleSize": 11,
+          "valueSize": 28
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_LDI}"
+          },
+          "format": "table",
+          "rawSql": "SELECT ROUND(temperature::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1) ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC LIMIT 1",
+          "refId": "A"
+        }
+      ],
+      "title": "temperature (22±2°C)",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_LDI}"
+      },
+      "description": "humidity at clicked moment",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "max": 70,
+          "min": 40,
+          "noValue": "N/A",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#EF4444",
+                "value": 0
+              },
+              {
+                "color": "#F59E0B",
+                "value": 45
+              },
+              {
+                "color": "#22C55E",
+                "value": 50
+              },
+              {
+                "color": "#F59E0B",
+                "value": 60
+              },
+              {
+                "color": "#EF4444",
+                "value": 65
+              }
+            ]
+          },
+          "unit": "suffix: %RH"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 8,
+        "y": 9
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "noValue": "NO TELEMETRY",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "titleSize": 11,
+          "valueSize": 28
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_LDI}"
+          },
+          "format": "table",
+          "rawSql": "SELECT ROUND(humidity::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1) ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC LIMIT 1",
+          "refId": "A"
+        }
+      ],
+      "title": "humidity (55±5%RH)",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_LDI}"
+      },
+      "description": "vacuum pressure at clicked moment",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "noValue": "N/A",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -305,21 +546,21 @@
               }
             ]
           },
-          "unit": "celsius"
+          "unit": "s"
         }
       },
       "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 0,
-        "y": 8
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 9
       },
-      "id": 2,
+      "id": 4,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "center",
-        "noValue": "\u0e42\u20ac\u201d",
+        "noValue": "NO TELEMETRY",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
@@ -331,7 +572,7 @@
         },
         "showPercentChange": false,
         "text": {
-          "titleSize": 12,
+          "titleSize": 11,
           "valueSize": 28
         },
         "textMode": "auto",
@@ -342,12 +583,12 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "\nSELECT\n   \r\nROUND(temperature::NUMERIC, 2) AS value \r\n\nFROM\n   public.ldi_data \r\n\nWHERE\n   eqp_id IN (${Eqp:singlequote}) \n  AND  ( (NULLIF('${exact_time}', '') IS NOT NULL \n  AND  \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \n  AND  \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \n  OR  (NULLIF('${exact_time}', '') IS NULL \n  AND  \"time\" = (\nSELECT MAX(\"time\") FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \n  AND  \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}')) )",
+          "rawSql": "SELECT\r\n  ROUND(total_time :: NUMERIC, 2) AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\r\nORDER BY\r\n  ABS(\r\n    EXTRACT(\r\n      EPOCH\r\n      FROM\r\n        (\r\n          \"time\" - to_timestamp(\r\n            COALESCE(NULLIF('${event_time_ms:raw}', ''), '0') :: NUMERIC / 1000.0\r\n          )\r\n        )\r\n    )\r\n  ),\r\n  \"time\" DESC\r\nLIMIT\r\n  1",
           "refId": "A",
           "sql": {
             "columns": [
@@ -368,22 +609,23 @@
           }
         }
       ],
-      "title": "temperature (\u00b0C)",
+      "title": "air_vacuum (kPa)",
       "transparent": true,
       "type": "stat"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "humidity at clicked moment",
+      "description": "laser scan speed at clicked moment",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
           "decimals": 2,
+          "noValue": "N/A",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -397,21 +639,21 @@
               }
             ]
           },
-          "unit": "humidity"
+          "unit": "suffix: mm/s"
         }
       },
       "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 4,
-        "y": 8
+        "h": 4,
+        "w": 7,
+        "x": 0,
+        "y": 13
       },
-      "id": 3,
+      "id": 5,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "center",
-        "noValue": "\u0e42\u20ac\u201d",
+        "noValue": "NO TELEMETRY",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
@@ -423,7 +665,7 @@
         },
         "showPercentChange": false,
         "text": {
-          "titleSize": 12,
+          "titleSize": 11,
           "valueSize": 28
         },
         "textMode": "auto",
@@ -434,21 +676,95 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   ROUND(humidity::NUMERIC, 2) AS value \nFROM\n   public.ldi_data \nWHERE\n   eqp_id IN (${Eqp:singlequote}) \n  AND  ( (NULLIF('${exact_time}', '') IS NOT NULL \n  AND  \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \n  AND  \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \n  OR  (NULLIF('${exact_time}', '') IS NULL \n  AND  \"time\" = (\nSELECT MAX(\"time\") FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \n  AND  \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}')) )",
+          "rawSql": "SELECT ROUND(scan_speed::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1) ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC LIMIT 1",
           "refId": "A"
         }
       ],
-      "title": "humidity (%RH)",
+      "title": "scan_speed (mm/s)",
       "transparent": true,
       "type": "stat"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
+      },
+      "description": "film thickness at clicked moment",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 3,
+          "noValue": "N/A",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#EF4444",
+                "value": 0
+              },
+              {
+                "color": "#22C55E",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "lengthmm"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 7,
+        "x": 7,
+        "y": 13
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "noValue": "NO TELEMETRY",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "titleSize": 11,
+          "valueSize": 28
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_LDI}"
+          },
+          "format": "table",
+          "rawSql": "SELECT ROUND(thickness::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1) ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC LIMIT 1",
+          "refId": "A"
+        }
+      ],
+      "title": "thickness (mm)",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_LDI}"
       },
       "description": "vacuum pressure at clicked moment",
       "fieldConfig": {
@@ -457,6 +773,7 @@
             "mode": "thresholds"
           },
           "decimals": 2,
+          "noValue": "N/A",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -475,16 +792,16 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 3,
-        "x": 8,
-        "y": 8
+        "w": 6,
+        "x": 14,
+        "y": 13
       },
-      "id": 4,
+      "id": 17,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "center",
-        "noValue": "\u0e42\u20ac\u201d",
+        "noValue": "NO TELEMETRY",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
@@ -496,7 +813,7 @@
         },
         "showPercentChange": false,
         "text": {
-          "titleSize": 12,
+          "titleSize": 11,
           "valueSize": 28
         },
         "textMode": "auto",
@@ -507,10 +824,10 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   ROUND(air_vacuum::NUMERIC, 2) AS value \nFROM\n   public.ldi_data \nWHERE\n   eqp_id IN (${Eqp:singlequote}) \n  AND  ( (NULLIF('${exact_time}', '') IS NOT NULL \n  AND  \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \n  AND  \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \n  OR  (NULLIF('${exact_time}', '') IS NULL \n  AND  \"time\" = (\nSELECT MAX(\"time\") FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \n  AND  \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}')) )",
+          "rawSql": "SELECT ROUND(air_vacuum::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1) ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC LIMIT 1",
           "refId": "A"
         }
       ],
@@ -521,245 +838,7 @@
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
-      },
-      "description": "laser scan speed at clicked moment",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 2,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#EF4444",
-                "value": 0
-              },
-              {
-                "color": "#22C55E",
-                "value": 1
-              }
-            ]
-          },
-          "unit": "short"
-        }
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 3,
-        "x": 11,
-        "y": 8
-      },
-      "id": 5,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "noValue": "\u0e42\u20ac\u201d",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "text": {
-          "titleSize": 12,
-          "valueSize": 28
-        },
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "13.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "LDI"
-          },
-          "format": "table",
-          "rawSql": "\nSELECT\n   ROUND(scan_speed::NUMERIC, 2) AS value \nFROM\n   public.ldi_data \nWHERE\n   eqp_id IN (${Eqp:singlequote}) \n  AND  ( (NULLIF('${exact_time}', '') IS NOT NULL \n  AND  \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \n  AND  \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \n  OR  (NULLIF('${exact_time}', '') IS NULL \n  AND  \"time\" = (\nSELECT MAX(\"time\") FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \n  AND  \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}')) )",
-          "refId": "A"
-        }
-      ],
-      "title": "scan_speed (mm/s)",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "LDI"
-      },
-      "description": "film thickness at clicked moment",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 2,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#EF4444",
-                "value": 0
-              },
-              {
-                "color": "#22C55E",
-                "value": 1
-              }
-            ]
-          },
-          "unit": "lengthmm"
-        }
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 3,
-        "x": 14,
-        "y": 8
-      },
-      "id": 6,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "noValue": "\u0e42\u20ac\u201d",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "text": {
-          "titleSize": 12,
-          "valueSize": 28
-        },
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "13.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "LDI"
-          },
-          "format": "table",
-          "rawSql": "\nSELECT\n   ROUND(thickness::NUMERIC, 2) AS value \nFROM\n   public.ldi_data \nWHERE\n   eqp_id IN (${Eqp:singlequote}) \n  AND  ( (NULLIF('${exact_time}', '') IS NOT NULL \n  AND  \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \n  AND  \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \n  OR  (NULLIF('${exact_time}', '') IS NULL \n  AND  \"time\" = (\nSELECT MAX(\"time\") FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \n  AND  \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}')) )",
-          "refId": "A"
-        }
-      ],
-      "title": "thickness (mm)",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "LDI"
-      },
-      "description": "temperature at clicked moment",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 2,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#EF4444",
-                "value": 0
-              },
-              {
-                "color": "#22C55E",
-                "value": 1
-              }
-            ]
-          },
-          "unit": "s"
-        }
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 3,
-        "x": 17,
-        "y": 8
-      },
-      "id": 14,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "noValue": "\u0e42\u20ac\u201d",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "text": {
-          "titleSize": 12,
-          "valueSize": 28
-        },
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "13.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "LDI"
-          },
-          "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  ROUND(total_time :: NUMERIC, 3) AS value\nFROM\n  public.ldi_data\nWHERE\n  eqp_id IN (${Eqp:singlequote})\n  AND (\n    (\n      NULLIF('${exact_time}', '') IS NOT NULL\n      AND \"time\" >= to_timestamp(NULLIF('${exact_time}', '') :: numeric / 1000.0) - interval '10 milliseconds'\n      AND \"time\" < to_timestamp(NULLIF('${exact_time}', '') :: numeric / 1000.0) + interval '1 second'\n    )\n    OR (\n      NULLIF('${exact_time}', '') IS NULL\n      AND \"time\" = (\n        SELECT\n          MAX(\"time\")\n        FROM\n          public.ldi_data\n        WHERE\n          eqp_id IN (${Eqp:singlequote})\n          AND \"time\" >= to_timestamp(NULLIF('${clicked_time}', '') :: numeric / 1000.0)\n          AND \"time\" < to_timestamp(NULLIF('${clicked_time}', '') :: numeric / 1000.0) + interval '${bucket_size}'\n      )\n    )\n  )",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "time-per-board",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
       "description": "resist dosage at clicked moment",
       "fieldConfig": {
@@ -768,6 +847,7 @@
             "mode": "thresholds"
           },
           "decimals": 2,
+          "noValue": "N/A",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -781,21 +861,21 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "suffix: mJ/cm²"
         }
       },
       "gridPos": {
-        "h": 3,
-        "w": 3,
+        "h": 4,
+        "w": 4,
         "x": 20,
-        "y": 8
+        "y": 13
       },
       "id": 7,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "center",
-        "noValue": "\u0e42\u20ac\u201d",
+        "noValue": "NO TELEMETRY",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
@@ -807,7 +887,7 @@
         },
         "showPercentChange": false,
         "text": {
-          "titleSize": 12,
+          "titleSize": 11,
           "valueSize": 28
         },
         "textMode": "auto",
@@ -818,23 +898,23 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   ROUND(resist_dosage::NUMERIC, 2) AS value \nFROM\n   public.ldi_data \nWHERE\n   eqp_id IN (${Eqp:singlequote}) \n  AND  ( (NULLIF('${exact_time}', '') IS NOT NULL \n  AND  \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \n  AND  \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \n  OR  (NULLIF('${exact_time}', '') IS NULL \n  AND  \"time\" = (\nSELECT MAX(\"time\") FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \n  AND  \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}')) )",
+          "rawSql": "SELECT ROUND(resist_dosage::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1) ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC LIMIT 1",
           "refId": "A"
         }
       ],
-      "title": "resist_dosage (mJ/cm\u0e22\u0e12)",
+      "title": "resist_dosage (mJ/cm²)",
       "transparent": true,
       "type": "stat"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "Individual PE values at the clicked moment. MAX|PE| = worst-case deviation across 6 fiducials.",
+      "description": "Real PE values from the selected event. N/A means this machine/event did not provide PE data.",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -848,6 +928,7 @@
             "inspect": false
           },
           "decimals": 3,
+          "noValue": "N/A",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -861,9 +942,69 @@
               }
             ]
           },
-          "unit": "lengthum"
+          "unit": "suffix: µm"
         },
         "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PE Status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "N/A": {
+                        "color": "#6B7280",
+                        "text": "N/A"
+                      },
+                      "OUT OF SPEC": {
+                        "color": "#EF4444",
+                        "text": "OUT OF SPEC"
+                      },
+                      "PASS": {
+                        "color": "#22C55E",
+                        "text": "PASS"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "PE Status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pe_2"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
           {
             "matcher": {
               "id": "byName",
@@ -871,76 +1012,95 @@
             },
             "properties": [
               {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "#22C55E",
-                      "value": 0
-                    },
-                    {
-                      "color": "#FACC15",
-                      "value": 15
-                    },
-                    {
-                      "color": "#EF4444",
-                      "value": 25
-                    }
-                  ]
-                }
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "type": "color-background"
-                }
+                "id": "custom.width",
+                "value": 90
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Timestamp"
+              "options": "pe_1"
             },
             "properties": [
               {
-                "id": "unit",
-                "value": "dateTimeAsIso"
-              },
-              {
-                "id": "decimals",
-                "value": 6
+                "id": "custom.width",
+                "value": 80
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Time"
+              "options": "pe_6"
             },
             "properties": [
               {
-                "id": "unit",
-                "value": "dateTimeAsIso"
-              },
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pe_setting"
+            },
+            "properties": [
               {
-                "id": "decimals",
-                "value": 6
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pe_5"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pe_4"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pe_3"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 4,
+        "h": 6,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 17
       },
       "id": 8,
       "options": {
         "cellHeight": "sm",
+        "enablePagination": false,
         "rowHeight": 0.8,
         "showHeader": true
       },
@@ -949,42 +1109,23 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
-          "editorMode": "code",
           "format": "table",
-          "rawQuery": true,
-          "rawSql": "\nSELECT\n   \r\nROUND(pe_1::NUMERIC, 3) AS \"pe_1\", \r\nROUND(pe_2::NUMERIC, 3) AS \"pe_2\", \r\nROUND(pe_3::NUMERIC, 3) AS \"pe_3\", \r\nROUND(pe_4::NUMERIC, 3) AS \"pe_4\", \r\nROUND(pe_5::NUMERIC, 3) AS \"pe_5\", \r\nROUND(pe_6::NUMERIC, 3) AS \"pe_6\", \r\nROUND(GREATEST(ABS(COALESCE(pe_1,0)), \r\nABS(COALESCE(pe_2,0)), \r\nABS(COALESCE(pe_3,0)), \r\nABS(COALESCE(pe_4,0)), \r\nABS(COALESCE(pe_5,0)), \r\nABS(COALESCE(pe_6,0)))::NUMERIC, 3) AS \"MAX|PE|\", \r\nROUND(pe_setting::NUMERIC, 1) AS \"pe_setting\" \r\n\nFROM\n   public.ldi_data \r\n\nWHERE\n   eqp_id IN (${Eqp:singlequote}) \n  AND  ( (NULLIF('${exact_time}', '') IS NOT NULL \n  AND  \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \n  AND  \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \n  OR  (NULLIF('${exact_time}', '') IS NULL \n  AND  \"time\" = (\nSELECT MAX(\"time\") FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \n  AND  \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}')) )",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
+          "rawSql": "SELECT ROUND(pe_1::NUMERIC,3) AS \"pe_1\",ROUND(pe_2::NUMERIC,3) AS \"pe_2\",\n ROUND(pe_3::NUMERIC,3) AS \"pe_3\",ROUND(pe_4::NUMERIC,3) AS \"pe_4\",\n ROUND(pe_5::NUMERIC,3) AS \"pe_5\",ROUND(pe_6::NUMERIC,3) AS \"pe_6\",\n ROUND(max_pe::NUMERIC,3) AS \"MAX|PE|\",ROUND(pe_setting::NUMERIC,3) AS \"pe_setting\",\n CASE WHEN max_pe IS NULL THEN 'N/A' WHEN max_pe <= pe_setting THEN 'PASS' ELSE 'OUT OF SPEC' END AS \"PE Status\"\nFROM (\n SELECT d.*,GREATEST(ABS(pe_1),ABS(pe_2),ABS(pe_3),ABS(pe_4),ABS(pe_5),ABS(pe_6)) AS max_pe\n FROM public.ldi_data d WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\n ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC\n LIMIT 1\n) event_row;",
+          "refId": "A"
         }
       ],
-      "title": "Position Error (pe_1 ~ pe_6) + MAX|PE|",
+      "title": "pe_1–pe_6 + pe_setting",
       "transparent": true,
       "type": "table"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "Individual PE values at the clicked moment. MAX|PE| = worst-case deviation across 6 fiducials.",
+      "description": "Real JE values from the selected event with PASS/OUT OF SPEC evaluated against je_setting.",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -998,6 +1139,7 @@
             "inspect": false
           },
           "decimals": 3,
+          "noValue": "N/A",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1011,35 +1153,36 @@
               }
             ]
           },
-          "unit": "lengthum"
+          "unit": "suffix: µm"
         },
         "overrides": [
           {
             "matcher": {
               "id": "byName",
-              "options": "MAX|JE|",
-              "scope": "series"
+              "options": "JE Status"
             },
             "properties": [
               {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "#22C55E",
-                      "value": 0
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "N/A": {
+                        "color": "#6B7280",
+                        "text": "N/A"
+                      },
+                      "OUT OF SPEC": {
+                        "color": "#EF4444",
+                        "text": "OUT OF SPEC"
+                      },
+                      "PASS": {
+                        "color": "#22C55E",
+                        "text": "PASS"
+                      }
                     },
-                    {
-                      "color": "#FACC15",
-                      "value": 15
-                    },
-                    {
-                      "color": "#EF4444",
-                      "value": 25
-                    }
-                  ]
-                }
+                    "type": "value"
+                  }
+                ]
               },
               {
                 "id": "custom.cellOptions",
@@ -1052,46 +1195,99 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Timestamp"
+              "options": "je_1"
             },
             "properties": [
               {
-                "id": "unit",
-                "value": "dateTimeAsIso"
-              },
-              {
-                "id": "decimals",
-                "value": 6
+                "id": "custom.width",
+                "value": 90
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Time"
+              "options": "je_4"
             },
             "properties": [
               {
-                "id": "unit",
-                "value": "dateTimeAsIso"
-              },
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "MAX|JE|"
+            },
+            "properties": [
               {
-                "id": "decimals",
-                "value": 6
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "je_3"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "je_setting"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "je_2"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "JE Status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 4,
+        "h": 6,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 23
       },
-      "id": 13,
+      "id": 16,
       "options": {
         "cellHeight": "sm",
+        "enablePagination": false,
         "rowHeight": 0.8,
         "showHeader": true
       },
@@ -1100,40 +1296,21 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
-          "editorMode": "code",
           "format": "table",
-          "rawQuery": true,
-          "rawSql": "\nSELECT\n   \r\nROUND(je_1::NUMERIC, 3) AS \"je_1\", \r\nROUND(je_2::NUMERIC, 3) AS \"je_2\", \r\nROUND(je_3::NUMERIC, 3) AS \"je_3\", \r\nROUND(je_4::NUMERIC, 3) AS \"je_4\",  \r\nROUND(GREATEST(ABS(COALESCE(je_1,0)), \r\nABS(COALESCE(je_2,0)), \r\nABS(COALESCE(je_3,0)), \r\nABS(COALESCE(je_4,0)))::NUMERIC, 3) AS \"MAX|JE|\", \r\nROUND(je_setting::NUMERIC, 1) AS \"je_setting\" \r\n\nFROM\n   public.ldi_data \r\n\nWHERE\n   eqp_id IN (${Eqp:singlequote}) \n  AND  ( (NULLIF('${exact_time}', '') IS NOT NULL \n  AND  \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \n  AND  \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \n  OR  (NULLIF('${exact_time}', '') IS NULL \n  AND  \"time\" = (\nSELECT MAX(\"time\") FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \n  AND  \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}')) )",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
+          "rawSql": "SELECT ROUND(je_1::NUMERIC,3) AS \"je_1\",ROUND(je_2::NUMERIC,3) AS \"je_2\",\n ROUND(je_3::NUMERIC,3) AS \"je_3\",ROUND(je_4::NUMERIC,3) AS \"je_4\",\n ROUND(max_je::NUMERIC,3) AS \"MAX|JE|\",ROUND(je_setting::NUMERIC,3) AS \"je_setting\",\n CASE WHEN max_je IS NULL THEN 'N/A' WHEN max_je <= je_setting THEN 'PASS' ELSE 'OUT OF SPEC' END AS \"JE Status\"\nFROM (\n SELECT d.*,GREATEST(ABS(je_1),ABS(je_2),ABS(je_3),ABS(je_4)) AS max_je\n FROM public.ldi_data d WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\n ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC\n LIMIT 1\n) event_row;",
+          "refId": "A"
         }
       ],
-      "title": "Position Error (pe_1 ~ pe_6) + MAX|PE|",
+      "title": "je_1–je_4 + je_setting",
       "transparent": true,
       "type": "table"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
       "description": "Process capability from v_machine_spc_ranking. Cpk >= 1.33 = Capable, Sigma Level = Cpk * 3.",
       "fieldConfig": {
@@ -1148,6 +1325,7 @@
             },
             "inspect": false
           },
+          "noValue": "N/A",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1238,18 +1416,79 @@
                 "value": 6
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Mean PE"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 75
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Samples"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 75
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cp"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cpk"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Machine"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              }
+            ]
           }
         ]
       },
       "gridPos": {
-        "h": 5,
-        "w": 10,
-        "x": 14,
-        "y": 19
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 29
       },
       "id": 9,
       "options": {
         "cellHeight": "sm",
+        "enablePagination": false,
         "rowHeight": 0.8,
         "showHeader": true
       },
@@ -1258,23 +1497,92 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "table",
-          "rawSql": "\nSELECT\n   eqp_id AS \"Machine\", sample_count AS \"Samples\", ROUND(mean_pe::NUMERIC, 2) AS \"Mean PE\", ROUND(cp::NUMERIC, 2) AS \"Cp\", ROUND(cpk::NUMERIC, 2) AS \"Cpk\", ROUND((cpk * 3)::NUMERIC, 1) AS \"Sigma Level\", capability_class AS \"Capability\" \nFROM\n   public.v_machine_spc_ranking \nWHERE\n   eqp_id IN (${Eqp:singlequote})",
+          "rawSql": "WITH selected_machines AS (\n  SELECT DISTINCT eqp_id FROM public.ldi_data\n  WHERE eqp_id=split_part(${clicked_series:sqlstring},' - ',1)\n), pe_samples AS (\n  SELECT d.eqp_id,d.pe_setting,p.pe FROM public.ldi_data d JOIN selected_machines sm ON sm.eqp_id=d.eqp_id\n  CROSS JOIN LATERAL (VALUES(d.pe_1),(d.pe_2),(d.pe_3),(d.pe_4),(d.pe_5),(d.pe_6)) p(pe)\n  WHERE $__timeFilter(d.\"time\") AND p.pe IS NOT NULL AND d.pe_setting IS NOT NULL\n), stats AS (\n  SELECT eqp_id,COUNT(*) sample_count,AVG(pe) mean_pe,STDDEV_SAMP(pe) stddev_pe,AVG(pe_setting) lim FROM pe_samples GROUP BY eqp_id\n)\nSELECT sm.eqp_id AS \"Machine\",COALESCE(stats.sample_count,0) AS \"Samples\",ROUND(stats.mean_pe::NUMERIC,2) AS \"Mean PE\",\n ROUND((lim/NULLIF(3*stddev_pe,0))::NUMERIC,2) AS \"Cp\",\n ROUND(LEAST((lim-mean_pe)/NULLIF(3*stddev_pe,0),(mean_pe+lim)/NULLIF(3*stddev_pe,0))::NUMERIC,2) AS \"Cpk\"\nFROM selected_machines sm LEFT JOIN stats ON stats.eqp_id=sm.eqp_id;",
           "refId": "A"
         }
       ],
-      "title": "Process Capability (Cpk / Sigma)",
+      "title": "pe_1–pe_6 / pe_setting — Capability",
       "transparent": true,
       "type": "table"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "Alarms within \u0e22\u0e115 minutes of the clicked timestamp. Proves causality: data drift \u0e42\u0086\u2019 alarm.",
+      "description": "Precise raw timestamp from the database. Engineer can verify this matches the clicked point.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "N/A",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#22C55E",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "dateTimeAsIso"
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 29
+      },
+      "id": 11,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "noValue": "No data",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "titleSize": 14,
+          "valueSize": 32
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.1.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "${DS_LDI}"
+          },
+          "format": "table",
+          "rawSql": "SELECT COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC AS value",
+          "refId": "A"
+        }
+      ],
+      "title": "time — Selected Epoch (ms)",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "${DS_LDI}"
+      },
+      "description": "Alarm rows within ±5 minutes of the exact selected telemetry record. This panel stays empty until a Timestamp is selected in STEP 1.",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1305,7 +1613,107 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Severity"
+              "options": "logdate"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeAsIso"
+              },
+              {
+                "id": "custom.width",
+                "value": 185
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "logid"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 250
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "errorcode"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 105
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "errortime"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 175
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "equipmentid"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "factory"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 75
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "process"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "alarm_id"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 115
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "alarm_type"
             },
             "properties": [
               {
@@ -1313,17 +1721,25 @@
                 "value": [
                   {
                     "options": {
-                      "Critical": {
+                      "A": {
                         "color": "#EF4444",
-                        "text": "Critical"
+                        "text": "A"
                       },
-                      "WARN": {
-                        "color": "#FACC15",
-                        "text": "Warning"
+                      "E": {
+                        "color": "#A855F7",
+                        "text": "E"
                       },
-                      "Warning": {
-                        "color": "#FACC15",
-                        "text": "Warning"
+                      "NO ALARM": {
+                        "color": "#3B82F6",
+                        "text": "NO ALARM"
+                      },
+                      "UNMAPPED": {
+                        "color": "#EF4444",
+                        "text": "UNMAPPED"
+                      },
+                      "W": {
+                        "color": "#F59E0B",
+                        "text": "W"
                       }
                     },
                     "type": "value"
@@ -1335,58 +1751,107 @@
                 "value": {
                   "type": "color-background"
                 }
+              },
+              {
+                "id": "custom.width",
+                "value": 95
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Timestamp"
+              "options": "alarm_code"
             },
             "properties": [
               {
-                "id": "unit",
-                "value": "dateTimeAsIso"
-              },
-              {
-                "id": "decimals",
-                "value": 6
+                "id": "custom.width",
+                "value": 115
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Time"
+              "options": "alarm_msg"
             },
             "properties": [
               {
-                "id": "unit",
-                "value": "dateTimeAsIso"
+                "id": "custom.width",
+                "value": 360
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "alarm_detail"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 420
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "mapping_status"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "MAPPED": {
+                        "color": "#22C55E",
+                        "text": "MAPPED"
+                      },
+                      "NO ALARM": {
+                        "color": "#3B82F6",
+                        "text": "NO ALARM"
+                      },
+                      "UNMAPPED": {
+                        "color": "#EF4444",
+                        "text": "UNMAPPED"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
               },
               {
-                "id": "decimals",
-                "value": 6
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 125
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 4,
+        "h": 8,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 35
       },
       "id": 10,
       "options": {
         "cellHeight": "sm",
-        "rowHeight": 0.6,
+        "enablePagination": true,
+        "frozenColumns": 2,
         "showHeader": true,
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Time"
+            "displayName": "logdate"
           }
         ]
       },
@@ -1395,91 +1860,23 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "table",
-          "rawSql": "WITH target AS (  \nSELECT \"time\" FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  ( (NULLIF('${exact_time}', '') IS NOT NULL \n  AND  \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \n  AND  \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \n  OR  (NULLIF('${exact_time}', '') IS NULL \n  AND  \"time\" = (\nSELECT MAX(\"time\") FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \n  AND  \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}')) )\n) \nSELECT\n   al.logdate AS \"Time\", al.equipmentid AS \"Machine\", al.errorcode AS \"errorcode\", al.logdate AS \"errortime\", COALESCE(m.alarm_msg, al.errorcode::TEXT) AS \"Message\", COALESCE(m.alarm_type, 'WARN') AS \"Severity\", COALESCE(m.alarm_detail, '') AS \"Details\" \nFROM\n   public.ldi_alarm_log al \nLEFT JOIN\n   public.ldi_alarm_ms_code m ON al.errorcode::TEXT = m.alarm_code::TEXT \nWHERE\n   al.equipmentid LIKE REPLACE('${Eqp:raw}', 'LDI-C-0', 'LDI00') || '%' \n  AND  al.logdate >= (SELECT MIN(\"time\") - INTERVAL '5 minutes' FROM target) \n  AND  al.logdate <= (SELECT MAX(\"time\") + INTERVAL '5 minutes' FROM target) \nORDER BY\n   al.logdate DESC",
+          "rawSql": "WITH target AS (\n  SELECT to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) AS \"time\"\n),\nall_machines AS (\n  SELECT d.eqp_id, d.factory::TEXT AS factory, d.process::TEXT AS process\n  FROM public.ldi_data d\n  UNION ALL\n  SELECT a.equipmentid, a.factory::TEXT, a.process::TEXT\n  FROM public.ldi_alarm_log a\n  WHERE a.equipmentid IS NOT NULL\n),\nselected_machines AS (\n  SELECT\n    am.eqp_id,\n    MIN(am.factory) AS factory,\n    MIN(am.process) AS process\n  FROM all_machines am\n  WHERE am.eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\n  GROUP BY am.eqp_id\n),\nalarm_rows AS (\n  SELECT\n    al.logid, al.logdate, al.errorcode, al.errortime, al.equipmentid, al.factory, al.process,\n    COALESCE(m.alarm_id, 'UNMAPPED') AS alarm_id,\n    COALESCE(m.alarm_type, 'UNMAPPED') AS alarm_type,\n    COALESCE(m.alarm_code, al.errorcode::TEXT) AS alarm_code,\n    COALESCE(m.alarm_msg, al.errorcode::TEXT) AS alarm_msg,\n    CASE WHEN m.alarm_code IS NULL THEN 'No master record' ELSE COALESCE(m.alarm_detail, 'No detail') END AS alarm_detail,\n    CASE WHEN m.alarm_code IS NULL THEN 'UNMAPPED' ELSE 'MAPPED' END AS mapping_status\n  FROM public.ldi_alarm_log al\n  JOIN selected_machines sm ON sm.eqp_id = al.equipmentid\n  LEFT JOIN public.ldi_alarm_ms_code m ON al.errorcode::TEXT = m.alarm_code::TEXT\n  WHERE al.logdate BETWEEN (SELECT \"time\" - INTERVAL '5 minutes' FROM target) AND (SELECT \"time\" + INTERVAL '5 minutes' FROM target)\n)\nSELECT * FROM alarm_rows\nUNION ALL\nSELECT\n  'NO-ALARM-' || sm.eqp_id, target.\"time\", NULL::TEXT, NULL::TEXT, sm.eqp_id, sm.factory, sm.process,\n  'NOT APPLICABLE', 'NO ALARM', 'NOT APPLICABLE', 'No alarm event within ±5 minutes',\n  'Telemetry exists at the selected point, but no alarm event exists for this machine in the ±5-minute window', 'NO ALARM'\nFROM selected_machines sm CROSS JOIN target\nWHERE target.\"time\" IS NOT NULL AND NOT EXISTS (SELECT 1 FROM alarm_rows ar WHERE ar.equipmentid = sm.eqp_id)\nORDER BY logdate DESC, equipmentid;",
           "refId": "A"
         }
       ],
-      "title": "Alarm Context (\u0e22\u0e115 min of clicked timestamp)",
+      "title": "Alarm Context ±5 min — ldi_alarm_log + Master",
       "transparent": true,
       "type": "table"
     },
     {
       "datasource": {
         "type": "postgres",
-        "uid": "LDI"
+        "uid": "${DS_LDI}"
       },
-      "description": "Precise raw timestamp from the database. Engineer can verify this matches the clicked point.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#22C55E",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "dateTimeAsIso"
-        }
-      },
-      "gridPos": {
-        "h": 2,
-        "w": 24,
-        "x": 0,
-        "y": 28
-      },
-      "id": 11,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "noValue": "No data",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "text": {
-          "titleSize": 14,
-          "valueSize": 32
-        },
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "13.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "postgres",
-            "uid": "LDI"
-          },
-          "format": "table",
-          "rawSql": "\nSELECT\n   (EXTRACT(EPOCH FROM \"time\") * 1000)::bigint AS value \nFROM\n   public.ldi_data \nWHERE\n   eqp_id IN (${Eqp:singlequote}) \n  AND  ( (NULLIF('${exact_time}', '') IS NOT NULL \n  AND  \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \n  AND  \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \n  OR  (NULLIF('${exact_time}', '') IS NULL \n  AND  \"time\" = (\nSELECT MAX(\"time\") FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \n  AND  \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}')) )",
-          "refId": "A"
-        }
-      ],
-      "title": "Raw Timestamp (precise)",
-      "transparent": true,
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "postgres",
-        "uid": "LDI"
-      },
-      "description": "Chronological event sequence: Machine Start/Stop + Alarms. Shows the narrative flow of failures.",
+      "description": "All telemetry and alarm events in the selected ±5-minute context. No SQL row limit is applied; pagination controls rendering.",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -1492,6 +1889,7 @@
             },
             "inspect": false
           },
+          "noValue": "N/A",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1540,20 +1938,122 @@
                 "value": {
                   "type": "color-background"
                 }
+              },
+              {
+                "id": "custom.width",
+                "value": 105
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Event Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 185
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Machine"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Source"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 125
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Description"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 300
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "mapping_status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 135
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "logid"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 250
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "alarm_msg"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 360
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "alarm_detail"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 420
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 6,
+        "h": 10,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 43
       },
       "id": 12,
       "options": {
         "cellHeight": "sm",
+        "enablePagination": true,
+        "frozenColumns": 2,
         "rowHeight": 0.6,
         "showHeader": true,
         "sortBy": [
@@ -1568,49 +2068,66 @@
         {
           "datasource": {
             "type": "postgres",
-            "uid": "LDI"
+            "uid": "${DS_LDI}"
           },
           "format": "table",
-          "rawSql": "WITH target AS (  \nSELECT \"time\" FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  ( (NULLIF('${exact_time}', '') IS NOT NULL \n  AND  \"time\" >= to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) - interval '10 milliseconds' \n  AND  \"time\" < to_timestamp(NULLIF('${exact_time}', '')::numeric / 1000.0) + interval '1 second') \n  OR  (NULLIF('${exact_time}', '') IS NULL \n  AND  \"time\" = (\nSELECT MAX(\"time\") FROM public.ldi_data \nWHERE eqp_id IN (${Eqp:singlequote}) \n  AND  \"time\" >= to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) \n  AND  \"time\" < to_timestamp(NULLIF('${clicked_time}', '')::numeric / 1000.0) + interval '${bucket_size}')) )\n) \nSELECT\n   TO_CHAR(event_time, 'YYYY-MM-DD HH24:MI:SS.MS') AS \"Event Time\", eqp_id AS \"Machine\", event_type AS \"Event Type\", source AS \"Source\", description AS \"Description\" \nFROM\n   public.v_ldi_event_timeline \nWHERE\n   eqp_id LIKE REPLACE('${Eqp:raw}', 'LDI-C-0', 'LDI00') || '%' \n  AND  event_time >= (SELECT MIN(\"time\") - INTERVAL '5 minutes' FROM target) \n  AND  event_time <= (SELECT MAX(\"time\") + INTERVAL '5 minutes' FROM target) \nORDER BY\n   event_time DESC \nLIMIT\n   100",
+          "rawSql": "WITH target AS (\n  SELECT to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0) AS t\n),\nevents AS (\n  SELECT\n    d.\"time\" AS event_time, d.eqp_id AS machine, 'STATE'::TEXT AS event_type, 'ldi_data'::TEXT AS source,\n    d.log_id::TEXT AS logid, NULL::TEXT AS errorcode, NULL::TEXT AS errortime, d.factory::TEXT AS factory, d.process::TEXT AS process,\n    'NOT APPLICABLE'::TEXT AS alarm_id, 'TELEMETRY'::TEXT AS alarm_type, 'NOT APPLICABLE'::TEXT AS alarm_code,\n    'State sample; no alarm event'::TEXT AS alarm_msg, 'Alarm fields apply only to ALARM rows'::TEXT AS alarm_detail,\n    'NOT APPLICABLE'::TEXT AS mapping_status, CASE WHEN d.state THEN 'RUNNING' ELSE 'DOWN' END AS description\n  FROM public.ldi_data d CROSS JOIN target\n  WHERE d.eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\n    AND d.\"time\" BETWEEN target.t - INTERVAL '5 minutes' AND target.t + INTERVAL '5 minutes'\n  UNION ALL\n  SELECT\n    a.logdate, a.equipmentid, 'ALARM', 'ldi_alarm_log', a.logid, a.errorcode::TEXT, a.errortime::TEXT,\n    a.factory::TEXT, a.process::TEXT, COALESCE(m.alarm_id, 'UNMAPPED'), COALESCE(m.alarm_type, 'UNMAPPED'),\n    COALESCE(m.alarm_code, a.errorcode::TEXT), COALESCE(m.alarm_msg, a.errorcode::TEXT),\n    CASE WHEN m.alarm_code IS NULL THEN 'No master record' ELSE COALESCE(m.alarm_detail, 'No detail') END,\n    CASE WHEN m.alarm_code IS NULL THEN 'UNMAPPED' ELSE 'MAPPED' END, COALESCE(m.alarm_msg, a.errorcode::TEXT)\n  FROM public.ldi_alarm_log a LEFT JOIN public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT CROSS JOIN target\n  WHERE a.equipmentid = split_part(${clicked_series:sqlstring}, ' - ', 1)\n    AND a.logdate BETWEEN target.t - INTERVAL '5 minutes' AND target.t + INTERVAL '5 minutes'\n)\nSELECT event_time AS \"Event Time\", machine AS \"Machine\", event_type AS \"Event Type\", source AS \"Source\", description AS \"Description\",\n  mapping_status, logid, errorcode, errortime, factory, process, alarm_id, alarm_type, alarm_code, alarm_msg, alarm_detail\nFROM events ORDER BY event_time DESC;",
           "refId": "A"
         }
       ],
-      "title": "Event Timeline (state + alarms)",
+      "title": "Unified Event Timeline ±5 min — ldi_data + ldi_alarm_log",
       "transparent": true,
       "type": "table"
     }
   ],
   "preload": false,
-  "refresh": "5s",
+  "refresh": "10s",
   "schemaVersion": 42,
   "templating": {
     "list": [
       {
         "allowCustomValue": true,
         "current": {
+          "text": "5 minutes",
+          "value": "5 minutes"
+        },
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "time_group",
+        "options": [],
+        "query": "1 minute, 5 minutes, 15 minutes, 30 minutes, 1 hour, 1 day",
+        "skipUrlSync": false,
+        "type": "custom",
+        "valuesFormat": "csv"
+      },
+      {
+        "allowCustomValue": true,
+        "current": {
           "text": [
-            "All"
+            "2"
           ],
           "value": [
-            "$__all"
+            "2"
           ]
         },
         "datasource": {
           "type": "postgres",
-          "uid": "LDI"
+          "uid": "${DS_LDI}"
         },
-        "definition": "SELECT DISTINCT factory \nFROM ldi_data \nORDER BY factory;",
+        "definition": "SELECT DISTINCT factory AS __text, factory AS __value FROM public.ldi_data ORDER BY factory",
         "hide": 0,
         "includeAll": true,
+        "label": "Factory",
         "multi": true,
-        "name": "Factory",
+        "name": "factory",
         "options": [],
-        "query": "\nSELECT\n   DISTINCT factory \n\nFROM\n   ldi_data \n\nORDER BY\n   factory;",
+        "query": "SELECT DISTINCT factory AS __text, factory AS __value FROM public.ldi_data ORDER BY factory",
         "refresh": 1,
         "regex": "",
         "regexApplyTo": "value",
         "skipUrlSync": false,
-        "sort": 0,
+        "sort": 1,
         "type": "query"
       },
       {
@@ -1623,84 +2140,189 @@
         },
         "datasource": {
           "type": "postgres",
-          "uid": "LDI"
+          "uid": "${DS_LDI}"
         },
-        "definition": "SELECT DISTINCT process \nFROM ldi_data \nWHERE factory IN ($Factory) \nORDER BY process;",
+        "definition": "SELECT DISTINCT process AS __text, process AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) ORDER BY process",
         "hide": 0,
         "includeAll": true,
+        "label": "Process",
         "multi": true,
         "name": "process",
         "options": [],
-        "query": "\nSELECT\n   DISTINCT process \n\nFROM\n   ldi_data \n\nWHERE\n   factory IN ($Factory) \n\nORDER BY\n   process;",
+        "query": "SELECT DISTINCT process AS __text, process AS __value FROM public.ldi_data ORDER BY process",
         "refresh": 1,
         "regex": "",
         "regexApplyTo": "value",
         "skipUrlSync": false,
-        "sort": 0,
+        "sort": 1,
         "type": "query"
       },
       {
         "allowCustomValue": true,
         "current": {
-          "text": "EXPOSURE LDI-2",
-          "value": "EXPOSURE LDI-2"
+          "text": [
+            "LDIA-01"
+          ],
+          "value": [
+            "LDIA-01"
+          ]
         },
         "datasource": {
           "type": "postgres",
-          "uid": "LDI"
+          "uid": "${DS_LDI}"
         },
-        "definition": "SELECT DISTINCT eqp_id \nFROM ldi_data \nWHERE factory IN ($Factory) AND process IN ($process) \nORDER BY eqp_id;",
+        "definition": "SELECT DISTINCT eqp_id AS __text, eqp_id AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) ORDER BY eqp_id",
         "hide": 0,
-        "includeAll": false,
-        "multi": false,
-        "name": "Eqp",
+        "includeAll": true,
+        "label": "Eqp ID",
+        "multi": true,
+        "name": "eqp_id",
         "options": [],
-        "query": "\nSELECT\n   DISTINCT eqp_id \n\nFROM\n   ldi_data \n\nWHERE\n   factory IN ($Factory) \n  AND  process IN ($process) \n\nORDER BY\n   eqp_id;",
+        "query": "SELECT DISTINCT eqp_id AS __text, eqp_id AS __value FROM public.ldi_data ORDER BY eqp_id",
         "refresh": 1,
         "regex": "",
         "regexApplyTo": "value",
         "skipUrlSync": false,
-        "sort": 0,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_LDI}"
+        },
+        "definition": "SELECT DISTINCT mo AS __text, mo AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) ORDER BY mo",
+        "hide": 0,
+        "includeAll": true,
+        "label": "MO",
+        "multi": true,
+        "name": "mo",
+        "options": [],
+        "query": "SELECT DISTINCT mo AS __text, mo AS __value FROM public.ldi_data ORDER BY mo",
+        "refresh": 1,
+        "regex": "",
+        "regexApplyTo": "value",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_LDI}"
+        },
+        "definition": "SELECT DISTINCT fpn AS __text, fpn AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) ORDER BY fpn",
+        "hide": 0,
+        "includeAll": true,
+        "label": "FPN",
+        "multi": true,
+        "name": "fpn",
+        "options": [],
+        "query": "SELECT DISTINCT fpn AS __text, fpn AS __value FROM public.ldi_data ORDER BY fpn",
+        "refresh": 1,
+        "regex": "",
+        "regexApplyTo": "value",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_LDI}"
+        },
+        "definition": "SELECT DISTINCT layer_name AS __text, layer_name AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) ORDER BY layer_name",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Layer Name",
+        "multi": true,
+        "name": "layer_name",
+        "options": [],
+        "query": "SELECT DISTINCT layer_name AS __text, layer_name AS __value FROM public.ldi_data ORDER BY layer_name",
+        "refresh": 1,
+        "regex": "",
+        "regexApplyTo": "value",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": [
+            "__auto__"
+          ],
+          "value": [
+            "__auto__"
+          ]
+        },
+        "datasource": {
+          "type": "postgres",
+          "uid": "${DS_LDI}"
+        },
+        "definition": "SELECT DISTINCT log_id AS __text, log_id AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) ORDER BY log_id DESC",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Log ID",
+        "multi": true,
+        "name": "log_id",
+        "options": [],
+        "query": "SELECT DISTINCT log_id AS __text, log_id AS __value FROM public.ldi_data ORDER BY log_id DESC LIMIT 1000",
+        "refresh": 1,
+        "regex": "",
+        "regexApplyTo": "value",
+        "skipUrlSync": false,
+        "sort": 1,
         "type": "query"
       },
       {
         "current": {
-          "text": "1784598660000",
-          "value": "1784598660000"
+          "text": "1784607413550",
+          "value": "1784607413550"
         },
         "hide": 2,
-        "name": "clicked_time",
-        "query": "1784598660000",
+        "name": "event_time_ms",
+        "query": "1784607413550",
         "skipUrlSync": false,
         "type": "textbox"
       },
       {
         "current": {
-          "text": "",
-          "value": ""
+          "text": "LDIA-01 - ldi_data",
+          "value": "LDIA-01 - ldi_data"
         },
         "hide": 2,
-        "name": "exact_time",
-        "query": "",
-        "skipUrlSync": false,
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "1 minute",
-          "value": "1 minute"
-        },
-        "hide": 2,
-        "name": "bucket_size",
-        "query": "1 minute",
+        "name": "clicked_series",
+        "query": "LDIA-01 - ldi_data",
         "skipUrlSync": false,
         "type": "textbox"
       }
     ]
   },
   "time": {
-    "from": "2026-07-20T23:00:00.000Z",
-    "to": "2026-07-21T05:00:00.000Z"
+    "from": "2026-07-21T04:12:30.000Z",
+    "to": "2026-07-21T04:17:30.000Z"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -1717,6 +2339,31 @@
     ]
   },
   "timezone": "browser",
-  "title": "IMS LDI - Incident Snapshot",
-  "uid": "adz27jl"
+  "title": "IMS LDI - Machine Snapshot (Set 2 Real DB)",
+  "uid": "ims-ldi-set2-machine-snapshot-real-db",
+  "version": 31,
+  "__inputs": [
+    {
+      "name": "DS_LDI",
+      "label": "LDI",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "postgres",
+      "pluginName": "PostgreSQL"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "10.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "postgres",
+      "name": "PostgreSQL",
+      "version": "1.0.0"
+    }
+  ]
 }
