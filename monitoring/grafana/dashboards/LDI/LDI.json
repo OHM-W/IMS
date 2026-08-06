@@ -18,7 +18,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 2,
-  "id": null,
   "links": [],
   "panels": [
     {
@@ -1192,6 +1191,11 @@
             "fixedColor": "semi-dark-blue",
             "mode": "fixed"
           },
+          "custom": {
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1205,11 +1209,6 @@
                 "value": 30
               }
             ]
-          },
-          "custom": {
-            "thresholdsStyle": {
-              "mode": "dashed"
-            }
           }
         },
         "overrides": []
@@ -1605,6 +1604,6 @@
   "timezone": "browser",
   "title": "LDI",
   "uid": "ldi-operational-clean",
-  "version": 13,
+  "version": 6,
   "weekStart": ""
 }

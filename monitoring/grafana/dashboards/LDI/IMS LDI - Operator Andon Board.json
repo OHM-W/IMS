@@ -15,7 +15,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
   "links": [
     {
       "asDropdown": false,
@@ -58,8 +57,7 @@
   "panels": [
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Count of selected machines whose latest telemetry record in the selected time range is RUN.",
       "fieldConfig": {
@@ -119,8 +117,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "WITH latest AS (\n  SELECT DISTINCT ON (eqp_id) eqp_id, state\n  FROM public.ldi_data\n  WHERE factory IN (${factory:sqlstring})\n    AND mo IN (${mo:sqlstring})\n    AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring})\n    AND $__timeFilter(time)\n  ORDER BY eqp_id, time DESC\n)\nSELECT COUNT(*) FILTER (WHERE state = true)::NUMERIC AS value\nFROM latest",
@@ -133,8 +130,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Percentage of selected machines whose latest telemetry record in the selected time range is RUN.",
       "fieldConfig": {
@@ -194,8 +190,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "WITH latest AS (\n  SELECT DISTINCT ON (eqp_id) eqp_id, state\n  FROM public.ldi_data\n  WHERE factory IN (${factory:sqlstring})\n    AND mo IN (${mo:sqlstring})\n    AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring})\n    AND $__timeFilter(time)\n  ORDER BY eqp_id, time DESC\n)\nSELECT ROUND(100.0 * COUNT(*) FILTER (WHERE state = true) / NULLIF(COUNT(*), 0), 0) AS value\nFROM latest",
@@ -208,8 +203,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Alarm summary for the selected factory and machines. Green means zero events; category colors appear when a count is greater than zero. UNMAPPED identifies error codes that are missing from the alarm master.",
       "fieldConfig": {
@@ -396,8 +390,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT\n  COUNT(*)::NUMERIC AS \"Total\",\n  COUNT(*) FILTER (WHERE $__timeFilter(a.logdate) AND m.alarm_type = 'A')::NUMERIC AS \"A\",\n  COUNT(*) FILTER (WHERE $__timeFilter(a.logdate) AND m.alarm_type = 'W')::NUMERIC AS \"W\",\n  COUNT(*) FILTER (WHERE $__timeFilter(a.logdate) AND m.alarm_type = 'E')::NUMERIC AS \"E\",\n  COUNT(*) FILTER (WHERE $__timeFilter(a.logdate) AND m.alarm_code IS NULL)::NUMERIC AS \"UNMAPPED\"\nFROM public.ldi_alarm_log a\nLEFT JOIN public.ldi_alarm_ms_code m\n  ON a.errorcode::TEXT = m.alarm_code::TEXT\nWHERE $__timeFilter(a.logdate) AND a.factory IN (${factory:sqlstring})\n  AND a.equipmentid IN (${eqp_id:sqlstring})",
@@ -410,8 +403,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Environmental Compliance: percentage of machines within safe temperature AND humidity.",
       "fieldConfig": {
@@ -475,8 +467,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT ROUND(COUNT(DISTINCT eqp_id) FILTER (WHERE temperature BETWEEN 20 AND 24 AND humidity BETWEEN 50 AND 60) * 100.0 / NULLIF(COUNT(DISTINCT eqp_id), 0), 0) AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND mo IN (${mo:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND $__timeFilter(time) AND temperature IS NOT NULL AND humidity IS NOT NULL",
@@ -489,8 +480,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Machine Run State: per-machine green/red timeline showing RUNNING vs STOPPED.",
       "fieldConfig": {
@@ -577,8 +567,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
@@ -592,8 +581,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Temperature Compliance: per-machine 3-color matrix. Green=20-24°C, Amber=19-25°C, Red=outside.",
       "fieldConfig": {
@@ -684,8 +672,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
@@ -699,8 +686,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Humidity Compliance: per-machine 3-color matrix. Green=50-60%, Amber=45-65%, Red=outside.",
       "fieldConfig": {
@@ -791,8 +777,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
@@ -806,8 +791,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Live Production: current MO, part, layer, and board progress per machine.",
       "fieldConfig": {
@@ -893,8 +877,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT DISTINCT ON (eqp_id) eqp_id AS \"Machine\", mo AS \"Job (MO)\", fpn AS \"Part (FPN)\", layer_name AS \"Layer\", (board_no::TEXT || '/' || total_board::TEXT) AS \"Progress\" FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND mo IN (${mo:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND $__timeFilter(time) ORDER BY eqp_id, time DESC LIMIT 50",
@@ -907,8 +890,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "All matching ldi_alarm_log rows for the selected factory and machines. Every source column is shown, plus every joined master-code column and mapping status. Pagination is visual only; the SQL query has no row limit.",
       "fieldConfig": {
@@ -1187,8 +1169,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT\n  a.logid,\n  a.logdate,\n  a.errorcode,\n  a.errortime,\n  a.equipmentid,\n  a.factory,\n  a.process,\n  COALESCE(m.alarm_id, 'UNMAPPED') AS alarm_id,\n  COALESCE(m.alarm_type, 'UNMAPPED') AS alarm_type,\n  COALESCE(m.alarm_code, a.errorcode::TEXT) AS alarm_code,\n  COALESCE(m.alarm_msg, a.errorcode::TEXT) AS alarm_msg,\n  CASE\n    WHEN m.alarm_code IS NULL THEN 'No master record for this errorcode'\n    ELSE COALESCE(m.alarm_detail, 'No detail provided in master')\n  END AS alarm_detail,\n  CASE WHEN m.alarm_code IS NULL THEN 'UNMAPPED' ELSE 'MAPPED' END AS mapping_status\nFROM public.ldi_alarm_log a\nLEFT JOIN public.ldi_alarm_ms_code m\n  ON a.errorcode::TEXT = m.alarm_code::TEXT\nWHERE a.factory IN (${factory:sqlstring})\n  AND a.equipmentid IN (${eqp_id:sqlstring})\nORDER BY a.logdate DESC",
@@ -1208,14 +1189,15 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT factory AS __text, factory AS __value FROM public.ldi_data ORDER BY factory",
         "hide": 0,
@@ -1235,14 +1217,15 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT process AS __text, process AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) ORDER BY process",
         "hide": 0,
@@ -1262,14 +1245,15 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT eqp_id AS __text, eqp_id AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) ORDER BY eqp_id",
         "hide": 0,
@@ -1289,14 +1273,15 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT mo AS __text, mo AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) ORDER BY mo",
         "hide": 0,
@@ -1316,14 +1301,15 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT fpn AS __text, fpn AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) ORDER BY fpn",
         "hide": 0,
@@ -1343,14 +1329,15 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT layer_name AS __text, layer_name AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) ORDER BY layer_name",
         "hide": 0,
@@ -1370,14 +1357,15 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT log_id AS __text, log_id AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) ORDER BY log_id DESC",
         "hide": 0,
@@ -1417,29 +1405,5 @@
   "timezone": "browser",
   "title": "IMS LDI - Operator Andon Board (Set 2 Real DB)",
   "uid": "ims-ldi-set2-operator-andon-real-db",
-  "version": 10,
-  "__inputs": [
-    {
-      "name": "DS_LDI",
-      "label": "LDI",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "postgres",
-      "pluginName": "PostgreSQL"
-    }
-  ],
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "10.0.0"
-    },
-    {
-      "type": "datasource",
-      "id": "postgres",
-      "name": "PostgreSQL",
-      "version": "1.0.0"
-    }
-  ]
+  "version": 40
 }

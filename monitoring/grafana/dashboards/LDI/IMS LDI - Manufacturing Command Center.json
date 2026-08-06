@@ -15,13 +15,11 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 2,
-  "id": null,
   "liveNow": true,
   "panels": [
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Estimated Yield: percentage of samples where max|PE| <= pe_setting (within tolerance).",
       "fieldConfig": {
@@ -85,8 +83,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "editorMode": "code",
           "format": "table",
@@ -118,8 +115,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Percent of selected machines whose latest state in the selected time range is true.",
       "fieldConfig": {
@@ -183,8 +179,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "WITH latest AS (\n  SELECT DISTINCT ON (eqp_id) eqp_id, state\n  FROM public.ldi_data\n  WHERE $__timeFilter(\"time\")\n    AND factory IN (${factory:sqlstring})\n    AND mo IN (${mo:sqlstring})\n    AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring})\n  ORDER BY eqp_id, \"time\" DESC\n)\nSELECT ROUND(100.0 * COUNT(*) FILTER (WHERE state = true) / NULLIF(COUNT(*), 0), 1) AS value FROM latest;",
@@ -197,8 +192,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Average real Cpk across machines with JE data in the selected filters. Uses je_1 through je_4 and assumes symmetric +/- je_setting limits. Machines with zero variation are excluded because Cpk is undefined.",
       "fieldConfig": {
@@ -260,8 +254,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "WITH je_samples AS (\n  SELECT d.eqp_id, d.je_setting, j.je\n  FROM public.ldi_data d\n  CROSS JOIN LATERAL (VALUES (d.je_1),(d.je_2),(d.je_3),(d.je_4)) j(je)\n  WHERE $__timeFilter(d.\"time\")\n    AND d.factory IN (${factory:sqlstring})\n    AND d.mo IN (${mo:sqlstring})\n    AND d.eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring})\n    AND j.je IS NOT NULL\n    AND d.je_setting > 0\n), stats AS (\n  SELECT\n    eqp_id,\n    COUNT(*) AS sample_count,\n    AVG(je) AS mean_je,\n    STDDEV_SAMP(je) AS sigma,\n    AVG(je_setting) AS lim\n  FROM je_samples\n  GROUP BY eqp_id\n), cpk AS (\n  SELECT\n    LEAST(\n      (lim - mean_je) / NULLIF(3 * sigma, 0),\n      (mean_je + lim) / NULLIF(3 * sigma, 0)\n    ) AS value\n  FROM stats\n  WHERE sample_count >= 2\n    AND sigma > 0\n)\nSELECT ROUND(AVG(value)::NUMERIC, 2) AS value\nFROM cpk;",
@@ -274,8 +267,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Count of machines with state=true (powered on and available). Red < 8, Green >= 8 of 10.",
       "fieldConfig": {
@@ -333,8 +325,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "WITH latest AS (\n  SELECT DISTINCT ON (eqp_id) eqp_id, state\n  FROM public.ldi_data\n  WHERE $__timeFilter(\"time\") AND factory IN (${factory:sqlstring})\n    AND mo IN (${mo:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring})\n  ORDER BY eqp_id, \"time\" DESC\n)\nSELECT COUNT(*) FILTER (WHERE state = true)::NUMERIC AS value FROM latest;",
@@ -347,8 +338,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Target 22±2°C. Green 20–24°C, amber 18–20°C or 24–26°C, red outside 18–26°C.",
       "fieldConfig": {
@@ -420,8 +410,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT ROUND(AVG(temperature)::NUMERIC, 1) AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND mo IN (${mo:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND $__timeFilter(time) AND temperature IS NOT NULL",
@@ -434,8 +423,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Target 55±5%RH. Green 50–60%RH, amber 45–50%RH or 60–65%RH, red outside 45–65%RH.",
       "fieldConfig": {
@@ -507,8 +495,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT ROUND(AVG(humidity)::NUMERIC, 1) AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND mo IN (${mo:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND $__timeFilter(time) AND humidity IS NOT NULL",
@@ -521,8 +508,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Estimated Yield: percentage of samples where max|JE| <= pe_setting (within tolerance).",
       "fieldConfig": {
@@ -586,8 +572,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "editorMode": "code",
           "format": "table",
@@ -619,8 +604,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Average real Cpk across machines with PE data in the selected filters. Assumes symmetric +/- pe_setting limits.",
       "fieldConfig": {
@@ -682,8 +666,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "WITH pe_samples AS (\n  SELECT d.eqp_id, d.pe_setting, p.pe\n  FROM public.ldi_data d\n  CROSS JOIN LATERAL (VALUES (d.pe_1),(d.pe_2),(d.pe_3),(d.pe_4),(d.pe_5),(d.pe_6)) p(pe)\n  WHERE $__timeFilter(d.\"time\")\n    AND d.factory IN (${factory:sqlstring})\n    AND d.mo IN (${mo:sqlstring})\n    AND d.eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring})\n    AND p.pe IS NOT NULL AND d.pe_setting IS NOT NULL\n), stats AS (\n  SELECT eqp_id, AVG(pe) AS mean_pe, STDDEV_SAMP(pe) AS sigma, AVG(pe_setting) AS lim\n  FROM pe_samples GROUP BY eqp_id\n), cpk AS (\n  SELECT LEAST((lim - mean_pe) / NULLIF(3*sigma,0), (mean_pe + lim) / NULLIF(3*sigma,0)) AS value FROM stats\n)\nSELECT ROUND(AVG(value)::NUMERIC, 2) AS value FROM cpk;",
@@ -696,8 +679,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "One row per selected machine. Click a telemetry machine to open its complete Engineering timeline for the dashboard time range with Process, MO, FPN and Layer set to All. Alarm-only machines open the exact alarm Snapshot because no operating telemetry exists for them.",
       "fieldConfig": {
@@ -1032,8 +1014,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT DISTINCT ON (eqp_id)\n  eqp_id AS \"Machine\",\n  process AS \"Process\",\n  CASE WHEN state THEN 'RUN' ELSE 'DOWN' END AS \"State\",\n  mo AS \"MO\",\n  fpn AS \"FPN\",\n  layer_name AS \"Layer\",\n  CASE\n    WHEN board_no IS NULL THEN NULL\n    ELSE board_no::TEXT || '/' || total_board::TEXT\n  END AS \"Board\",\n  ROUND(temperature::NUMERIC, 1) AS \"Temp\",\n  ROUND(humidity::NUMERIC, 1) AS \"RH\",\n  \"time\" AS \"Updated\",\n  factory AS \"Factory\",\n  log_id AS \"Log ID\",\n  'ldi_data' AS \"Source\"\nFROM public.ldi_data\nWHERE factory IN (${factory:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND $__timeFilter(\"time\")\nORDER BY eqp_id, \"time\" DESC",
@@ -1046,8 +1027,7 @@
     },
     {
       "datasource": {
-        "type": "mixed",
-        "uid": "-- Mixed --"
+        "type": "postgres"
       },
       "description": "Average MAX|PE| divided by the PE limit stored on each record. This normalized scale allows machines with different PE limits to be compared fairly.",
       "fieldConfig": {
@@ -1125,8 +1105,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "editorMode": "code",
           "format": "table",
@@ -1152,10 +1131,8 @@
           }
         },
         {
-          "dataset": "ims",
           "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "editorMode": "code",
           "format": "table",
@@ -1187,8 +1164,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Alarm summary for the selected factory and machines. Green means zero events; category colors appear when a count is greater than zero. UNMAPPED identifies error codes that are missing from the alarm master.",
       "fieldConfig": {
@@ -1375,8 +1351,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT\n  COUNT(*)::NUMERIC AS \"Total\",\n  COUNT(*) FILTER (WHERE $__timeFilter(a.logdate) AND m.alarm_type = 'A')::NUMERIC AS \"A\",\n  COUNT(*) FILTER (WHERE $__timeFilter(a.logdate) AND m.alarm_type = 'W')::NUMERIC AS \"W\",\n  COUNT(*) FILTER (WHERE $__timeFilter(a.logdate) AND m.alarm_type = 'E')::NUMERIC AS \"E\",\n  COUNT(*) FILTER (WHERE $__timeFilter(a.logdate) AND m.alarm_code IS NULL)::NUMERIC AS \"UNMAPPED\"\nFROM public.ldi_alarm_log a\nLEFT JOIN public.ldi_alarm_ms_code m\n  ON a.errorcode::TEXT = m.alarm_code::TEXT\nWHERE $__timeFilter(a.logdate) AND a.factory IN (${factory:sqlstring})\n  AND a.equipmentid IN (${eqp_id:sqlstring})",
@@ -1389,8 +1364,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Calculated from total_time / total_board. Colors are derived from the current 439 five-minute database cells: green below P75 (0.099 s), amber from P75 to P95 (0.099-0.265 s), and red at or above P95 (0.265 s). Hover for machine, timestamp, and cycle time; click a populated cell to open a +/-5 minute engineering drilldown.",
       "fieldConfig": {
@@ -1427,11 +1401,11 @@
                 "value": 0
               },
               {
-                "color": "semi-dark-red",
+                "color": "blue",
                 "value": 1
               },
               {
-                "color": "semi-dark-yellow",
+                "color": "purple",
                 "value": 2
               },
               {
@@ -1491,8 +1465,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "editorMode": "code",
           "format": "time_series",
@@ -1524,8 +1497,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "3-sigma Z-Score on temperature per machine. Green ±2 (normal), Amber 2.5 (watch), Red 3+ (anomaly).",
       "fieldConfig": {
@@ -1620,8 +1592,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
@@ -1635,8 +1606,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "3-color compliance matrix per machine. Green 20-24°C, Amber 19-25°C, Red outside.",
       "fieldConfig": {
@@ -1705,7 +1675,7 @@
         },
         "mergeValues": true,
         "rowHeight": 0.85,
-        "showValue": "auto",
+        "showValue": "never",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
@@ -1716,8 +1686,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "editorMode": "code",
           "format": "time_series",
@@ -1750,8 +1719,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "3-color compliance matrix per machine. Green 50-60%, Amber 45-65%, Red outside.",
       "fieldConfig": {
@@ -1820,7 +1788,7 @@
         },
         "mergeValues": true,
         "rowHeight": 0.85,
-        "showValue": "auto",
+        "showValue": "never",
         "tooltip": {
           "hideZeros": false,
           "mode": "single",
@@ -1831,8 +1799,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
@@ -1846,8 +1813,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Dual Y-axis: scan_speed (left, mm/s) and air_vacuum (right, kPa) per machine.",
       "fieldConfig": {
@@ -1992,8 +1958,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
@@ -2007,8 +1972,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Dual Y-axis: thickness (left, mm) and resist_dosage (right, mJ/cm²) per machine.",
       "fieldConfig": {
@@ -2153,8 +2117,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
@@ -2168,8 +2131,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "XY calibration drift. High-precision (6 decimals) monitoring of scale_x and scale_y ratios. Drift from 1.0 indicates lens magnification error.",
       "fieldConfig": {
@@ -2306,8 +2268,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
@@ -2321,8 +2282,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "All matching ldi_alarm_log rows for the selected factory and machines. Every source column is shown, plus every joined master-code column and mapping status. Pagination is visual only; the SQL query has no row limit.",
       "fieldConfig": {
@@ -2601,8 +2561,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "editorMode": "code",
           "format": "table",
@@ -2647,8 +2606,7 @@
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT factory AS __text, factory AS __value FROM public.ldi_data ORDER BY factory",
         "hide": 0,
@@ -2674,8 +2632,7 @@
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT process AS __text, process AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) ORDER BY process",
         "hide": 0,
@@ -2701,8 +2658,7 @@
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT eqp_id AS __text, eqp_id AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) ORDER BY eqp_id",
         "hide": 0,
@@ -2728,8 +2684,7 @@
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT mo AS __text, mo AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) ORDER BY mo",
         "hide": 0,
@@ -2755,8 +2710,7 @@
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT fpn AS __text, fpn AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) ORDER BY fpn",
         "hide": 0,
@@ -2782,8 +2736,7 @@
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT layer_name AS __text, layer_name AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) ORDER BY layer_name",
         "hide": 0,
@@ -2809,8 +2762,7 @@
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT log_id AS __text, log_id AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) ORDER BY log_id DESC",
         "hide": 0,
@@ -2850,29 +2802,5 @@
   "timezone": "browser",
   "title": "IMS LDI - Manufacturing Command Center (Set 2 Real DB)",
   "uid": "ims-ldi-set2-manufacturing-real-db",
-  "version": 69,
-  "__inputs": [
-    {
-      "name": "DS_LDI",
-      "label": "LDI",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "postgres",
-      "pluginName": "PostgreSQL"
-    }
-  ],
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "10.0.0"
-    },
-    {
-      "type": "datasource",
-      "id": "postgres",
-      "name": "PostgreSQL",
-      "version": "1.0.0"
-    }
-  ]
+  "version": 103
 }

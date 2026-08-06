@@ -15,7 +15,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
   "links": [
     {
       "asDropdown": false,
@@ -58,8 +57,7 @@
   "panels": [
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "The table keeps every telemetry record from the selected machine and minute. Clicking a blue Timestamp changes only the exact-record detail panels below; it does not collapse this table to one row.",
       "fieldConfig": {
@@ -313,8 +311,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "editorMode": "code",
           "format": "table",
@@ -346,8 +343,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "temperature at clicked moment",
       "fieldConfig": {
@@ -420,8 +416,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT ROUND(temperature::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1) ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC LIMIT 1",
@@ -434,8 +429,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "humidity at clicked moment",
       "fieldConfig": {
@@ -508,8 +502,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT ROUND(humidity::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1) ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC LIMIT 1",
@@ -522,8 +515,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "fieldConfig": {
         "defaults": {
@@ -581,8 +573,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "editorMode": "code",
           "format": "table",
@@ -614,8 +605,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "laser scan speed at clicked moment",
       "fieldConfig": {
@@ -674,8 +664,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT ROUND(scan_speed::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1) ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC LIMIT 1",
@@ -688,8 +677,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "film thickness at clicked moment",
       "fieldConfig": {
@@ -748,8 +736,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT ROUND(thickness::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1) ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC LIMIT 1",
@@ -762,8 +749,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "vacuum pressure at clicked moment",
       "fieldConfig": {
@@ -822,8 +808,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT ROUND(air_vacuum::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1) ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC LIMIT 1",
@@ -836,8 +821,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "resist dosage at clicked moment",
       "fieldConfig": {
@@ -896,8 +880,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT ROUND(resist_dosage::NUMERIC, 2) AS value FROM public.ldi_data WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1) ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC LIMIT 1",
@@ -910,8 +893,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Real PE values from the selected event. N/A means this machine/event did not provide PE data.",
       "fieldConfig": {
@@ -1117,8 +1099,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT ROUND(pe_1::NUMERIC,3) AS \"pe_1\",ROUND(pe_2::NUMERIC,3) AS \"pe_2\",\n ROUND(pe_3::NUMERIC,3) AS \"pe_3\",ROUND(pe_4::NUMERIC,3) AS \"pe_4\",\n ROUND(pe_5::NUMERIC,3) AS \"pe_5\",ROUND(pe_6::NUMERIC,3) AS \"pe_6\",\n ROUND(max_pe::NUMERIC,3) AS \"MAX|PE|\",ROUND(pe_setting::NUMERIC,3) AS \"pe_setting\",\n CASE WHEN max_pe IS NULL THEN 'N/A' WHEN max_pe <= pe_setting THEN 'PASS' ELSE 'OUT OF SPEC' END AS \"PE Status\"\nFROM (\n SELECT d.*,GREATEST(ABS(pe_1),ABS(pe_2),ABS(pe_3),ABS(pe_4),ABS(pe_5),ABS(pe_6)) AS max_pe\n FROM public.ldi_data d WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\n ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC\n LIMIT 1\n) event_row;",
@@ -1131,8 +1112,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Real JE values from the selected event with PASS/OUT OF SPEC evaluated against je_setting.",
       "fieldConfig": {
@@ -1314,8 +1294,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT ROUND(je_1::NUMERIC,3) AS \"je_1\",ROUND(je_2::NUMERIC,3) AS \"je_2\",\n ROUND(je_3::NUMERIC,3) AS \"je_3\",ROUND(je_4::NUMERIC,3) AS \"je_4\",\n ROUND(max_je::NUMERIC,3) AS \"MAX|JE|\",ROUND(je_setting::NUMERIC,3) AS \"je_setting\",\n CASE WHEN max_je IS NULL THEN 'N/A' WHEN max_je <= je_setting THEN 'PASS' ELSE 'OUT OF SPEC' END AS \"JE Status\"\nFROM (\n SELECT d.*,GREATEST(ABS(je_1),ABS(je_2),ABS(je_3),ABS(je_4)) AS max_je\n FROM public.ldi_data d WHERE eqp_id = split_part(${clicked_series:sqlstring}, ' - ', 1)\n ORDER BY ABS(EXTRACT(EPOCH FROM (\"time\" - to_timestamp(COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC / 1000.0)))), \"time\" DESC\n LIMIT 1\n) event_row;",
@@ -1328,8 +1307,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Process capability from v_machine_spc_ranking. Cpk >= 1.33 = Capable, Sigma Level = Cpk * 3.",
       "fieldConfig": {
@@ -1516,8 +1494,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "editorMode": "code",
           "format": "table",
@@ -1549,8 +1526,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Precise raw timestamp from the database. Engineer can verify this matches the clicked point.",
       "fieldConfig": {
@@ -1604,8 +1580,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "format": "table",
           "rawSql": "SELECT COALESCE(NULLIF('${event_time_ms:raw}', ''), '0')::NUMERIC AS value",
@@ -1618,8 +1593,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "Alarm rows within ±5 minutes of the exact selected telemetry record. This panel stays empty until a Timestamp is selected in STEP 1.",
       "fieldConfig": {
@@ -1898,8 +1872,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "editorMode": "code",
           "format": "table",
@@ -1931,8 +1904,7 @@
     },
     {
       "datasource": {
-        "type": "postgres",
-        "uid": "${DS_LDI}"
+        "type": "postgres"
       },
       "description": "All telemetry and alarm events in the selected ±5-minute context. No SQL row limit is applied; pagination controls rendering.",
       "fieldConfig": {
@@ -2177,8 +2149,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "postgres",
-            "uid": "${DS_LDI}"
+            "type": "postgres"
           },
           "editorMode": "code",
           "format": "table",
@@ -2234,15 +2205,14 @@
         "allowCustomValue": true,
         "current": {
           "text": [
-            "2"
+            "All"
           ],
           "value": [
-            "2"
+            "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT factory AS __text, factory AS __value FROM public.ldi_data ORDER BY factory",
         "hide": 0,
@@ -2263,15 +2233,14 @@
         "allowCustomValue": true,
         "current": {
           "text": [
-            "DF INNER"
+            "All"
           ],
           "value": [
-            "DF INNER"
+            "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT process AS __text, process AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) ORDER BY process",
         "hide": 0,
@@ -2292,15 +2261,14 @@
         "allowCustomValue": true,
         "current": {
           "text": [
-            "EXPOSURE LDI-2"
+            "All"
           ],
           "value": [
-            "EXPOSURE LDI-2"
+            "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT eqp_id AS __text, eqp_id AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) ORDER BY eqp_id",
         "hide": 0,
@@ -2321,15 +2289,14 @@
         "allowCustomValue": true,
         "current": {
           "text": [
-            "B68005287"
+            "All"
           ],
           "value": [
-            "B68005287"
+            "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT mo AS __text, mo AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) ORDER BY mo",
         "hide": 0,
@@ -2350,15 +2317,14 @@
         "allowCustomValue": true,
         "current": {
           "text": [
-            "W048E-139B"
+            "All"
           ],
           "value": [
-            "W048E-139B"
+            "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT fpn AS __text, fpn AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) ORDER BY fpn",
         "hide": 0,
@@ -2379,15 +2345,14 @@
         "allowCustomValue": true,
         "current": {
           "text": [
-            "l2"
+            "All"
           ],
           "value": [
-            "l2"
+            "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT layer_name AS __text, layer_name AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) ORDER BY layer_name",
         "hide": 0,
@@ -2407,14 +2372,15 @@
       {
         "allowCustomValue": true,
         "current": {
-          "text": "All",
+          "text": [
+            "All"
+          ],
           "value": [
             "$__all"
           ]
         },
         "datasource": {
-          "type": "postgres",
-          "uid": "${DS_LDI}"
+          "type": "postgres"
         },
         "definition": "SELECT DISTINCT log_id AS __text, log_id AS __value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) ORDER BY log_id DESC",
         "hide": 0,
@@ -2476,29 +2442,5 @@
   "timezone": "browser",
   "title": "IMS LDI - Machine Snapshot (Set 2 Real DB)",
   "uid": "ims-ldi-set2-machine-snapshot-real-db",
-  "version": 51,
-  "__inputs": [
-    {
-      "name": "DS_LDI",
-      "label": "LDI",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "postgres",
-      "pluginName": "PostgreSQL"
-    }
-  ],
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "10.0.0"
-    },
-    {
-      "type": "datasource",
-      "id": "postgres",
-      "name": "PostgreSQL",
-      "version": "1.0.0"
-    }
-  ]
+  "version": 66
 }
