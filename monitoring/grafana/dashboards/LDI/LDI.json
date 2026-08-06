@@ -103,7 +103,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n  NOW() AS \"time\";",
+          "rawSql": "SELECT\n  NOW() AS \"time\";",
           "refId": "A",
           "sql": {
             "columns": [
@@ -185,7 +185,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT mo AS \"mo\", \r\nfpn AS \"fpn\", \r\nlayer_name AS \"Layer\", \r\nresist_dosage AS \"Resist\" \r\nFROM ldi_data \r\nWHERE $__timeFilter(\"time\") AND eqp_id IN (${Eqp:singlequote}) \r\nORDER BY \"time\" \r\n",
+          "rawSql": "SELECT\n  mo AS \"mo\",\n  fpn AS \"fpn\",\n  layer_name AS \"Layer\",\n  resist_dosage AS \"Resist\"\nFROM\n  ldi_data\nWHERE\n  $__timeFilter(\"time\")\n  AND eqp_id IN (${Eqp:singlequote})\nORDER BY\n  \"time\"",
           "refId": "A",
           "sql": {
             "columns": [
@@ -299,7 +299,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT (board_no * 100.0 / NULLIF(total_board, 0)) AS \"Progress (%)\", \r\nboard_no AS \"Current Board\", \r\ntotal_board AS \"Total Boards\" \r\nFROM ldi_data \r\nWHERE $__timeFilter(\"time\") AND eqp_id IN (${Eqp:singlequote}) \r\nORDER BY \"time\" \r\n",
+          "rawSql": "SELECT\n  (board_no * 100.0 / NULLIF(total_board, 0)) AS \"Progress (%)\",\n  board_no AS \"Current Board\",\n  total_board AS \"Total Boards\"\nFROM\n  ldi_data\nWHERE\n  $__timeFilter(\"time\")\n  AND eqp_id IN (${Eqp:singlequote})\nORDER BY\n  \"time\"",
           "refId": "A",
           "sql": {
             "columns": [
@@ -413,7 +413,7 @@
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n  time_bucket('1h', \"time\")::timestamptz AS time,\r\n  COUNT(*) AS board\r\nFROM ldi_data\r\nWHERE $__timeFilter(\"time\") AND eqp_id IN (${Eqp:sqlstring})\r\nGROUP BY 1\r\nORDER BY 1;",
+          "rawSql": "SELECT\n  time_bucket ('1h', \"time\")::timestamptz AS time,\n  COUNT(*) AS board\nFROM\n  ldi_data\nWHERE\n  $__timeFilter(\"time\")\n  AND eqp_id IN (${Eqp:sqlstring})\nGROUP BY\n  1\nORDER BY\n  1;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -496,7 +496,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\nair_vacuum AS \"Air Vacuum\", \r\nscan_speed AS \"Scan Speed\", \r\nresist_dosage AS \"Resist Dosage\",\r\nthickness AS \"thickness\"\r\nFROM ldi_data \r\nWHERE $__timeFilter(\"time\") AND eqp_id IN (${Eqp:singlequote}) \r\nORDER BY \"time\" \r\n--DESC LIMIT 1;",
+          "rawSql": "SELECT\n  air_vacuum AS \"Air Vacuum\",\n  scan_speed AS \"Scan Speed\",\n  resist_dosage AS \"Resist Dosage\",\n  thickness AS \"thickness\"\nFROM\n  ldi_data\nWHERE\n  $__timeFilter(\"time\")\n  AND eqp_id IN (${Eqp:singlequote})\nORDER BY\n  \"time\"\n  --DESC LIMIT 1;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -590,7 +590,7 @@
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "SELECT (\"time\")::timestamptz AS time,\r\neqp_id AS metric, \r\nCASE WHEN state=TRUE THEN 1 ELSE 0 END AS state \r\nFROM ldi_data WHERE $__timeFilter(\"time\") AND eqp_id = ${Eqp:sqlstring}\r\nORDER BY time;",
+          "rawSql": "SELECT\n  (\"time\")::timestamptz AS time,\n  eqp_id AS metric,\n  CASE\n    WHEN state = TRUE THEN 1\n    ELSE 0\n  END AS state\nFROM\n  ldi_data\nWHERE\n  $__timeFilter(\"time\")\n  AND eqp_id = ${Eqp:sqlstring}\nORDER BY\n  time;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -705,7 +705,7 @@
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "SELECT (\"time\")::timestamptz AS time,\n  eqp_id AS metric,\n  total_time AS \"Cycle Time\"\n--EXTRACT(EPOCH FROM (\"time\" - LAG(\"time\") OVER (ORDER BY \"time\"))) AS \"Actual Time Gap (s)\"\nFROM ldi_data\nWHERE $__timeFilter(\"time\") AND eqp_id IN (${Eqp:sqlstring})\nORDER BY 1;",
+          "rawSql": "SELECT\n  (\"time\")::timestamptz AS time,\n  eqp_id AS metric,\n  total_time AS \"Cycle Time\"\n  --EXTRACT(EPOCH FROM (\"time\" - LAG(\"time\") OVER (ORDER BY \"time\"))) AS \"Actual Time Gap (s)\"\nFROM\n  ldi_data\nWHERE\n  $__timeFilter(\"time\")\n  AND eqp_id IN (${Eqp:sqlstring})\nORDER BY\n  1;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -830,7 +830,7 @@
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "SELECT (\"time\")::timestamptz AS time,\r\n  eqp_id AS metric,\r\n  temperature AS \"temp\"\r\nFROM ldi_data\r\nWHERE $__timeFilter(\"time\") AND eqp_id IN (${Eqp:sqlstring})\r\nORDER BY 1;",
+          "rawSql": "SELECT\n  (\"time\")::timestamptz AS time,\n  eqp_id AS metric,\n  temperature AS \"temp\"\nFROM\n  ldi_data\nWHERE\n  $__timeFilter(\"time\")\n  AND eqp_id IN (${Eqp:sqlstring})\nORDER BY\n  1;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -915,7 +915,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT logdate::timestamptz AS \"Time\", \r\nalarm_type AS \"Type\", \r\nalarm_msg AS \"Message\", \r\nalarm_detail AS \"Detail\" \r\nFROM v_ldi_alarm_detail \r\nWHERE $__timeFilter(logdate) AND eqp_id = ${Eqp:sqlstring} \r\nORDER BY logdate \r\nDESC LIMIT 100;",
+          "rawSql": "SELECT\n  logdate::timestamptz AS \"Time\",\n  alarm_type AS \"Type\",\n  alarm_msg AS \"Message\",\n  alarm_detail AS \"Detail\"\nFROM\n  v_ldi_alarm_detail\nWHERE\n  $__timeFilter(logdate)\n  AND eqp_id = ${Eqp:sqlstring}\nORDER BY\n  logdate DESC\nLIMIT\n  100;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1042,7 +1042,7 @@
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "SELECT (\"time\")::timestamptz AS time,\r\n  eqp_id AS metric,\r\n  humidity AS \"humidity\"\r\nFROM ldi_data\r\nWHERE $__timeFilter(\"time\") AND eqp_id IN (${Eqp:sqlstring})\r\nORDER BY 1;",
+          "rawSql": "SELECT\n  (\"time\")::timestamptz AS time,\n  eqp_id AS metric,\n  humidity AS \"humidity\"\nFROM\n  ldi_data\nWHERE\n  $__timeFilter(\"time\")\n  AND eqp_id IN (${Eqp:sqlstring})\nORDER BY\n  1;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1129,7 +1129,7 @@
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n  (\"time\")::timestamptz AS \"time\",\r\n  pe_1, pe_2, pe_3, pe_4, pe_5, pe_6\r\nFROM ldi_data\r\nWHERE $__timeFilter(\"time\")\r\n  AND eqp_id IN (${Eqp:singlequote})\r\n  AND pe_1 IS NOT NULL\r\nORDER BY \"time\" DESC\r\nLIMIT 1;",
+          "rawSql": "SELECT\n  (\"time\")::timestamptz AS \"time\",\n  pe_1,\n  pe_2,\n  pe_3,\n  pe_4,\n  pe_5,\n  pe_6\nFROM\n  ldi_data\nWHERE\n  $__timeFilter(\"time\")\n  AND eqp_id IN (${Eqp:singlequote})\n  AND pe_1 IS NOT NULL\nORDER BY\n  \"time\" DESC\nLIMIT\n  1;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1247,7 +1247,7 @@
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n  (\"time\")::timestamptz AS \"time\",\r\n  je_1, je_2, je_3, je_4\r\nFROM ldi_data\r\nWHERE $__timeFilter(\"time\")\r\n  AND eqp_id IN (${Eqp:singlequote})\r\n  AND je_1 IS NOT NULL\r\nORDER BY \"time\" DESC\r\nLIMIT 1;",
+          "rawSql": "SELECT\n  (\"time\")::timestamptz AS \"time\",\n  je_1,\n  je_2,\n  je_3,\n  je_4\nFROM\n  ldi_data\nWHERE\n  $__timeFilter(\"time\")\n  AND eqp_id IN (${Eqp:singlequote})\n  AND je_1 IS NOT NULL\nORDER BY\n  \"time\" DESC\nLIMIT\n  1;",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1376,7 +1376,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \r\n(\"time\")::timestamptz AS \"time\",\r\nscale_x::NUMERIC(18, 6) AS \"Scale X\", \r\nscale_y::NUMERIC(18, 6) AS \"Scale Y\" \r\nFROM ldi_data \r\nWHERE $__timeFilter(\"time\") AND eqp_id IN (${Eqp:singlequote}) \r\nORDER BY \"time\" \r\n",
+          "rawSql": "SELECT\n  (\"time\")::timestamptz AS \"time\",\n  scale_x::NUMERIC(18, 6) AS \"Scale X\",\n  scale_y::NUMERIC(18, 6) AS \"Scale Y\"\nFROM\n  ldi_data\nWHERE\n  $__timeFilter(\"time\")\n  AND eqp_id IN (${Eqp:singlequote})\nORDER BY\n  \"time\"",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1487,7 +1487,7 @@
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
-          "rawSql": "SELECT\r\n  (\"time\")::timestamptz AS \"time\",\r\n  pe_1, pe_2, pe_3, pe_4, pe_5, pe_6,\r\n  je_1, je_2, je_3, je_4\r\nFROM ldi_data\r\nWHERE $__timeFilter(\"time\")\r\n  AND eqp_id IN (${Eqp:singlequote})\r\nORDER BY \"time\" ASC;",
+          "rawSql": "SELECT\n  (\"time\")::timestamptz AS \"time\",\n  pe_1,\n  pe_2,\n  pe_3,\n  pe_4,\n  pe_5,\n  pe_6,\n  je_1,\n  je_2,\n  je_3,\n  je_4\nFROM\n  ldi_data\nWHERE\n  $__timeFilter(\"time\")\n  AND eqp_id IN (${Eqp:singlequote})\nORDER BY\n  \"time\" ASC;",
           "refId": "A",
           "sql": {
             "columns": [

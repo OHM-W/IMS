@@ -51,7 +51,7 @@
                       "version": "v0",
                       "spec": {
                         "format": "table",
-                        "rawSql": "WITH latest AS (\n  SELECT DISTINCT ON (eqp_id) eqp_id, state\n  FROM public.ldi_data\n  WHERE factory IN (${factory:sqlstring})\n    AND mo IN (${mo:sqlstring})\n    AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring})\n    AND $__timeFilter(time)\n  ORDER BY eqp_id, time DESC\n)\nSELECT ROUND(100.0 * COUNT(*) FILTER (WHERE state = true) / NULLIF(COUNT(*), 0), 0) AS value\nFROM latest"
+                        "rawSql": "WITH\n  latest AS (\n    SELECT DISTINCT\n      ON (eqp_id) eqp_id,\n      state\n    FROM\n      public.ldi_data\n    WHERE\n      factory IN (${factory:sqlstring})\n      AND mo IN (${mo:sqlstring})\n      AND eqp_id IN (${eqp_id:sqlstring})\n      AND layer_name IN (${layer_name:sqlstring})\n      AND log_id IN (${log_id:sqlstring})\n      AND $__timeFilter(time)\n    ORDER BY\n      eqp_id,\n      time DESC\n  )\nSELECT\n  ROUND(\n    100.0 * COUNT(*) FILTER (\n      WHERE\n        state = true\n    ) / NULLIF(COUNT(*), 0),\n    0\n  ) AS value\nFROM\n  latest"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -144,7 +144,7 @@
                       "version": "v0",
                       "spec": {
                         "format": "table",
-                        "rawSql": "WITH latest_data AS (\n  SELECT DISTINCT ON (eqp_id) \n    eqp_id AS \"Machine\", process AS \"Process\", CASE WHEN state THEN 'RUN' ELSE 'DOWN' END AS \"State\",\n    mo AS \"MO\", fpn AS \"FPN\", layer_name AS \"Layer\",\n    CASE WHEN board_no IS NULL THEN NULL ELSE board_no::TEXT || '/' || total_board::TEXT END AS \"Board\",\n    ROUND(temperature::NUMERIC, 1) AS \"Temp\", ROUND(humidity::NUMERIC, 1) AS \"RH\",\n    \"time\" AS \"Updated\", factory AS \"Factory\", log_id AS \"Log ID\", 'ldi_data' AS \"Source\"\n  FROM public.ldi_data\n  WHERE factory IN (${factory:sqlstring}) AND mo IN (${mo:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND $__timeFilter(\"time\")\n  ORDER BY eqp_id, \"time\" DESC\n),\nlatest_alarm AS (\n  SELECT DISTINCT ON (equipmentid) equipmentid AS eqp_id, logdate\n  FROM public.ldi_alarm_log\n  WHERE $__timeFilter(logdate)\n  ORDER BY equipmentid, logdate DESC\n)\nSELECT \n  COALESCE(d.\"Machine\", a.eqp_id) AS \"Machine\",\n  d.\"Process\", d.\"State\", d.\"MO\", d.\"FPN\", d.\"Layer\", d.\"Board\", d.\"Temp\", d.\"RH\",\n  COALESCE(d.\"Updated\", a.logdate) AS \"Updated\",\n  d.\"Factory\", d.\"Log ID\",\n  CASE WHEN d.\"Machine\" IS NULL THEN 'alarm_only' ELSE d.\"Source\" END AS \"Source\"\nFROM latest_data d\nFULL OUTER JOIN latest_alarm a ON d.\"Machine\" = a.eqp_id\nORDER BY \"Updated\" DESC"
+                        "rawSql": "WITH\n  latest_data AS (\n    SELECT DISTINCT\n      ON (eqp_id) eqp_id AS \"Machine\",\n      process AS \"Process\",\n      CASE\n        WHEN state THEN 'RUN'\n        ELSE 'DOWN'\n      END AS \"State\",\n      mo AS \"MO\",\n      fpn AS \"FPN\",\n      layer_name AS \"Layer\",\n      CASE\n        WHEN board_no IS NULL THEN NULL\n        ELSE board_no::TEXT || '/' || total_board::TEXT\n      END AS \"Board\",\n      ROUND(temperature::NUMERIC, 1) AS \"Temp\",\n      ROUND(humidity::NUMERIC, 1) AS \"RH\",\n      \"time\" AS \"Updated\",\n      factory AS \"Factory\",\n      log_id AS \"Log ID\",\n      'ldi_data' AS \"Source\"\n    FROM\n      public.ldi_data\n    WHERE\n      factory IN (${factory:sqlstring})\n      AND mo IN (${mo:sqlstring})\n      AND layer_name IN (${layer_name:sqlstring})\n      AND log_id IN (${log_id:sqlstring})\n      AND eqp_id IN (${eqp_id:sqlstring})\n      AND $__timeFilter(\"time\")\n    ORDER BY\n      eqp_id,\n      \"time\" DESC\n  ),\n  latest_alarm AS (\n    SELECT DISTINCT\n      ON (equipmentid) equipmentid AS eqp_id,\n      logdate\n    FROM\n      public.ldi_alarm_log\n    WHERE\n      $__timeFilter(logdate)\n    ORDER BY\n      equipmentid,\n      logdate DESC\n  )\nSELECT\n  COALESCE(d.\"Machine\", a.eqp_id) AS \"Machine\",\n  d.\"Process\",\n  d.\"State\",\n  d.\"MO\",\n  d.\"FPN\",\n  d.\"Layer\",\n  d.\"Board\",\n  d.\"Temp\",\n  d.\"RH\",\n  COALESCE(d.\"Updated\", a.logdate) AS \"Updated\",\n  d.\"Factory\",\n  d.\"Log ID\",\n  CASE\n    WHEN d.\"Machine\" IS NULL THEN 'alarm_only'\n    ELSE d.\"Source\"\n  END AS \"Source\"\nFROM\n  latest_data d\n  FULL OUTER JOIN latest_alarm a ON d.\"Machine\" = a.eqp_id\nORDER BY\n  \"Updated\" DESC"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -509,7 +509,7 @@
                       "version": "v0",
                       "spec": {
                         "format": "table",
-                        "rawSql": "SELECT\n  COUNT(*)::NUMERIC AS \"Total\",\n  COUNT(*) FILTER (WHERE $__timeFilter(a.logdate) AND m.alarm_type = 'A')::NUMERIC AS \"A\",\n  COUNT(*) FILTER (WHERE $__timeFilter(a.logdate) AND m.alarm_type = 'W')::NUMERIC AS \"W\",\n  COUNT(*) FILTER (WHERE $__timeFilter(a.logdate) AND m.alarm_type = 'E')::NUMERIC AS \"E\",\n  COUNT(*) FILTER (WHERE $__timeFilter(a.logdate) AND m.alarm_code IS NULL)::NUMERIC AS \"UNMAPPED\"\nFROM public.ldi_alarm_log a\nLEFT JOIN public.ldi_alarm_ms_code m\n  ON a.errorcode::TEXT = m.alarm_id::TEXT\nWHERE $__timeFilter(a.logdate) AND a.factory IN (${factory:sqlstring})\n  AND a.equipmentid IN (${eqp_id:sqlstring})"
+                        "rawSql": "SELECT\n  COUNT(*)::NUMERIC AS \"Total\",\n  COUNT(*) FILTER (\n    WHERE\n      $__timeFilter(a.logdate)\n      AND m.alarm_type = 'A'\n  )::NUMERIC AS \"A\",\n  COUNT(*) FILTER (\n    WHERE\n      $__timeFilter(a.logdate)\n      AND m.alarm_type = 'W'\n  )::NUMERIC AS \"W\",\n  COUNT(*) FILTER (\n    WHERE\n      $__timeFilter(a.logdate)\n      AND m.alarm_type = 'E'\n  )::NUMERIC AS \"E\",\n  COUNT(*) FILTER (\n    WHERE\n      $__timeFilter(a.logdate)\n      AND m.alarm_code IS NULL\n  )::NUMERIC AS \"UNMAPPED\"\nFROM\n  public.ldi_alarm_log a\n  LEFT JOIN public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_id::TEXT\nWHERE\n  $__timeFilter(a.logdate)\n  AND a.factory IN (${factory:sqlstring})\n  AND a.equipmentid IN (${eqp_id:sqlstring})"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -730,7 +730,7 @@
                         "editorMode": "code",
                         "format": "table",
                         "rawQuery": true,
-                        "rawSql": "SELECT\n  ROUND(\n    COUNT(DISTINCT eqp_id) FILTER (\n      WHERE\n        temperature BETWEEN 20\n        AND 24\n        AND humidity BETWEEN 50\n        AND 60\n    ) * 100.0 / NULLIF(COUNT(DISTINCT eqp_id), 0),\n    0\n  ) AS value\nFROM\n  (\n    SELECT\n      DISTINCT ON (eqp_id) eqp_id,\n      temperature,\n      humidity,\n      \"time\",\n      factory,\n      mo,\n      layer_name,\n      log_id\n    FROM\n      public.ldi_data\n    WHERE\n      $__timeFilter(\"time\")\n    ORDER BY\n      eqp_id,\n      \"time\" DESC\n  ) d\nWHERE\n  factory IN (${factory:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND temperature IS NOT NULL\n  AND humidity IS NOT NULL",
+                        "rawSql": "SELECT\n  ROUND(\n    COUNT(DISTINCT eqp_id) FILTER (\n      WHERE\n        temperature BETWEEN 20 AND 24\n        AND humidity BETWEEN 50 AND 60\n    ) * 100.0 / NULLIF(COUNT(DISTINCT eqp_id), 0),\n    0\n  ) AS value\nFROM\n  (\n    SELECT DISTINCT\n      ON (eqp_id) eqp_id,\n      temperature,\n      humidity,\n      \"time\",\n      factory,\n      mo,\n      layer_name,\n      log_id\n    FROM\n      public.ldi_data\n    WHERE\n      $__timeFilter(\"time\")\n    ORDER BY\n      eqp_id,\n      \"time\" DESC\n  ) d\nWHERE\n  factory IN (${factory:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND temperature IS NOT NULL\n  AND humidity IS NOT NULL",
                         "sql": {
                           "columns": [
                             {
@@ -847,7 +847,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT\r\n  time,\r\n  eqp_id AS metric,\r\n  CASE\r\n    WHEN state = true THEN 1\r\n    ELSE 0 \r\n  END AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND $__timeFilter(time)\r\nORDER BY\r\n  time ASC",
+                        "rawSql": "SELECT\n  time,\n  eqp_id AS metric,\n  CASE\n    WHEN state = true THEN 1\n    ELSE 0\n  END AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND $__timeFilter(time)\nORDER BY\n  time ASC",
                         "sql": {
                           "columns": [
                             {
@@ -986,7 +986,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT\r\n  time,\r\n  eqp_id AS metric,\r\n  temperature AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND temperature IS NOT NULL\r\nORDER BY\r\n  time ASC",
+                        "rawSql": "SELECT\n  time,\n  eqp_id AS metric,\n  temperature AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND $__timeFilter(time)\n  AND temperature IS NOT NULL\nORDER BY\n  time ASC",
                         "sql": {
                           "columns": [
                             {
@@ -1122,7 +1122,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT\r\n  time,\r\n  eqp_id AS metric,\r\n  humidity AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND humidity IS NOT NULL\r\nORDER BY\r\n  time ASC",
+                        "rawSql": "SELECT\n  time,\n  eqp_id AS metric,\n  humidity AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND $__timeFilter(time)\n  AND humidity IS NOT NULL\nORDER BY\n  time ASC",
                         "sql": {
                           "columns": [
                             {
@@ -1255,7 +1255,7 @@
                       "version": "v0",
                       "spec": {
                         "format": "table",
-                        "rawSql": "SELECT DISTINCT ON (eqp_id) eqp_id AS \"Machine\", mo AS \"Job (MO)\", fpn AS \"Part (FPN)\", layer_name AS \"Layer\", (board_no::TEXT || '/' || total_board::TEXT) AS \"Progress\" FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND mo IN (${mo:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND $__timeFilter(time) ORDER BY eqp_id, time DESC LIMIT 50"
+                        "rawSql": "SELECT DISTINCT\n  ON (eqp_id) eqp_id AS \"Machine\",\n  mo AS \"Job (MO)\",\n  fpn AS \"Part (FPN)\",\n  layer_name AS \"Layer\",\n  (board_no::TEXT || '/' || total_board::TEXT) AS \"Progress\"\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND $__timeFilter(time)\nORDER BY\n  eqp_id,\n  time DESC\nLIMIT\n  50"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -1373,7 +1373,7 @@
                       "version": "v0",
                       "spec": {
                         "format": "table",
-                        "rawSql": "SELECT\n  a.logid,\n  a.logdate,\n  a.errorcode,\n  a.errortime,\n  a.equipmentid,\n  a.factory,\n  a.process,\n  COALESCE(m.alarm_id, 'UNMAPPED') AS alarm_id,\n  COALESCE(m.alarm_type, 'UNMAPPED') AS alarm_type,\n  COALESCE(m.alarm_code, a.errorcode::TEXT) AS alarm_code,\n  COALESCE(m.alarm_msg, a.errorcode::TEXT) AS alarm_msg,\n  CASE\n    WHEN m.alarm_code IS NULL THEN 'No master record for this errorcode'\n    ELSE COALESCE(m.alarm_detail, 'No detail provided in master')\n  END AS alarm_detail,\n  CASE WHEN m.alarm_code IS NULL THEN 'UNMAPPED' ELSE 'MAPPED' END AS mapping_status\nFROM public.ldi_alarm_log a\nLEFT JOIN public.ldi_alarm_ms_code m\n  ON a.errorcode::TEXT = m.alarm_id::TEXT\nWHERE $__timeFilter(a.logdate) AND a.factory IN (${factory:sqlstring})\n  AND a.equipmentid IN (${eqp_id:sqlstring})\nORDER BY a.logdate DESC"
+                        "rawSql": "SELECT\n  a.logid,\n  a.logdate,\n  a.errorcode,\n  a.errortime,\n  a.equipmentid,\n  a.factory,\n  a.process,\n  COALESCE(m.alarm_id, 'UNMAPPED') AS alarm_id,\n  COALESCE(m.alarm_type, 'UNMAPPED') AS alarm_type,\n  COALESCE(m.alarm_code, a.errorcode::TEXT) AS alarm_code,\n  COALESCE(m.alarm_msg, a.errorcode::TEXT) AS alarm_msg,\n  CASE\n    WHEN m.alarm_code IS NULL THEN 'No master record for this errorcode'\n    ELSE COALESCE(m.alarm_detail, 'No detail provided in master')\n  END AS alarm_detail,\n  CASE\n    WHEN m.alarm_code IS NULL THEN 'UNMAPPED'\n    ELSE 'MAPPED'\n  END AS mapping_status\nFROM\n  public.ldi_alarm_log a\n  LEFT JOIN public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_id::TEXT\nWHERE\n  $__timeFilter(a.logdate)\n  AND a.factory IN (${factory:sqlstring})\n  AND a.equipmentid IN (${eqp_id:sqlstring})\nORDER BY\n  a.logdate DESC"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -1684,7 +1684,7 @@
                       "version": "v0",
                       "spec": {
                         "format": "table",
-                        "rawSql": "WITH latest AS (\n  SELECT DISTINCT ON (eqp_id) eqp_id, state\n  FROM public.ldi_data\n  WHERE factory IN (${factory:sqlstring})\n    AND mo IN (${mo:sqlstring})\n    AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring})\n    AND $__timeFilter(time)\n  ORDER BY eqp_id, time DESC\n)\nSELECT COUNT(*) FILTER (WHERE state = true)::NUMERIC AS value\nFROM latest"
+                        "rawSql": "WITH\n  latest AS (\n    SELECT DISTINCT\n      ON (eqp_id) eqp_id,\n      state\n    FROM\n      public.ldi_data\n    WHERE\n      factory IN (${factory:sqlstring})\n      AND mo IN (${mo:sqlstring})\n      AND eqp_id IN (${eqp_id:sqlstring})\n      AND layer_name IN (${layer_name:sqlstring})\n      AND log_id IN (${log_id:sqlstring})\n      AND $__timeFilter(time)\n    ORDER BY\n      eqp_id,\n      time DESC\n  )\nSELECT\n  COUNT(*) FILTER (\n    WHERE\n      state = true\n  )::NUMERIC AS value\nFROM\n  latest"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",

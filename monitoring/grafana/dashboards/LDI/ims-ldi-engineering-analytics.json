@@ -54,7 +54,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id AS metric,\r\n  AVG(temperature) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND temperature IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id AS metric,\n  AVG(temperature)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND temperature IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1",
                         "sql": {
                           "columns": [
                             {
@@ -213,7 +213,7 @@
                       "version": "v0",
                       "spec": {
                         "format": "table",
-                        "rawSql": "WITH pe_samples AS (\n  SELECT d.eqp_id, d.pe_setting, p.pe\n  FROM public.ldi_data d\n  CROSS JOIN LATERAL (VALUES (d.pe_1),(d.pe_2),(d.pe_3),(d.pe_4),(d.pe_5),(d.pe_6)) p(pe)\n  WHERE $__timeFilter(d.\"time\")\n    AND d.factory IN (${factory:sqlstring})\n    AND d.process IN (${process:sqlstring})\n    AND d.mo IN (${mo:sqlstring})\n    AND d.fpn IN (${fpn:sqlstring})\n    AND d.layer_name IN (${layer_name:sqlstring})\n    AND d.eqp_id IN (${eqp_id:sqlstring}) AND d.layer_name IN (${layer_name:sqlstring}) AND d.log_id IN (${log_id:sqlstring})\n    AND p.pe IS NOT NULL AND d.pe_setting IS NOT NULL\n), stats AS (\n  SELECT eqp_id, AVG(pe) AS mean_pe, STDDEV_SAMP(pe) AS stddev_pe, AVG(pe_setting) AS pe_limit\n  FROM pe_samples GROUP BY eqp_id\n), capability AS (\n  SELECT *, pe_limit / NULLIF(3 * stddev_pe, 0) AS cp,\n    LEAST((pe_limit - mean_pe) / NULLIF(3 * stddev_pe, 0), (mean_pe + pe_limit) / NULLIF(3 * stddev_pe, 0)) AS cpk\n  FROM stats\n)\nSELECT eqp_id AS \"Machine\", ROUND(cp::NUMERIC, 3) AS \"Cp\", ROUND(cpk::NUMERIC, 3) AS \"Cpk\"\nFROM capability ORDER BY cpk DESC NULLS LAST;"
+                        "rawSql": "WITH\n  pe_samples AS (\n    SELECT\n      d.eqp_id,\n      d.pe_setting,\n      p.pe\n    FROM\n      public.ldi_data d\n      CROSS JOIN LATERAL (\n        VALUES\n          (d.pe_1),\n          (d.pe_2),\n          (d.pe_3),\n          (d.pe_4),\n          (d.pe_5),\n          (d.pe_6)\n      ) p (pe)\n    WHERE\n      $__timeFilter(d.\"time\")\n      AND d.factory IN (${factory:sqlstring})\n      AND d.process IN (${process:sqlstring})\n      AND d.mo IN (${mo:sqlstring})\n      AND d.fpn IN (${fpn:sqlstring})\n      AND d.layer_name IN (${layer_name:sqlstring})\n      AND d.eqp_id IN (${eqp_id:sqlstring})\n      AND d.layer_name IN (${layer_name:sqlstring})\n      AND d.log_id IN (${log_id:sqlstring})\n      AND p.pe IS NOT NULL\n      AND d.pe_setting IS NOT NULL\n  ),\n  stats AS (\n    SELECT\n      eqp_id,\n      AVG(pe) AS mean_pe,\n      STDDEV_SAMP(pe) AS stddev_pe,\n      AVG(pe_setting) AS pe_limit\n    FROM\n      pe_samples\n    GROUP BY\n      eqp_id\n  ),\n  capability AS (\n    SELECT\n      *,\n      pe_limit / NULLIF(3 * stddev_pe, 0) AS cp,\n      LEAST(\n        (pe_limit - mean_pe) / NULLIF(3 * stddev_pe, 0),\n        (mean_pe + pe_limit) / NULLIF(3 * stddev_pe, 0)\n      ) AS cpk\n    FROM\n      stats\n  )\nSELECT\n  eqp_id AS \"Machine\",\n  ROUND(cp::NUMERIC, 3) AS \"Cp\",\n  ROUND(cpk::NUMERIC, 3) AS \"Cpk\"\nFROM\n  capability\nORDER BY\n  cpk DESC NULLS LAST;"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -327,7 +327,7 @@
                       "version": "v0",
                       "spec": {
                         "format": "table",
-                        "rawSql": "WITH pe_samples AS (\n  SELECT d.eqp_id, p.pe\n  FROM public.ldi_data d\n  CROSS JOIN LATERAL (VALUES (d.pe_1),(d.pe_2),(d.pe_3),(d.pe_4),(d.pe_5),(d.pe_6)) p(pe)\n  WHERE $__timeFilter(d.\"time\")\n    AND d.factory IN (${factory:sqlstring})\n    AND d.process IN (${process:sqlstring})\n    AND d.mo IN (${mo:sqlstring})\n    AND d.fpn IN (${fpn:sqlstring})\n    AND d.layer_name IN (${layer_name:sqlstring})\n    AND d.eqp_id IN (${eqp_id:sqlstring}) AND d.layer_name IN (${layer_name:sqlstring}) AND d.log_id IN (${log_id:sqlstring})\n    AND p.pe IS NOT NULL\n)\nSELECT eqp_id AS \"Machine\", ROUND(STDDEV_SAMP(pe)::NUMERIC, 3) AS \"StdDev\"\nFROM pe_samples GROUP BY eqp_id HAVING STDDEV_SAMP(pe) IS NOT NULL ORDER BY \"StdDev\" DESC;"
+                        "rawSql": "WITH\n  pe_samples AS (\n    SELECT\n      d.eqp_id,\n      p.pe\n    FROM\n      public.ldi_data d\n      CROSS JOIN LATERAL (\n        VALUES\n          (d.pe_1),\n          (d.pe_2),\n          (d.pe_3),\n          (d.pe_4),\n          (d.pe_5),\n          (d.pe_6)\n      ) p (pe)\n    WHERE\n      $__timeFilter(d.\"time\")\n      AND d.factory IN (${factory:sqlstring})\n      AND d.process IN (${process:sqlstring})\n      AND d.mo IN (${mo:sqlstring})\n      AND d.fpn IN (${fpn:sqlstring})\n      AND d.layer_name IN (${layer_name:sqlstring})\n      AND d.eqp_id IN (${eqp_id:sqlstring})\n      AND d.layer_name IN (${layer_name:sqlstring})\n      AND d.log_id IN (${log_id:sqlstring})\n      AND p.pe IS NOT NULL\n  )\nSELECT\n  eqp_id AS \"Machine\",\n  ROUND(STDDEV_SAMP(pe)::NUMERIC, 3) AS \"StdDev\"\nFROM\n  pe_samples\nGROUP BY\n  eqp_id\nHAVING\n  STDDEV_SAMP(pe) IS NOT NULL\nORDER BY\n  \"StdDev\" DESC;"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -444,7 +444,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT\r\n  time,\r\n  eqp_id || ' - pe_1' AS metric,\r\n  pe_1 AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_1 IS NOT NULL\r\nUNION\r\nALL\r\nSELECT\r\n  time,\r\n  eqp_id || ' - pe_2',\r\n  pe_2\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_2 IS NOT NULL\r\nUNION\r\nALL\r\nSELECT\r\n  time,\r\n  eqp_id || ' - pe_3',\r\n  pe_3\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_3 IS NOT NULL\r\nUNION\r\nALL\r\nSELECT\r\n  time,\r\n  eqp_id || ' - pe_4',\r\n  pe_4\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_4 IS NOT NULL\r\nUNION\r\nALL\r\nSELECT\r\n  time,\r\n  eqp_id || ' - pe_5',\r\n  pe_5\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_5 IS NOT NULL\r\nUNION\r\nALL\r\nSELECT\r\n  time,\r\n  eqp_id || ' - pe_6',\r\n  pe_6\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_6 IS NOT NULL\r\nORDER BY\r\n  time",
+                        "rawSql": "SELECT\n  time,\n  eqp_id || ' - pe_1' AS metric,\n  pe_1 AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND pe_1 IS NOT NULL\nUNION ALL\nSELECT\n  time,\n  eqp_id || ' - pe_2',\n  pe_2\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND pe_2 IS NOT NULL\nUNION ALL\nSELECT\n  time,\n  eqp_id || ' - pe_3',\n  pe_3\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND pe_3 IS NOT NULL\nUNION ALL\nSELECT\n  time,\n  eqp_id || ' - pe_4',\n  pe_4\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND pe_4 IS NOT NULL\nUNION ALL\nSELECT\n  time,\n  eqp_id || ' - pe_5',\n  pe_5\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND pe_5 IS NOT NULL\nUNION ALL\nSELECT\n  time,\n  eqp_id || ' - pe_6',\n  pe_6\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND pe_6 IS NOT NULL\nORDER BY\n  time",
                         "sql": {
                           "columns": [
                             {
@@ -566,7 +566,7 @@
                       "version": "v0",
                       "spec": {
                         "format": "table",
-                        "rawSql": "SELECT eqp_id AS metric, ROUND(AVG(resist_dosage)::NUMERIC, 1) AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND resist_dosage IS NOT NULL GROUP BY 1 ORDER BY 1"
+                        "rawSql": "SELECT\n  eqp_id AS metric,\n  ROUND(AVG(resist_dosage)::NUMERIC, 1) AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND resist_dosage IS NOT NULL\nGROUP BY\n  1\nORDER BY\n  1"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -673,7 +673,7 @@
                       "version": "v0",
                       "spec": {
                         "format": "table",
-                        "rawSql": "SELECT time AS \"Time\", eqp_id AS \"Machine\", factory AS \"Factory\",\n  mo AS \"MO\", fpn AS \"Part\", layer_name AS \"Layer\", board_no AS \"Board\", total_board AS \"Total Boards\", ROUND((total_time / NULLIF(total_board, 0))::NUMERIC, 3) AS \"Cycle Time\", CASE WHEN state THEN 'RUNNING' ELSE 'STOPPED' END AS \"State\", board_id AS \"Board ID\", log_id AS \"Log ID\" FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND $__timeFilter(time) ORDER BY time DESC LIMIT 50"
+                        "rawSql": "SELECT\n  time AS \"Time\",\n  eqp_id AS \"Machine\",\n  factory AS \"Factory\",\n  mo AS \"MO\",\n  fpn AS \"Part\",\n  layer_name AS \"Layer\",\n  board_no AS \"Board\",\n  total_board AS \"Total Boards\",\n  ROUND((total_time / NULLIF(total_board, 0))::NUMERIC, 3) AS \"Cycle Time\",\n  CASE\n    WHEN state THEN 'RUNNING'\n    ELSE 'STOPPED'\n  END AS \"State\",\n  board_id AS \"Board ID\",\n  log_id AS \"Log ID\"\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND $__timeFilter(time)\nORDER BY\n  time DESC\nLIMIT\n  50"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -842,7 +842,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT \n  time_bucket('1 minute', time) AS time, \n  eqp_id AS metric, \n  AVG(total_time)::NUMERIC AS value \nFROM public.ldi_data \nWHERE factory IN (${factory:sqlstring}) \n  AND process IN (${process:sqlstring}) \n  AND mo IN (${mo:sqlstring}) \n  AND fpn IN (${fpn:sqlstring}) \n  AND $__timeFilter(time) \n  AND eqp_id IN (${eqp_id:sqlstring}) \n  AND layer_name IN (${layer_name:sqlstring}) \n  AND log_id IN (${log_id:sqlstring}) \n  AND total_time > 0 \nGROUP BY 1, 2 \nORDER BY 1",
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id AS metric,\n  AVG(total_time)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND total_time > 0\nGROUP BY\n  1,\n  2\nORDER BY\n  1",
                         "sql": {
                           "columns": [
                             {
@@ -987,7 +987,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id AS metric,\r\n  AVG(humidity) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND humidity IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id AS metric,\n  AVG(humidity)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND humidity IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1",
                         "sql": {
                           "columns": [
                             {
@@ -1147,7 +1147,7 @@
                       "spec": {
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
-                        "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id AS metric, AVG(scan_speed)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND scan_speed IS NOT NULL GROUP BY 1, 2 ORDER BY 1"
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id AS metric,\n  AVG(scan_speed)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND scan_speed IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -1284,7 +1284,7 @@
                       "spec": {
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
-                        "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id AS metric, AVG(air_vacuum)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND air_vacuum IS NOT NULL GROUP BY 1, 2 ORDER BY 1"
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id AS metric,\n  AVG(air_vacuum)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND air_vacuum IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -1423,7 +1423,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT \n  time_bucket('1 minute', d.time) AS time, \n  d.eqp_id || ' - ' || v.metric_name AS metric, \n  AVG(v.value)::NUMERIC AS value \nFROM public.ldi_data d\nCROSS JOIN LATERAL (\n  VALUES \n    ('scale_x', d.scale_x),\n    ('scale_y', d.scale_y)\n) v(metric_name, value)\nWHERE d.factory IN (${factory:sqlstring}) \n  AND d.process IN (${process:sqlstring}) \n  AND d.mo IN (${mo:sqlstring}) \n  AND d.fpn IN (${fpn:sqlstring}) \n  AND $__timeFilter(d.time) \n  AND d.eqp_id IN (${eqp_id:sqlstring}) \n  AND d.layer_name IN (${layer_name:sqlstring}) \n  AND d.log_id IN (${log_id:sqlstring}) \n  AND v.value IS NOT NULL\nGROUP BY 1, 2 \nORDER BY 1",
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', d.time) AS time,\n  d.eqp_id || ' - ' || v.metric_name AS metric,\n  AVG(v.value)::NUMERIC AS value\nFROM\n  public.ldi_data d\n  CROSS JOIN LATERAL (\n    VALUES\n      ('scale_x', d.scale_x),\n      ('scale_y', d.scale_y)\n  ) v (metric_name, value)\nWHERE\n  d.factory IN (${factory:sqlstring})\n  AND d.process IN (${process:sqlstring})\n  AND d.mo IN (${mo:sqlstring})\n  AND d.fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(d.time)\n  AND d.eqp_id IN (${eqp_id:sqlstring})\n  AND d.layer_name IN (${layer_name:sqlstring})\n  AND d.log_id IN (${log_id:sqlstring})\n  AND v.value IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1",
                         "sql": {
                           "columns": [
                             {
@@ -1576,7 +1576,7 @@
                       "spec": {
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
-                        "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - pe_1' AS metric, AVG(pe_1)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_1 IS NOT NULL GROUP BY 1, 2 ORDER BY 1"
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id || ' - pe_1' AS metric,\n  AVG(pe_1)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND pe_1 IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -1599,7 +1599,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id || ' - pe_2' AS metric,\r\n  AVG(pe_2) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_2 IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id || ' - pe_2' AS metric,\n  AVG(pe_2)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND pe_2 IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1",
                         "sql": {
                           "columns": [
                             {
@@ -1639,7 +1639,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id || ' - pe_3' AS metric,\r\n  AVG(pe_3) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_3 IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id || ' - pe_3' AS metric,\n  AVG(pe_3)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND pe_3 IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1",
                         "sql": {
                           "columns": [
                             {
@@ -1679,7 +1679,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id || ' - pe_4' AS metric,\r\n  AVG(pe_4) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_4 IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id || ' - pe_4' AS metric,\n  AVG(pe_4)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND pe_4 IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1",
                         "sql": {
                           "columns": [
                             {
@@ -1717,7 +1717,7 @@
                       "spec": {
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
-                        "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - pe_5' AS metric, AVG(pe_5)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND pe_5 IS NOT NULL GROUP BY 1, 2 ORDER BY 1"
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id || ' - pe_5' AS metric,\n  AVG(pe_5)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND pe_5 IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -1740,7 +1740,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id || ' - pe_6' AS metric,\r\n  AVG(pe_6) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND pe_6 IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id || ' - pe_6' AS metric,\n  AVG(pe_6)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND pe_6 IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1",
                         "sql": {
                           "columns": [
                             {
@@ -1893,7 +1893,7 @@
                       "spec": {
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
-                        "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - je_1' AS metric, AVG(je_1)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND je_1 IS NOT NULL GROUP BY 1, 2 ORDER BY 1"
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id || ' - je_1' AS metric,\n  AVG(je_1)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND je_1 IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -1916,7 +1916,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id || ' - je_2' AS metric,\r\n  AVG(je_2) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND je_2 IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id || ' - je_2' AS metric,\n  AVG(je_2)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND je_2 IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1",
                         "sql": {
                           "columns": [
                             {
@@ -1954,7 +1954,7 @@
                       "spec": {
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
-                        "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id || ' - je_3' AS metric, AVG(je_3)::NUMERIC AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND je_3 IS NOT NULL GROUP BY 1, 2 ORDER BY 1"
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id || ' - je_3' AS metric,\n  AVG(je_3)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND je_3 IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
@@ -1977,7 +1977,7 @@
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
                         "rawQuery": true,
-                        "rawSql": "SELECT\r\n  time_bucket('1 minute', time) AS time,\r\n  eqp_id || ' - je_4' AS metric,\r\n  AVG(je_4) :: NUMERIC AS value\r\nFROM\r\n  public.ldi_data\r\nWHERE\r\n  factory IN (${factory:sqlstring})\r\n  AND process IN (${process:sqlstring})\r\n  AND mo IN (${mo:sqlstring})\r\n  AND fpn IN (${fpn:sqlstring})\r\n  AND $__timeFilter(time)\r\n  AND eqp_id IN (${eqp_id:sqlstring})\r\n  AND layer_name IN (${layer_name:sqlstring})\r\n  AND log_id IN (${log_id:sqlstring})\r\n  AND je_4 IS NOT NULL\r\nGROUP BY\r\n  1,\r\n  2\r\nORDER BY\r\n  1",
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id || ' - je_4' AS metric,\n  AVG(je_4)::NUMERIC AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\n  AND je_4 IS NOT NULL\nGROUP BY\n  1,\n  2\nORDER BY\n  1",
                         "sql": {
                           "columns": [
                             {
@@ -2131,7 +2131,7 @@
                       "spec": {
                         "format": "time_series",
                         "legendFormat": "{{metric}}",
-                        "rawSql": "SELECT time_bucket('1 minute', time) AS time, eqp_id AS metric, MAX(CASE WHEN state THEN 1 ELSE 0 END) AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND process IN (${process:sqlstring}) AND mo IN (${mo:sqlstring}) AND fpn IN (${fpn:sqlstring}) AND $__timeFilter(time) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) GROUP BY 1, 2 ORDER BY 1"
+                        "rawSql": "SELECT\n  time_bucket ('1 minute', time) AS time,\n  eqp_id AS metric,\n  MAX(\n    CASE\n      WHEN state THEN 1\n      ELSE 0\n    END\n  ) AS value\nFROM\n  public.ldi_data\nWHERE\n  factory IN (${factory:sqlstring})\n  AND process IN (${process:sqlstring})\n  AND mo IN (${mo:sqlstring})\n  AND fpn IN (${fpn:sqlstring})\n  AND $__timeFilter(time)\n  AND eqp_id IN (${eqp_id:sqlstring})\n  AND layer_name IN (${layer_name:sqlstring})\n  AND log_id IN (${log_id:sqlstring})\nGROUP BY\n  1,\n  2\nORDER BY\n  1"
                       },
                       "labels": {
                         "grafana.app/export-label": "postgres-1",
