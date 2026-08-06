@@ -199,7 +199,7 @@ services:
 
   # ── Grafana ───────────────────────────────────────────────
   grafana:
-    image: grafana/grafana-oss:11.1.0
+    image: grafana/grafana:13.1.0
     container_name: ims-grafana
     <<: *default-restart
     init: true

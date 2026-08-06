@@ -601,43 +601,32 @@
             "lineWidth": 0,
             "spanNulls": false
           },
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "color": "#EF4444",
-                  "text": "CRIT"
-                },
-                "1": {
-                  "color": "#FACC15",
-                  "text": "WARN"
-                },
-                "2": {
-                  "color": "#22C55E",
-                  "text": "OK"
-                }
-              },
-              "type": "value"
-            }
-          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "#EF4444",
-                "value": 0
+                "value": null
               },
               {
                 "color": "#FACC15",
-                "value": 1
+                "value": 19
               },
               {
                 "color": "#22C55E",
-                "value": 2
+                "value": 20
+              },
+              {
+                "color": "#FACC15",
+                "value": 24.0001
+              },
+              {
+                "color": "#EF4444",
+                "value": 25.0001
               }
             ]
           },
-          "unit": "short"
+          "unit": "celsius"
         }
       },
       "gridPos": {
@@ -676,7 +665,7 @@
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "SELECT time, eqp_id AS metric, CASE WHEN temperature BETWEEN 20 AND 24 THEN 2 WHEN temperature BETWEEN 19 AND 25 THEN 1 ELSE 0 END AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND mo IN (${mo:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND $__timeFilter(time) AND temperature IS NOT NULL ORDER BY time ASC",
+          "rawSql": "SELECT time, eqp_id AS metric, temperature AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND mo IN (${mo:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND $__timeFilter(time) AND temperature IS NOT NULL ORDER BY time ASC",
           "refId": "A"
         }
       ],
@@ -706,43 +695,32 @@
             "lineWidth": 0,
             "spanNulls": false
           },
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "color": "#EF4444",
-                  "text": "CRIT"
-                },
-                "1": {
-                  "color": "#FACC15",
-                  "text": "WARN"
-                },
-                "2": {
-                  "color": "#22C55E",
-                  "text": "OK"
-                }
-              },
-              "type": "value"
-            }
-          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "#EF4444",
-                "value": 0
+                "value": null
               },
               {
                 "color": "#FACC15",
-                "value": 1
+                "value": 45
               },
               {
                 "color": "#22C55E",
-                "value": 2
+                "value": 50
+              },
+              {
+                "color": "#FACC15",
+                "value": 60.0001
+              },
+              {
+                "color": "#EF4444",
+                "value": 65.0001
               }
             ]
           },
-          "unit": "short"
+          "unit": "humidity"
         }
       },
       "gridPos": {
@@ -781,7 +759,7 @@
           },
           "format": "time_series",
           "legendFormat": "{{metric}}",
-          "rawSql": "SELECT time, eqp_id AS metric, CASE WHEN humidity BETWEEN 50 AND 60 THEN 2 WHEN humidity BETWEEN 45 AND 65 THEN 1 ELSE 0 END AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND mo IN (${mo:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND $__timeFilter(time) AND humidity IS NOT NULL ORDER BY time ASC",
+          "rawSql": "SELECT time, eqp_id AS metric, humidity AS value FROM public.ldi_data WHERE factory IN (${factory:sqlstring}) AND mo IN (${mo:sqlstring}) AND eqp_id IN (${eqp_id:sqlstring}) AND layer_name IN (${layer_name:sqlstring}) AND log_id IN (${log_id:sqlstring}) AND $__timeFilter(time) AND humidity IS NOT NULL ORDER BY time ASC",
           "refId": "A"
         }
       ],

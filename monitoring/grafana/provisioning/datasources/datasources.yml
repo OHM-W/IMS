@@ -2,7 +2,13 @@ apiVersion: 1
 deleteDatasources:
   - name: TimescaleDB
     orgId: 1
+  - name: LDI
+    orgId: 1
   - name: Prometheus
+    orgId: 1
+  - name: LDI-Main
+    orgId: 1
+  - name: ldi-postgres
     orgId: 1
 datasources:
   - name: TimescaleDB
@@ -21,12 +27,21 @@ datasources:
       maxOpenConns: 20
       maxIdleConns: 5
       connMaxLifetime: 14400
-  - name: Prometheus
-    uid: prometheus
-    type: prometheus
+  - name: LDI
+    uid: LDI
+    type: postgres
     access: proxy
-    url: http://prometheus:9090
-    isDefault: false
+    url: ims-timescaledb-2:5432
+    isDefault: true
+    database: ims
+    user: ${GRAFANA_DB_USER}
+    secureJsonData:
+      password: ${GRAFANA_DB_PASSWORD}
     jsonData:
-      httpMethod: POST
-      timeInterval: '15s'
+      database: ims
+      sslmode: disable
+      postgresVersion: 1600
+      timescaledb: true
+      maxOpenConns: 20
+      maxIdleConns: 5
+      connMaxLifetime: 14400
