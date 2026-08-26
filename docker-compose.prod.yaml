@@ -54,3 +54,24 @@ services:
         limits:
           cpus: '0.5'
           memory: 128M
+
+  backup:
+    image: postgres:16-alpine
+    container_name: ims-backup
+    restart: unless-stopped
+    volumes:
+      - ./scripts:/scripts:ro
+      - ./backups:/backups
+      - ./nodered_data:/nodered_data:ro
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in .env}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      PGHOST: timescaledb
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "0 2 * * * /scripts/backup.sh >> /backups/cron.log 2>&1" > /etc/crontabs/root
+        crond -f
+    networks:
+      - ims-internal

@@ -20,8 +20,8 @@
 | #   | Issue                                                              | Severity | Status            | Fix Plan                                                                               |
 | --- | ------------------------------------------------------------------ | -------- | ----------------- | -------------------------------------------------------------------------------------- |
 | 1   | PgBouncer port exposed on host                                     | ️ Medium  | Known             | Bind localhost-only or use reverse proxy                                               |
-| 2   | Node-RED Admin UI has no auth                                      | High     | Known             | Add `adminAuth` in settings.js before production                                       |
-| 3   | SNMP community string in plain text                                | ️ Medium  | Known             | Move to environment variable                                                           |
+| 2   | Node-RED Admin UI has no auth                                      | High     | Fixed             | Add `adminAuth` in settings.js before production                                       |
+| 3   | SNMP community string in plain text                                | ️ Medium  | Fixed             | Move to environment variable                                                           |
 | 4   | PgBouncer uses AUTH_TYPE: plain                                    | ️ Medium  | Known (trade-off) | Consider password hashing at source                                                    |
 | 5   | GitHub PAT hardcoded in `.mimocode/mimocode.json` (AI tool config) | High     | Known             | Revoke token at GitHub; replace with `${GITHUB_PERSONAL_ACCESS_TOKEN}` env placeholder |
 
@@ -32,7 +32,7 @@
 ### Before Granting Network Access
 
 - [x] PgBouncer has no host port binding — never published one in the base `docker-compose.yaml`, not a prod-overlay change
-- [ ] Enable Node-RED adminAuth (generate bcrypt hash)
+- [x] Enable Node-RED adminAuth (generate bcrypt hash)
 - [x] Grafana is not directly reachable from the host — `docker-compose.yaml` gives it no host port at all; the `proxy` service (nginx) is the only published entry point (3000), fronting both Grafana and `alarm-api` and gating the latter behind an `auth_request` check against Grafana's own session (see `docs/architecture/SECURITY_MODEL.md`)
 - [ ] Review all Docker secrets in `secrets/` directory
 - [ ] Enable SNMPv3 for production devices (replacing v2c)
