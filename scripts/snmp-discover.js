@@ -11,8 +11,8 @@
 const snmp = require('net-snmp');
 
 // ── CONFIG ──────────────────────────────────────────────────────────
-var IP = '10.0.0.1';
-var COMMUNITY = 'apex_mock';
+var IP = process.env.SNMP_HOST || '10.0.0.1';
+var COMMUNITY = process.env.SNMP_COMMUNITY || 'public';
 // ────────────────────────────────────────────────────────────────────
 
 var options = {

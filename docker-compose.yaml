@@ -164,6 +164,9 @@ services:
     depends_on:
       alertmanager:
         condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9090/-/healthy || exit 1"]
+      <<: *healthcheck-defaults
     networks:
       - ims-internal
       - ims-monitoring
@@ -191,6 +194,9 @@ services:
         reservations:
           cpus: '0.1'
           memory: 64M
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9093/-/healthy || exit 1"]
+      <<: *healthcheck-defaults
     networks:
       - ims-internal
       - ims-monitoring
@@ -303,6 +309,9 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8081/ || exit 1"]
+      <<: *healthcheck-defaults
     networks:
       - ims-internal
     logging: *default-logging
@@ -328,6 +337,9 @@ services:
         reservations:
           cpus: '0.1'
           memory: 32M
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z -u 127.0.0.1 ${SNMP_PORT:-161} || exit 1"]
+      <<: *healthcheck-defaults
     networks:
       - ims-internal
     logging: *default-logging
@@ -353,6 +365,9 @@ services:
         reservations:
           cpus: '0.1'
           memory: 64M
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9115/-/healthy || exit 1"]
+      <<: *healthcheck-defaults
     networks:
       - ims-internal
       - ims-monitoring
@@ -473,6 +488,7 @@ services:
       NODE_RED_ENABLE_PROJECTS: "false"
       NODE_OPTIONS: "--max-old-space-size=2048"
       CREDENTIAL_SECRET: ${NODE_RED_CREDENTIAL_SECRET:?set NODE_RED_CREDENTIAL_SECRET in .env}
+      SNMP_COMMUNITY: ${SNMP_COMMUNITY:-public}
       NODE_RED_ADMIN_USER: ${NODE_RED_ADMIN_USER:-admin}
       NODE_RED_ADMIN_PASSWORD_HASH: ${NODE_RED_ADMIN_PASSWORD_HASH:-}
       PGHOST: ims-pgbouncer
@@ -543,6 +559,9 @@ services:
     depends_on:
       timescaledb:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep -v grep | grep observability-archiver.sh || exit 1"]
+      <<: *healthcheck-defaults
     networks:
       - ims-internal
     logging: *default-logging
@@ -559,6 +578,9 @@ services:
       - "5050:80"
     networks:
       - ims-internal
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:80/misc/ping || exit 1"]
+      <<: *healthcheck-defaults
     depends_on:
       - timescaledb
     logging: *default-logging
