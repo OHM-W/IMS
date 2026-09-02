@@ -125,6 +125,16 @@ scratch_sql.txt
 .p11-scratch/
 .p11c-scratch/
 p*_scratch/
+.agents/
+venv/
+.coverage
+temp_probe.json
+implementation_plan*.md
+services/floorplan-web/backend/dist/
+services/floorplan-web/frontend/dist/
+services/floorplan-web/backend/data/databases.json
+!services/floorplan-web/backend/data/databases.json.example
 
 # Allow tracking agent skills
 !.agents/skills/
+

@@ -1,0 +1,3198 @@
+{
+  "uid": "floor1-canvas",
+  "title": "IMS Factory Floor 1 — Real-Time Canvas Floorplan",
+  "tags": [
+    "IMS",
+    "Factory",
+    "Floor1",
+    "CAD",
+    "Canvas",
+    "LDI"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 50,
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "editable": true,
+  "templating": {
+    "list": [
+      {
+        "name": "machine_id",
+        "type": "query",
+        "datasource": {
+          "type": "postgres",
+          "uid": "timescaledb"
+        },
+        "definition": "SELECT DISTINCT eqp_id FROM public.ldi_data ORDER BY eqp_id",
+        "query": "SELECT DISTINCT eqp_id FROM public.ldi_data ORDER BY eqp_id",
+        "multi": true,
+        "includeAll": true,
+        "allValue": "",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "hide": 0,
+        "label": "Equipment"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "canvas",
+      "title": "🏭 Factory Floor 1 — Real-Time CAD Layout & Live Machine Telemetry",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 26
+      },
+      "datasource": {
+        "type": "postgres",
+        "uid": "timescaledb"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "timescaledb"
+          },
+          "format": "table",
+          "rawSql": "SELECT DISTINCT ON (eqp_id)\n  eqp_id AS machine_name,\n  CASE WHEN state = true THEN 1 ELSE 2 END AS status,\n  ROUND(temperature::NUMERIC, 1) AS temperature,\n  ROUND(humidity::NUMERIC, 1) AS humidity,\n  ROUND(resist_dosage::NUMERIC, 2) AS resist_dosage,\n  ROUND(scan_speed::NUMERIC, 1) AS scan_speed\nFROM public.ldi_data\nORDER BY eqp_id, \"time\" DESC;",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "panZoom": true,
+        "showHide": {
+          "enabled": false
+        },
+        "root": {
+          "type": "frame",
+          "name": "Root",
+          "background": {
+            "color": {
+              "fixed": "#080c16",
+              "mode": "fixed"
+            },
+            "image": {
+              "fixed": "/public/plugins/3d-panel/img/floorplan_1F.png",
+              "mode": "fixed"
+            },
+            "size": "fill"
+          },
+          "elements": [
+            {
+              "id": "elem-ldi-01",
+              "name": "LDI-01",
+              "type": "metric-value",
+              "placement": {
+                "left": 1660,
+                "top": 440,
+                "width": 105,
+                "height": 48,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "LDI-01",
+                  "mode": "fixed",
+                  "size": 13
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#00FF87",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(0, 255, 135, 0.4)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#00FF87",
+                    "mode": "thresholds"
+                  },
+                  "width": 2
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: LDI-01",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=LDI-01&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-ldi-02",
+              "name": "LDI-02",
+              "type": "metric-value",
+              "placement": {
+                "left": 1790,
+                "top": 440,
+                "width": 105,
+                "height": 48,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "LDI-02",
+                  "mode": "fixed",
+                  "size": 13
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#00FF87",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(0, 255, 135, 0.4)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#00FF87",
+                    "mode": "thresholds"
+                  },
+                  "width": 2
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: LDI-02",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=LDI-02&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-ldi-03",
+              "name": "LDI-03",
+              "type": "metric-value",
+              "placement": {
+                "left": 1920,
+                "top": 440,
+                "width": 105,
+                "height": 48,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "LDI-03",
+                  "mode": "fixed",
+                  "size": 13
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#00FF87",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(0, 255, 135, 0.4)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#00FF87",
+                    "mode": "thresholds"
+                  },
+                  "width": 2
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: LDI-03",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=LDI-03&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-ldi-04",
+              "name": "LDI-04",
+              "type": "metric-value",
+              "placement": {
+                "left": 2050,
+                "top": 440,
+                "width": 105,
+                "height": 48,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "LDI-04",
+                  "mode": "fixed",
+                  "size": 13
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#00FF87",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(0, 255, 135, 0.4)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#00FF87",
+                    "mode": "thresholds"
+                  },
+                  "width": 2
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: LDI-04",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=LDI-04&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-ldi-05",
+              "name": "LDI-05",
+              "type": "metric-value",
+              "placement": {
+                "left": 2180,
+                "top": 440,
+                "width": 105,
+                "height": 48,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "LDI-05",
+                  "mode": "fixed",
+                  "size": 13
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#00FF87",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(0, 255, 135, 0.4)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#00FF87",
+                    "mode": "thresholds"
+                  },
+                  "width": 2
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: LDI-05",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=LDI-05&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-ldi-06",
+              "name": "LDI-06",
+              "type": "metric-value",
+              "placement": {
+                "left": 1660,
+                "top": 600,
+                "width": 105,
+                "height": 48,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "LDI-06",
+                  "mode": "fixed",
+                  "size": 13
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#00FF87",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(0, 255, 135, 0.4)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#00FF87",
+                    "mode": "thresholds"
+                  },
+                  "width": 2
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: LDI-06",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=LDI-06&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-ldi-07",
+              "name": "LDI-07",
+              "type": "metric-value",
+              "placement": {
+                "left": 1790,
+                "top": 600,
+                "width": 105,
+                "height": 48,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "LDI-07",
+                  "mode": "fixed",
+                  "size": 13
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#00FF87",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(0, 255, 135, 0.4)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#00FF87",
+                    "mode": "thresholds"
+                  },
+                  "width": 2
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: LDI-07",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=LDI-07&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-ldi-08",
+              "name": "LDI-08",
+              "type": "metric-value",
+              "placement": {
+                "left": 1920,
+                "top": 600,
+                "width": 105,
+                "height": 48,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "LDI-08",
+                  "mode": "fixed",
+                  "size": 13
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#00FF87",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(0, 255, 135, 0.4)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#00FF87",
+                    "mode": "thresholds"
+                  },
+                  "width": 2
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: LDI-08",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=LDI-08&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-ldi-09",
+              "name": "LDI-09",
+              "type": "metric-value",
+              "placement": {
+                "left": 2050,
+                "top": 600,
+                "width": 105,
+                "height": 48,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "LDI-09",
+                  "mode": "fixed",
+                  "size": 13
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#00FF87",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(0, 255, 135, 0.4)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#00FF87",
+                    "mode": "thresholds"
+                  },
+                  "width": 2
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: LDI-09",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=LDI-09&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-ldi-10",
+              "name": "LDI-10",
+              "type": "metric-value",
+              "placement": {
+                "left": 2180,
+                "top": 600,
+                "width": 105,
+                "height": 48,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "LDI-10",
+                  "mode": "fixed",
+                  "size": 13
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#00FF87",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(0, 255, 135, 0.4)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#00FF87",
+                    "mode": "thresholds"
+                  },
+                  "width": 2
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: LDI-10",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=LDI-10&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-01",
+              "name": "DR-01",
+              "type": "metric-value",
+              "placement": {
+                "left": 450,
+                "top": 320,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-01",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-01",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-01&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-02",
+              "name": "DR-02",
+              "type": "metric-value",
+              "placement": {
+                "left": 580,
+                "top": 320,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-02",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-02",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-02&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-03",
+              "name": "DR-03",
+              "type": "metric-value",
+              "placement": {
+                "left": 710,
+                "top": 320,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-03",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-03",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-03&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-04",
+              "name": "DR-04",
+              "type": "metric-value",
+              "placement": {
+                "left": 840,
+                "top": 320,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-04",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-04",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-04&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-05",
+              "name": "DR-05",
+              "type": "metric-value",
+              "placement": {
+                "left": 970,
+                "top": 320,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-05",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-05",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-05&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-06",
+              "name": "DR-06",
+              "type": "metric-value",
+              "placement": {
+                "left": 1100,
+                "top": 320,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-06",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-06",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-06&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-07",
+              "name": "DR-07",
+              "type": "metric-value",
+              "placement": {
+                "left": 450,
+                "top": 410,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-07",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-07",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-07&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-08",
+              "name": "DR-08",
+              "type": "metric-value",
+              "placement": {
+                "left": 580,
+                "top": 410,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-08",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-08",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-08&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-09",
+              "name": "DR-09",
+              "type": "metric-value",
+              "placement": {
+                "left": 710,
+                "top": 410,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-09",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-09",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-09&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-10",
+              "name": "DR-10",
+              "type": "metric-value",
+              "placement": {
+                "left": 840,
+                "top": 410,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-10",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-10",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-10&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-11",
+              "name": "DR-11",
+              "type": "metric-value",
+              "placement": {
+                "left": 970,
+                "top": 410,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-11",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-11",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-11&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-12",
+              "name": "DR-12",
+              "type": "metric-value",
+              "placement": {
+                "left": 1100,
+                "top": 410,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-12",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-12",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-12&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-13",
+              "name": "DR-13",
+              "type": "metric-value",
+              "placement": {
+                "left": 450,
+                "top": 500,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-13",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-13",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-13&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-14",
+              "name": "DR-14",
+              "type": "metric-value",
+              "placement": {
+                "left": 580,
+                "top": 500,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-14",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-14",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-14&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-15",
+              "name": "DR-15",
+              "type": "metric-value",
+              "placement": {
+                "left": 710,
+                "top": 500,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-15",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-15",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-15&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-16",
+              "name": "DR-16",
+              "type": "metric-value",
+              "placement": {
+                "left": 840,
+                "top": 500,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-16",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-16",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-16&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-17",
+              "name": "DR-17",
+              "type": "metric-value",
+              "placement": {
+                "left": 970,
+                "top": 500,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-17",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-17",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-17&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-18",
+              "name": "DR-18",
+              "type": "metric-value",
+              "placement": {
+                "left": 1100,
+                "top": 500,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-18",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-18",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-18&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-19",
+              "name": "DR-19",
+              "type": "metric-value",
+              "placement": {
+                "left": 450,
+                "top": 590,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-19",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-19",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-19&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-20",
+              "name": "DR-20",
+              "type": "metric-value",
+              "placement": {
+                "left": 580,
+                "top": 590,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-20",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-20",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-20&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-21",
+              "name": "DR-21",
+              "type": "metric-value",
+              "placement": {
+                "left": 710,
+                "top": 590,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-21",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-21",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-21&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-22",
+              "name": "DR-22",
+              "type": "metric-value",
+              "placement": {
+                "left": 840,
+                "top": 590,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-22",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-22",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-22&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-23",
+              "name": "DR-23",
+              "type": "metric-value",
+              "placement": {
+                "left": 970,
+                "top": 590,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-23",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-23",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-23&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dr-24",
+              "name": "DR-24",
+              "type": "metric-value",
+              "placement": {
+                "left": 1100,
+                "top": 590,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DR-24",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#38bdf8",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#38bdf8",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DR-24",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DR-24&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dc-01",
+              "name": "DC-1F-01",
+              "type": "metric-value",
+              "placement": {
+                "left": 520,
+                "top": 160,
+                "width": 90,
+                "height": 36,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DC-1F-01",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f59e0b",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f59e0b",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DC-1F-01",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DC-1F-01&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dc-02",
+              "name": "DC-1F-02",
+              "type": "metric-value",
+              "placement": {
+                "left": 740,
+                "top": 160,
+                "width": 90,
+                "height": 36,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DC-1F-02",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f59e0b",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f59e0b",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DC-1F-02",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DC-1F-02&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dc-03",
+              "name": "DC-1F-03",
+              "type": "metric-value",
+              "placement": {
+                "left": 960,
+                "top": 160,
+                "width": 90,
+                "height": 36,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DC-1F-03",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f59e0b",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f59e0b",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DC-1F-03",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DC-1F-03&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dc-04",
+              "name": "DC-1F-04",
+              "type": "metric-value",
+              "placement": {
+                "left": 1180,
+                "top": 160,
+                "width": 90,
+                "height": 36,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DC-1F-04",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f59e0b",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f59e0b",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DC-1F-04",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DC-1F-04&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dc-05",
+              "name": "DC-1F-05",
+              "type": "metric-value",
+              "placement": {
+                "left": 1400,
+                "top": 160,
+                "width": 90,
+                "height": 36,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DC-1F-05",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f59e0b",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f59e0b",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DC-1F-05",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DC-1F-05&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dc-06",
+              "name": "DC-1F-06",
+              "type": "metric-value",
+              "placement": {
+                "left": 1620,
+                "top": 160,
+                "width": 90,
+                "height": 36,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DC-1F-06",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f59e0b",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f59e0b",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DC-1F-06",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DC-1F-06&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dc-07",
+              "name": "DC-1F-07",
+              "type": "metric-value",
+              "placement": {
+                "left": 1840,
+                "top": 160,
+                "width": 90,
+                "height": 36,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DC-1F-07",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f59e0b",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f59e0b",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DC-1F-07",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DC-1F-07&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dc-08",
+              "name": "DC-1F-08",
+              "type": "metric-value",
+              "placement": {
+                "left": 2060,
+                "top": 160,
+                "width": 90,
+                "height": 36,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DC-1F-08",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f59e0b",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f59e0b",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DC-1F-08",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DC-1F-08&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-dc-09",
+              "name": "DC-1F-09",
+              "type": "metric-value",
+              "placement": {
+                "left": 2280,
+                "top": 160,
+                "width": 90,
+                "height": 36,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "DC-1F-09",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f59e0b",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f59e0b",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: DC-1F-09",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=DC-1F-09&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-pah-01",
+              "name": "PAH-1F-01",
+              "type": "metric-value",
+              "placement": {
+                "left": 2500,
+                "top": 180,
+                "width": 100,
+                "height": 42,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "PAH-1F-01",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#a855f7",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#a855f7",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: PAH-1F-01",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=PAH-1F-01&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-pah-02",
+              "name": "PAH-1F-02",
+              "type": "metric-value",
+              "placement": {
+                "left": 2750,
+                "top": 180,
+                "width": 100,
+                "height": 42,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "PAH-1F-02",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#a855f7",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#a855f7",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: PAH-1F-02",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=PAH-1F-02&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-pah-03",
+              "name": "PAH-1F-03",
+              "type": "metric-value",
+              "placement": {
+                "left": 2500,
+                "top": 360,
+                "width": 100,
+                "height": 42,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "PAH-1F-03",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#a855f7",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#a855f7",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: PAH-1F-03",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=PAH-1F-03&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-xr-01",
+              "name": "XR-01",
+              "type": "metric-value",
+              "placement": {
+                "left": 480,
+                "top": 850,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "XR-01",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#ec4899",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#ec4899",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: XR-01",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=XR-01&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-xr-02",
+              "name": "XR-02",
+              "type": "metric-value",
+              "placement": {
+                "left": 640,
+                "top": 850,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "XR-02",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#ec4899",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#ec4899",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: XR-02",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=XR-02&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-xr-03",
+              "name": "XR-03",
+              "type": "metric-value",
+              "placement": {
+                "left": 800,
+                "top": 850,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "XR-03",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#ec4899",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#ec4899",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: XR-03",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=XR-03&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-xr-04",
+              "name": "AOI-01",
+              "type": "metric-value",
+              "placement": {
+                "left": 960,
+                "top": 850,
+                "width": 85,
+                "height": 38,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "AOI-01",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#ec4899",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#ec4899",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: AOI-01",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=AOI-01&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-press-01",
+              "name": "PRESS-01",
+              "type": "metric-value",
+              "placement": {
+                "left": 1250,
+                "top": 820,
+                "width": 95,
+                "height": 42,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "PRESS-01",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#ef4444",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#ef4444",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: PRESS-01",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=PRESS-01&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-press-02",
+              "name": "PRESS-02",
+              "type": "metric-value",
+              "placement": {
+                "left": 1400,
+                "top": 820,
+                "width": 95,
+                "height": 42,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "PRESS-02",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#ef4444",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#ef4444",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: PRESS-02",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=PRESS-02&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-press-03",
+              "name": "PRESS-03",
+              "type": "metric-value",
+              "placement": {
+                "left": 1550,
+                "top": 820,
+                "width": 95,
+                "height": 42,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "PRESS-03",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#ef4444",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#ef4444",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: PRESS-03",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=PRESS-03&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-press-04",
+              "name": "PRESS-04",
+              "type": "metric-value",
+              "placement": {
+                "left": 1700,
+                "top": 820,
+                "width": 95,
+                "height": 42,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "PRESS-04",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#ef4444",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#ef4444",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: PRESS-04",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=PRESS-04&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-press-05",
+              "name": "BOILER-01",
+              "type": "metric-value",
+              "placement": {
+                "left": 1900,
+                "top": 820,
+                "width": 95,
+                "height": 42,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "BOILER-01",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#ef4444",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#ef4444",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: BOILER-01",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=BOILER-01&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-bo-01",
+              "name": "BROWN-OX-01",
+              "type": "metric-value",
+              "placement": {
+                "left": 1250,
+                "top": 1020,
+                "width": 100,
+                "height": 40,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "BROWN-OX-01",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f97316",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f97316",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: BROWN-OX-01",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=BROWN-OX-01&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-bo-02",
+              "name": "BROWN-OX-02",
+              "type": "metric-value",
+              "placement": {
+                "left": 1400,
+                "top": 1020,
+                "width": 100,
+                "height": 40,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "BROWN-OX-02",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f97316",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f97316",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: BROWN-OX-02",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=BROWN-OX-02&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-bo-03",
+              "name": "BROWN-OX-03",
+              "type": "metric-value",
+              "placement": {
+                "left": 1550,
+                "top": 1020,
+                "width": 100,
+                "height": 40,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "BROWN-OX-03",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f97316",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f97316",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: BROWN-OX-03",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=BROWN-OX-03&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-bo-04",
+              "name": "BROWN-OX-04",
+              "type": "metric-value",
+              "placement": {
+                "left": 1700,
+                "top": 1020,
+                "width": 100,
+                "height": 40,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "BROWN-OX-04",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f97316",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f97316",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: BROWN-OX-04",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=BROWN-OX-04&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-bo-05",
+              "name": "BROWN-OX-05",
+              "type": "metric-value",
+              "placement": {
+                "left": 1850,
+                "top": 1020,
+                "width": 100,
+                "height": 40,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "BROWN-OX-05",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f97316",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f97316",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: BROWN-OX-05",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=BROWN-OX-05&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-bo-06",
+              "name": "BROWN-OX-06",
+              "type": "metric-value",
+              "placement": {
+                "left": 2000,
+                "top": 1020,
+                "width": 100,
+                "height": 40,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "BROWN-OX-06",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#f97316",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#f97316",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: BROWN-OX-06",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=BROWN-OX-06&from=now-15m&to=now"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "elem-gen-500kva",
+              "name": "CT_DIESEL_500KVA",
+              "type": "metric-value",
+              "placement": {
+                "left": 2700,
+                "top": 850,
+                "width": 130,
+                "height": 55,
+                "rotation": 0
+              },
+              "constraint": {
+                "horizontal": "left",
+                "vertical": "top"
+              },
+              "config": {
+                "text": {
+                  "fixed": "CT_DIESEL_500KVA",
+                  "mode": "fixed",
+                  "size": 11
+                },
+                "color": {
+                  "field": "status",
+                  "fixed": "#eab308",
+                  "mode": "thresholds"
+                },
+                "background": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "rgba(30, 41, 59, 0.9)",
+                    "mode": "thresholds"
+                  }
+                },
+                "border": {
+                  "color": {
+                    "field": "status",
+                    "fixed": "#eab308",
+                    "mode": "thresholds"
+                  },
+                  "width": 1
+                },
+                "links": [
+                  {
+                    "title": "Drill Down: CT_DIESEL_500KVA",
+                    "url": "/d/ims-engineering/ims-engineering-drill-down?var-machine_id=CT_DIESEL_500KVA&from=now-15m&to=now"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "#64748B"
+              },
+              {
+                "value": 0,
+                "color": "#64748B"
+              },
+              {
+                "value": 1,
+                "color": "#00FF87"
+              },
+              {
+                "value": 2,
+                "color": "#FFB800"
+              },
+              {
+                "value": 3,
+                "color": "#FF003C"
+              },
+              {
+                "value": 4,
+                "color": "#00F2FE"
+              }
+            ]
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "OFF",
+                  "color": "#64748B"
+                },
+                "1": {
+                  "text": "RUN",
+                  "color": "#00FF87"
+                },
+                "2": {
+                  "text": "IDLE",
+                  "color": "#FFB800"
+                },
+                "3": {
+                  "text": "ALARM",
+                  "color": "#FF003C"
+                },
+                "4": {
+                  "text": "LOTO",
+                  "color": "#00F2FE"
+                }
+              }
+            }
+          ],
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      }
+    }
+  ]
+}
