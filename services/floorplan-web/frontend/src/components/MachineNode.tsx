@@ -56,19 +56,19 @@ export const MachineNode: React.FC<MachineNodeProps> = ({
     const displayName = coord.name || machineId;
     const cleanLabel = displayName.replace(/^DRL-/, '');
     
-    // Solid SCADA chip styling
+    // Solid Status Fill: High-contrast visibility across factory floorplan
     const bgStyle =
       status === 1
-        ? 'bg-[#00FF87] text-[#071329] font-black'
+        ? 'bg-emerald-500 text-slate-950 font-black shadow-sm'
         : status === 2
-        ? 'bg-[#FFB800] text-[#071329] font-black'
+        ? 'bg-amber-400 text-slate-950 font-black shadow-sm'
         : status === 3
-        ? 'bg-[#FF003C] text-white font-black animate-pulse shadow-[0_0_8px_rgba(255,0,60,0.8)]'
+        ? 'bg-red-500 text-white font-black animate-pulse shadow-sm'
         : status === 4
-        ? 'bg-[#00F2FE] text-[#071329] font-black'
+        ? 'bg-cyan-400 text-slate-950 font-black shadow-sm'
         : status === 0
-        ? 'bg-[#64748B]/60 text-slate-200 border border-slate-600'
-        : 'bg-[#0c1a30]/80 text-slate-300 border border-slate-500/60';
+        ? 'bg-slate-600 text-slate-100 font-bold border border-slate-500'
+        : 'bg-slate-800/90 text-slate-300 font-bold border border-slate-600/70';
 
     return (
       <div
@@ -78,7 +78,7 @@ export const MachineNode: React.FC<MachineNodeProps> = ({
         className={`relative w-full h-full rounded-[2px] cursor-pointer select-none transition-all duration-150 flex items-center justify-center ${bgStyle} ${
           isSelected
             ? 'ring-2 ring-white ring-offset-1 ring-offset-[#071329] scale-125 z-30'
-            : 'hover:scale-110 hover:brightness-125'
+            : 'hover:scale-110 hover:brightness-110'
         } ${isDimmed ? 'opacity-25' : 'opacity-100'}`}
       >
         <span className="font-mono text-[8px] leading-none tracking-tighter truncate">
@@ -93,18 +93,15 @@ export const MachineNode: React.FC<MachineNodeProps> = ({
     <div
       data-testid={`machine-node-${machineId}`}
       onClick={() => onSelect(machineId)}
-      className={`relative w-full h-full rounded-lg p-1.5 cursor-pointer select-none transition-all duration-200 backdrop-blur-md flex flex-col justify-between ${
+      className={`relative w-full h-full rounded p-1.5 cursor-pointer select-none transition-all duration-150 flex flex-col justify-between ${
         isAlarm
-          ? 'bg-red-950/85 border-2 border-[#FF003C] animate-pulse-alarm shadow-[0_0_20px_rgba(255,0,60,0.7)]'
-          : `bg-[#0F172A]/90 border ${theme.borderClass}`
+          ? 'bg-red-950/90 border-2 border-red-500 animate-pulse-alarm'
+          : `bg-[#0f172a]/95 border-2 ${theme.borderClass}`
       } ${
         isSelected
-          ? 'ring-2 ring-white ring-offset-2 ring-offset-[#080c16] scale-105 z-30'
+          ? 'ring-2 ring-white ring-offset-1 ring-offset-[#080c16] scale-105 z-30'
           : 'hover:scale-102 hover:border-slate-300'
       } ${isDimmed ? 'opacity-30' : 'opacity-100'}`}
-      style={{
-        boxShadow: isAlarm ? undefined : theme.glow !== 'none' ? theme.glow : undefined,
-      }}
     >
       {/* Header: Machine ID and Status Badge */}
       <div className="flex items-center justify-between gap-1 mb-0.5">

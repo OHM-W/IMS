@@ -5,7 +5,7 @@ import {
   RotateCcw,
   Maximize2,
   Radio,
-  Cpu,
+  Sliders,
 } from 'lucide-react';
 import { ConnectionState, LdiMachine, PanzoomControls } from '../types/ldi';
 import { FleetFilterOption } from '../types/fleet';
@@ -52,30 +52,30 @@ export const TopBar: React.FC<TopBarProps> = ({
     switch (connectionState) {
       case 'connected':
         return (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#00FF87]/15 border border-[#00FF87]/40 rounded-full font-mono text-xs text-[#00FF87] shadow-[0_0_10px_rgba(0,255,135,0.25)]">
-            <span className="w-2 h-2 rounded-full bg-[#00FF87] animate-ping" />
-            <span className="font-bold">● LIVE</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-950/60 border border-emerald-600/60 rounded text-xs font-mono text-emerald-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span className="font-semibold tracking-wide">TELEMETRY LIVE</span>
           </div>
         );
       case 'connecting':
         return (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FFB800]/15 border border-[#FFB800]/40 rounded-full font-mono text-xs text-[#FFB800]">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-950/60 border border-amber-600/60 rounded text-xs font-mono text-amber-400">
             <Radio className="w-3.5 h-3.5 animate-spin" />
-            <span>CONNECTING...</span>
+            <span>CONNECTING</span>
           </div>
         );
       case 'reconnecting':
         return (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FFB800]/20 border border-[#FFB800]/50 rounded-full font-mono text-xs text-[#FFB800] animate-pulse">
-            <Radio className="w-3.5 h-3.5" />
-            <span>RECONNECTING ({retryCount})</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-950/80 border border-amber-500 rounded text-xs font-mono text-amber-300">
+            <Radio className="w-3.5 h-3.5 animate-pulse" />
+            <span>RETRY ({retryCount})</span>
           </div>
         );
       case 'disconnected':
       default:
         return (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FF003C]/20 border border-[#FF003C]/50 rounded-full font-mono text-xs text-[#FF003C]">
-            <span className="w-2 h-2 rounded-full bg-[#FF003C]" />
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-950/80 border border-red-500 rounded text-xs font-mono text-red-300 font-bold">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
             <span>DISCONNECTED</span>
           </div>
         );
@@ -85,110 +85,109 @@ export const TopBar: React.FC<TopBarProps> = ({
   return (
     <header
       data-testid="top-bar"
-      className="h-14 bg-[#080c16]/95 border-b border-slate-800 backdrop-blur-md px-4 flex items-center justify-between select-none z-30 relative"
+      className="h-12 bg-[#0c121e] border-b border-slate-800/90 px-4 flex items-center justify-between select-none z-30 relative"
     >
-      {/* Brand & Area Title */}
+      {/* Brand & Factory Metadata */}
       <div className="flex items-center gap-3">
-        <div className="p-1.5 bg-cyan-950/60 border border-cyan-500/40 rounded-lg">
-          <Cpu className="w-5 h-5 text-[#00F2FE]" />
+        <div className="px-2 py-1 bg-slate-900 border border-slate-700/80 rounded flex items-center gap-1.5 text-slate-200">
+          <Sliders className="w-4 h-4 text-emerald-400" />
+          <span className="font-mono text-xs font-bold tracking-wider">IMS SCADA</span>
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-mono text-sm font-bold tracking-tight text-slate-100 uppercase">
-              IMS Factory Digital Twin
+            <h1 className="text-xs font-semibold tracking-tight text-slate-200 uppercase font-sans">
+              Factory Floor 1F • Plant Twin
             </h1>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 bg-slate-800 border border-slate-700 text-slate-300 rounded">
-              1F Floorplan
+            <span className="text-[10px] font-mono px-1.5 py-0.5 bg-slate-800/80 border border-slate-700/60 text-slate-400 rounded">
+              REV 2.4
             </span>
           </div>
-          <p className="text-[11px] text-slate-400">
-            Multi-Process SCADA Telemetry &amp; Machine Fleet
-          </p>
         </div>
       </div>
 
-      {/* KPI Status Summary Bar (Standard 6-State SCADA Legend) */}
-      <div className="hidden lg:flex items-center gap-2 font-mono text-xs">
-        <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-900/80 border border-slate-800 rounded-md">
-          <span className="text-slate-400">TOTAL:</span>
+      {/* KPI Status Strip: Clean, High-Density Industrial Summary */}
+      <div className="hidden lg:flex items-center bg-slate-900/90 border border-slate-800 rounded divide-x divide-slate-800 text-xs font-mono">
+        <div className="px-3 py-1 flex items-center gap-1.5">
+          <span className="text-slate-500 text-[11px]">FLEET:</span>
           <span className="font-bold text-slate-200">{total}</span>
         </div>
-        <div className="flex items-center gap-1.5 px-2 py-1 bg-[#00FF87]/10 border border-[#00FF87]/30 rounded-md text-[#00FF87]">
-          <span>RUN:</span>
+        <div className="px-3 py-1 flex items-center gap-1.5 text-emerald-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span className="text-slate-400 text-[11px]">RUN:</span>
           <span className="font-bold">{running}</span>
         </div>
-        <div className="flex items-center gap-1.5 px-2 py-1 bg-[#FFB800]/10 border border-[#FFB800]/30 rounded-md text-[#FFB800]">
-          <span>IDLE:</span>
+        <div className="px-3 py-1 flex items-center gap-1.5 text-amber-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+          <span className="text-slate-400 text-[11px]">IDLE:</span>
           <span className="font-bold">{idle}</span>
         </div>
-        {alarm > 0 ? (
-          <div className="flex items-center gap-1.5 px-2 py-1 bg-[#FF003C]/20 border border-[#FF003C] rounded-md text-[#FF003C] font-bold animate-pulse">
-            <span>ALARM:</span>
-            <span>{alarm}</span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-1.5 px-2 py-1 bg-[#FF003C]/10 border border-[#FF003C]/30 rounded-md text-[#FF003C]">
-            <span>ALARM:</span>
-            <span className="font-bold">{alarm}</span>
-          </div>
-        )}
+        <div className={`px-3 py-1 flex items-center gap-1.5 ${
+          alarm > 0 ? 'bg-red-950/60 text-red-300 font-bold border-red-600/50' : 'text-slate-400'
+        }`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${alarm > 0 ? 'bg-red-500 animate-pulse' : 'bg-red-900'}`} />
+          <span className="text-slate-400 text-[11px]">ALARM:</span>
+          <span>{alarm}</span>
+        </div>
         {loto > 0 && (
-          <div className="flex items-center gap-1.5 px-2 py-1 bg-[#00F2FE]/10 border border-[#00F2FE]/30 rounded-md text-[#00F2FE]">
-            <span>LOTO:</span>
+          <div className="px-3 py-1 flex items-center gap-1.5 text-cyan-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500" />
+            <span className="text-slate-400 text-[11px]">PM:</span>
             <span className="font-bold">{loto}</span>
           </div>
         )}
-        <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-800/40 border border-slate-800 rounded-md text-slate-400">
-          <span>OFF:</span>
+        <div className="px-3 py-1 flex items-center gap-1.5 text-slate-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+          <span className="text-slate-500 text-[11px]">OFF:</span>
           <span className="font-bold">{off}</span>
         </div>
         {undefine > 0 && (
-          <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-800/20 border border-slate-700/40 rounded-md text-slate-300">
-            <span>UNDEFINE:</span>
-            <span className="font-bold">{undefine}</span>
+          <div className="px-3 py-1 flex items-center gap-1.5 text-slate-500">
+            <span className="text-slate-500 text-[11px]">UNMAPPED:</span>
+            <span>{undefine}</span>
           </div>
         )}
       </div>
 
-      {/* Right Controls: Panzoom actions, Live Badge & Clock */}
-      <div className="flex items-center gap-3">
-        {/* Navigation / Panzoom buttons */}
-        <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
+      {/* Right Controls: Panzoom, Connection Status & System Clock */}
+      <div className="flex items-center gap-2.5">
+        {/* Navigation Controls Group */}
+        <div className="flex items-center bg-slate-900 border border-slate-800 rounded p-0.5 text-slate-400">
           <button
             onClick={() => panzoomControls?.zoomIn()}
-            className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded transition-colors"
+            className="p-1 hover:text-slate-100 hover:bg-slate-800 rounded transition-colors"
             title="Zoom In (+)"
           >
-            <ZoomIn className="w-4 h-4" />
+            <ZoomIn className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => panzoomControls?.zoomOut()}
-            className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded transition-colors"
+            className="p-1 hover:text-slate-100 hover:bg-slate-800 rounded transition-colors"
             title="Zoom Out (-)"
           >
-            <ZoomOut className="w-4 h-4" />
+            <ZoomOut className="w-3.5 h-3.5" />
           </button>
+          <div className="w-[1px] h-3.5 bg-slate-800 mx-0.5" />
           <button
             onClick={() => panzoomControls?.focusCleanroom()}
-            className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded transition-colors"
-            title="Focus Cleanroom"
+            className="p-1 hover:text-emerald-400 hover:bg-slate-800 rounded transition-colors"
+            title="Focus Laser Area"
           >
-            <Maximize2 className="w-4 h-4 text-[#00FF87]" />
+            <Maximize2 className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => panzoomControls?.resetView()}
-            className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded transition-colors"
-            title="Reset Floorplan View"
+            className="p-1 hover:text-slate-100 hover:bg-slate-800 rounded transition-colors"
+            title="Reset Pan/Zoom (0)"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        {/* Live status badge */}
+        {/* Live Status Badge */}
         {renderConnectionBadge()}
 
-        {/* Real-time Clock */}
-        <div className="hidden sm:block font-mono text-xs font-semibold text-slate-300 px-2 py-1 bg-slate-900/60 rounded border border-slate-800">
+        {/* Precision Clock */}
+        <div className="hidden sm:block font-mono text-xs text-slate-400 px-2 py-1 bg-slate-900/80 rounded border border-slate-800">
           {timeStr || '--:--:--'}
         </div>
       </div>

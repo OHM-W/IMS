@@ -610,9 +610,9 @@ export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGPro
                   >
                     <div
                       onPointerDown={(e) => handleNodePointerDown(e, machine)}
-                      className={`draggable-node w-full h-full relative touch-none select-none transition-shadow ${
-                        isBeingDragged ? 'z-50 scale-110 shadow-[0_0_25px_rgba(245,158,11,0.8)] ring-2 ring-amber-400 opacity-90' : ''
-                      } ${isEditSelected && isEditMode ? 'ring-2 ring-cyan-400 ring-offset-1 ring-offset-[#080c16] shadow-[0_0_15px_rgba(6,182,212,0.7)] z-40' : ''}`}
+                      className={`draggable-node w-full h-full relative touch-none select-none ${
+                        isBeingDragged ? 'z-50 scale-105 ring-2 ring-amber-400 opacity-90' : ''
+                      } ${isEditSelected && isEditMode ? 'ring-2 ring-cyan-400 ring-offset-1 ring-offset-[#080c16] z-40' : ''}`}
                     >
                       <MachineNode
                         coord={machine}
@@ -622,11 +622,11 @@ export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGPro
                         onSelect={onSelectMachine}
                       />
 
-                      {/* Edit Mode Visual Badges */}
+                      {/* Edit Mode Visual Indicators */}
                       {isEditMode && (
                         <>
-                          <div className={`absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border border-slate-900 shadow-sm pointer-events-none ${
-                            isEditSelected ? 'bg-cyan-400 animate-ping' : 'bg-amber-400'
+                          <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full border border-slate-900 pointer-events-none ${
+                            isEditSelected ? 'bg-cyan-400' : 'bg-amber-400'
                           }`} />
                           
                           {/* Corner Resize Handle on Bottom-Right */}
@@ -661,63 +661,69 @@ export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGPro
               />
             )}
 
-            {/* Draggable Industrial SCADA 6-State Legend Box */}
+            {/* Draggable High-Performance SCADA Status Legend */}
             <g
               id="scada-legend-box"
               transform={`translate(${legendPos.x}, ${legendPos.y})`}
               onPointerDown={handleLegendPointerDown}
               className={`draggable-node select-none cursor-move transition-opacity ${
-                isDraggingLegend ? 'opacity-90 filter drop-shadow-[0_0_20px_rgba(56,189,248,0.9)]' : 'hover:opacity-100'
+                isDraggingLegend ? 'opacity-90' : 'hover:opacity-100'
               }`}
             >
+              {/* Matte Slate Panel Background */}
               <rect
-                width="220"
-                height="310"
-                rx="8"
-                fill="#0a1936"
-                fillOpacity="0.95"
-                stroke="#38bdf8"
-                strokeWidth="2"
-                className="hover:stroke-cyan-300 transition-colors"
+                width="200"
+                height="240"
+                rx="4"
+                fill="#0b101b"
+                fillOpacity="0.96"
+                stroke="#1e293b"
+                strokeWidth="1"
               />
+              
+              {/* Header */}
               <text
-                x="110"
-                y="28"
-                fill="#ffffff"
-                fontSize="14"
-                fontWeight="bold"
-                fontFamily="Segoe UI, Arial, sans-serif"
-                textAnchor="middle"
-                letterSpacing="1.5"
-                className="cursor-move"
+                x="15"
+                y="24"
+                fill="#94a3b8"
+                fontSize="11"
+                fontWeight="600"
+                fontFamily="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+                letterSpacing="1"
               >
-                LEGEND ✥
+                STATUS LEGEND
               </text>
-              <line x1="15" y1="38" x2="205" y2="38" stroke="#334155" strokeWidth="1" />
+              <line x1="15" y1="32" x2="185" y2="32" stroke="#1e293b" strokeWidth="1" />
 
-              {/* Legend Item: Off */}
-              <rect x="20" y="50" width="180" height="32" rx="4" fill="#64748b" fillOpacity="0.4" stroke="#64748b" strokeWidth="1" />
-              <text x="110" y="71" fill="#cbd5e1" fontSize="13" fontWeight="bold" fontFamily="Segoe UI, Arial, sans-serif" textAnchor="middle">Off</text>
+              {/* 1. RUN */}
+              <rect x="15" y="44" width="12" height="12" rx="2" fill="#10b981" />
+              <text x="36" y="54" fill="#e2e8f0" fontSize="11" fontWeight="600" fontFamily="ui-monospace, monospace">RUN</text>
+              <text x="185" y="54" fill="#64748b" fontSize="10" fontFamily="ui-monospace, monospace" textAnchor="end">ACTIVE</text>
 
-              {/* Legend Item: Down */}
-              <rect x="20" y="92" width="180" height="32" rx="4" fill="#ff003c" fillOpacity="0.85" stroke="#ff003c" strokeWidth="1" />
-              <text x="110" y="113" fill="#ffffff" fontSize="13" fontWeight="bold" fontFamily="Segoe UI, Arial, sans-serif" textAnchor="middle">Down</text>
+              {/* 2. IDLE */}
+              <rect x="15" y="74" width="12" height="12" rx="2" fill="#f59e0b" />
+              <text x="36" y="84" fill="#e2e8f0" fontSize="11" fontWeight="600" fontFamily="ui-monospace, monospace">IDLE</text>
+              <text x="185" y="84" fill="#64748b" fontSize="10" fontFamily="ui-monospace, monospace" textAnchor="end">STANDBY</text>
 
-              {/* Legend Item: Idle */}
-              <rect x="20" y="134" width="180" height="32" rx="4" fill="#ffb800" fillOpacity="0.85" stroke="#ffb800" strokeWidth="1" />
-              <text x="110" y="155" fill="#ffffff" fontSize="13" fontWeight="bold" fontFamily="Segoe UI, Arial, sans-serif" textAnchor="middle">Idle</text>
+              {/* 3. ALARM */}
+              <rect x="15" y="104" width="12" height="12" rx="2" fill="#ef4444" />
+              <text x="36" y="114" fill="#f87171" fontSize="11" fontWeight="700" fontFamily="ui-monospace, monospace">ALARM</text>
+              <text x="185" y="114" fill="#ef4444" fontSize="10" fontWeight="600" fontFamily="ui-monospace, monospace" textAnchor="end">CRITICAL</text>
 
-              {/* Legend Item: Initial/PM/Stop */}
-              <rect x="20" y="176" width="180" height="32" rx="4" fill="#00f2fe" fillOpacity="0.85" stroke="#00f2fe" strokeWidth="1" />
-              <text x="110" y="197" fill="#071329" fontSize="12" fontWeight="bold" fontFamily="Segoe UI, Arial, sans-serif" textAnchor="middle">Initial,PM,Stop</text>
+              {/* 4. STOP / PM */}
+              <rect x="15" y="134" width="12" height="12" rx="2" fill="#06b6d4" />
+              <text x="36" y="144" fill="#e2e8f0" fontSize="11" fontWeight="600" fontFamily="ui-monospace, monospace">STOP / PM</text>
+              <text x="185" y="144" fill="#64748b" fontSize="10" fontFamily="ui-monospace, monospace" textAnchor="end">SERVICE</text>
 
-              {/* Legend Item: Run */}
-              <rect x="20" y="218" width="180" height="32" rx="4" fill="#00ff87" fillOpacity="0.85" stroke="#00ff87" strokeWidth="1" />
-              <text x="110" y="239" fill="#071329" fontSize="13" fontWeight="bold" fontFamily="Segoe UI, Arial, sans-serif" textAnchor="middle">Run</text>
+              {/* 5. OFF */}
+              <rect x="15" y="164" width="12" height="12" rx="2" fill="#64748b" />
+              <text x="36" y="174" fill="#94a3b8" fontSize="11" fontWeight="500" fontFamily="ui-monospace, monospace">OFF</text>
+              <text x="185" y="174" fill="#64748b" fontSize="10" fontFamily="ui-monospace, monospace" textAnchor="end">NO SYNC</text>
 
-              {/* Legend Item: Undefine */}
-              <rect x="20" y="260" width="180" height="32" rx="4" fill="#eceff1" fillOpacity="0.15" stroke="#eceff1" strokeWidth="1" strokeDasharray="3 3" />
-              <text x="110" y="281" fill="#eceff1" fontSize="13" fontWeight="bold" fontFamily="Segoe UI, Arial, sans-serif" textAnchor="middle">Undefine</text>
+              {/* 6. UNDEFINE */}
+              <rect x="15" y="194" width="12" height="12" rx="2" fill="none" stroke="#475569" strokeWidth="1" strokeDasharray="2 2" />
+              <text x="36" y="204" fill="#64748b" fontSize="11" fontWeight="500" fontFamily="ui-monospace, monospace">UNMAPPED</text>
+              <text x="185" y="204" fill="#475569" fontSize="10" fontFamily="ui-monospace, monospace" textAnchor="end">STATIC</text>
             </g>
           </g>
         </svg>

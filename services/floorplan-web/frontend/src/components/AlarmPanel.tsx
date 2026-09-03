@@ -25,48 +25,48 @@ export const AlarmPanel: React.FC<AlarmPanelProps> = ({ alarms, onFocusMachine }
   return (
     <div
       data-testid="alarm-panel"
-      className="fixed bottom-6 left-6 z-40 max-w-md w-full bg-red-950/90 border-2 border-[#FF003C] rounded-xl shadow-[0_0_30px_rgba(255,0,60,0.45)] backdrop-blur-md overflow-hidden transition-all duration-200"
+      className="fixed bottom-8 left-4 z-40 max-w-sm w-full bg-[#160b10] border border-red-600/80 rounded shadow-2xl overflow-hidden transition-all duration-150"
     >
       {/* Header Banner */}
       <div
         onClick={() => setIsExpanded(!isExpanded)}
-        className="p-3 bg-red-900/40 flex items-center justify-between cursor-pointer select-none border-b border-red-800/60"
+        className="px-3 py-2 bg-red-950/90 flex items-center justify-between cursor-pointer select-none border-b border-red-800/60"
       >
         <div className="flex items-center gap-2">
-          <AlertOctagon className="w-5 h-5 text-[#FF003C] animate-pulse" />
-          <span className="font-mono text-xs font-bold text-red-100 tracking-wider">
-            ACTIVE ALARMS ({alarms.length})
+          <AlertOctagon className="w-4 h-4 text-red-400" />
+          <span className="font-mono text-xs font-bold text-red-200 tracking-wider">
+            CRITICAL ALARMS ({alarms.length})
           </span>
         </div>
-        <button className="text-red-300 hover:text-white transition-colors">
+        <button className="text-red-400 hover:text-red-200 transition-colors">
           {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
         </button>
       </div>
 
       {/* Alarm Items List */}
       {isExpanded && (
-        <div className="p-2 max-h-48 overflow-y-auto space-y-1.5 font-mono text-xs">
+        <div className="p-1.5 max-h-48 overflow-y-auto space-y-1 font-mono text-xs divide-y divide-red-950/40">
           {alarms.map((m) => {
             const coord = MACHINE_MAP.get(m.eqp_id);
             return (
               <div
                 key={m.eqp_id}
                 onClick={() => handleItemClick(m)}
-                className="flex items-center justify-between p-2 rounded-lg bg-red-900/30 hover:bg-red-800/50 border border-red-700/40 cursor-pointer transition-colors"
+                className="flex items-center justify-between p-2 rounded bg-red-950/40 hover:bg-red-900/40 border border-red-900/50 cursor-pointer transition-colors"
               >
                 <div>
                   <div className="font-bold text-red-200">{m.eqp_id}</div>
-                  <div className="text-[10px] text-red-300/70">
-                    {coord?.bay || 'Cleanroom'} • {m.mo ? `MO: ${m.mo}` : 'No active order'}
+                  <div className="text-[10px] text-red-400/80">
+                    {coord?.bay || 'ZONE'} • {m.event_message || m.mo || 'Fault detected'}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-1.5 py-0.5 text-[10px] font-bold bg-[#FF003C]/30 text-red-100 border border-[#FF003C] rounded">
-                    CRITICAL
+                <div className="flex items-center gap-1.5">
+                  <span className="px-1.5 py-0.2 text-[10px] font-bold bg-red-900/60 text-red-200 border border-red-600/60 rounded">
+                    TRIP
                   </span>
                   <button
-                    className="p-1 text-red-200 hover:text-white bg-red-800/60 rounded"
-                    title="Focus Machine on Floorplan"
+                    className="p-1 text-red-300 hover:text-white bg-red-950/80 border border-red-800 rounded"
+                    title="Focus Machine"
                   >
                     <Crosshair className="w-3.5 h-3.5" />
                   </button>

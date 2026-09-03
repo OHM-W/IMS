@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
+import {
+  Wrench,
+  Plus,
+  Save,
+  Download,
+  RotateCcw,
+  AlignLeft,
+  ArrowUp,
+  Trash2,
+  Sliders,
+  Check,
+} from 'lucide-react';
 import { MachineDef, ProcessCategory } from '../types/fleet';
 
-interface EditToolbarProps {
+export interface EditToolbarProps {
   isEditMode: boolean;
   onToggleEditMode: () => void;
   onSave: () => void;
@@ -51,13 +63,10 @@ export const EditToolbar: React.FC<EditToolbarProps> = ({
   const currentW = selectedMachine?.cardWidth ?? (selectedMachine?.isCompact ? 38 : 80);
   const currentH = selectedMachine?.cardHeight ?? (selectedMachine?.isCompact ? 22 : 50);
 
-  // Instant Add with typed name (e.g. 004)
   const handleAddCard = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const nameToUse = inputMachineName.trim() || 'NEW';
     const viewCenter = getViewCenter ? getViewCenter() : { x: 1600, y: 860 };
-    
-    // Unique ID ensuring zero collision
     const uniqueId = `CUSTOM-${Date.now()}`;
 
     const created: MachineDef = {
@@ -80,80 +89,92 @@ export const EditToolbar: React.FC<EditToolbarProps> = ({
   const isSingleSelected = selectedIds.length === 1 && selectedMachine;
 
   return (
-    <div className="absolute top-20 left-6 z-40 flex flex-col gap-2 pointer-events-auto">
+    <div className="absolute top-18 left-4 z-40 flex flex-col gap-2 pointer-events-auto select-none font-mono">
       {/* Main Control Bar */}
-      <div className="flex items-center gap-2 bg-[#0F172A]/95 backdrop-blur-md border border-slate-700/80 rounded-xl p-2 shadow-2xl">
+      <div className="flex items-center gap-1.5 bg-[#0b101b] border border-slate-800 rounded p-1 shadow-xl">
         <button
           type="button"
           onClick={onToggleEditMode}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all duration-200 cursor-pointer ${
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold transition-colors cursor-pointer ${
             isEditMode
-              ? 'bg-amber-500 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.6)] animate-pulse'
-              : 'bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white border border-slate-600/50'
+              ? 'bg-amber-500 text-slate-950 font-bold'
+              : 'bg-slate-900 text-slate-300 hover:text-white border border-slate-700/80 hover:bg-slate-800'
           }`}
         >
-          <span>{isEditMode ? '🛠️ EDIT MODE: ON' : '⚙️ EDIT LAYOUT'}</span>
+          <Wrench className="w-3.5 h-3.5" />
+          <span>{isEditMode ? 'EDIT MODE: ON' : 'EDIT LAYOUT'}</span>
         </button>
 
         {isEditMode && (
           <>
-            <div className="h-5 w-px bg-slate-700 mx-1" />
+            <div className="h-4 w-px bg-slate-800 mx-1" />
 
-            {/* Inline Quick Add Input & Button */}
+            {/* Quick Add Form */}
             <form onSubmit={handleAddCard} className="flex items-center gap-1">
               <input
                 type="text"
-                placeholder="Name e.g. 004"
+                placeholder="Name"
                 value={inputMachineName}
                 onChange={(e) => setInputMachineName(e.target.value)}
-                className="w-24 bg-slate-900 border border-slate-600 focus:border-emerald-400 rounded-lg px-2 py-1 text-white font-mono font-bold text-xs focus:outline-none"
+                className="w-20 bg-slate-950 border border-slate-700 focus:border-cyan-500 rounded px-2 py-0.5 text-slate-100 text-xs focus:outline-none"
               />
               <button
                 type="submit"
-                title="Create card at center of screen"
-                className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-lg font-mono text-xs font-bold transition-all shadow-[0_0_12px_rgba(16,185,129,0.5)] cursor-pointer"
+                title="Create card at center"
+                className="flex items-center gap-1 px-2 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 rounded text-xs transition-colors cursor-pointer"
               >
-                ➕ ADD
+                <Plus className="w-3.5 h-3.5 text-emerald-400" />
+                <span>ADD</span>
               </button>
             </form>
 
-            <div className="h-5 w-px bg-slate-700 mx-1" />
+            <div className="h-4 w-px bg-slate-800 mx-1" />
 
+            {/* Save Button */}
             <button
               type="button"
               onClick={onSave}
               disabled={saveStatus === 'saving'}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-mono text-xs font-semibold transition-all duration-200 cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold transition-colors cursor-pointer ${
                 saveStatus === 'saved'
-                  ? 'bg-emerald-600 text-white'
+                  ? 'bg-emerald-950 text-emerald-300 border border-emerald-600'
                   : isDirty
-                  ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_10px_rgba(37,99,235,0.5)]'
-                  : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-slate-200'
+                  ? 'bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/80 font-bold'
+                  : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
               }`}
             >
-              <span>{saveStatus === 'saved' ? '✅ SAVED!' : saveStatus === 'saving' ? '💾 SAVING...' : '💾 SAVE'}</span>
+              {saveStatus === 'saved' ? (
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+              ) : (
+                <Save className="w-3.5 h-3.5" />
+              )}
+              <span>{saveStatus === 'saved' ? 'SAVED' : saveStatus === 'saving' ? 'SAVING...' : 'SAVE'}</span>
             </button>
 
+            {/* Export Button */}
             <button
               type="button"
               onClick={onExport}
-              title="Copy positions to clipboard"
-              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg font-mono text-xs transition-all cursor-pointer"
+              title="Copy positions JSON to clipboard"
+              className="flex items-center gap-1 px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white rounded text-xs transition-colors cursor-pointer"
             >
-              📋 EXPORT
+              <Download className="w-3.5 h-3.5 text-slate-400" />
+              <span>EXPORT</span>
             </button>
 
+            {/* Reset Button */}
             <button
               type="button"
               onClick={() => {
-                if (confirm('Revert all machine positions, sizes and custom edits to default CAD layout?')) {
+                if (window.confirm('Revert all machine positions and custom edits to default CAD layout?')) {
                   onReset();
                 }
               }}
-              title="Reset all to default"
-              className="px-2.5 py-1.5 bg-red-950/80 hover:bg-red-900 border border-red-800 text-red-300 hover:text-white rounded-lg font-mono text-xs transition-all cursor-pointer"
+              title="Reset all to default baseline"
+              className="flex items-center gap-1 px-2.5 py-1 bg-slate-900 hover:bg-red-950/80 border border-slate-800 hover:border-red-800 text-slate-400 hover:text-red-300 rounded text-xs transition-colors cursor-pointer"
             >
-              🔄 RESET
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>RESET</span>
             </button>
           </>
         )}
@@ -161,154 +182,157 @@ export const EditToolbar: React.FC<EditToolbarProps> = ({
 
       {/* Multi-Selection Group Operations Box */}
       {isEditMode && isMultiSelected && (
-        <div className="bg-[#071329]/95 backdrop-blur-md border border-amber-500/80 rounded-xl p-3 shadow-2xl flex flex-col gap-2 min-w-[300px] animate-fade-in">
-          <div className="flex items-center justify-between text-xs font-mono pb-1 border-b border-slate-700/80">
-            <span className="text-amber-400 font-bold">
-              📦 GROUP SELECTED: {selectedIds.length} MACHINES
+        <div className="bg-[#0b101b] border border-slate-800 rounded p-2.5 shadow-xl flex flex-col gap-2 min-w-[280px]">
+          <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-800">
+            <span className="text-slate-200 font-semibold uppercase tracking-wider text-[11px]">
+              SELECTED: {selectedIds.length} UNITS
             </span>
             <button
               type="button"
               onClick={onClearSelection}
-              className="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 rounded cursor-pointer"
+              className="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 px-1.5 py-0.5 rounded cursor-pointer"
             >
-              DESELECT
+              CLEAR
             </button>
           </div>
 
           {/* Alignment Tools */}
-          <div className="flex flex-col gap-1 text-xs font-mono">
-            <span className="text-[10px] text-slate-400">ALIGNMENT TOOLS:</span>
-            <div className="grid grid-cols-4 gap-1.5">
+          <div className="flex flex-col gap-1 text-xs">
+            <span className="text-[10px] text-slate-500 uppercase tracking-wider">ALIGNMENT:</span>
+            <div className="grid grid-cols-4 gap-1">
               <button
                 type="button"
                 onClick={() => onAlign?.('left')}
                 title="Align Left Edges"
-                className="py-1 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] font-bold text-center cursor-pointer"
+                className="py-1 px-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded text-[11px] flex items-center justify-center gap-1 cursor-pointer"
               >
-                ⬅️ Left
+                <AlignLeft className="w-3 h-3" />
+                <span>Left</span>
               </button>
               <button
                 type="button"
                 onClick={() => onAlign?.('top')}
                 title="Align Top Edges"
-                className="py-1 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] font-bold text-center cursor-pointer"
+                className="py-1 px-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded text-[11px] flex items-center justify-center gap-1 cursor-pointer"
               >
-                ⬆️ Top
+                <ArrowUp className="w-3 h-3" />
+                <span>Top</span>
               </button>
               <button
                 type="button"
                 onClick={() => onAlign?.('distribute-h')}
                 title="Distribute Evenly Horizontally"
-                className="py-1 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] font-bold text-center cursor-pointer"
+                className="py-1 px-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded text-[11px] text-center cursor-pointer"
               >
-                ↔️ Dist-H
+                <span>Dist-H</span>
               </button>
               <button
                 type="button"
                 onClick={() => onAlign?.('distribute-v')}
                 title="Distribute Evenly Vertically"
-                className="py-1 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[11px] font-bold text-center cursor-pointer"
+                className="py-1 px-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded text-[11px] text-center cursor-pointer"
               >
-                ↕️ Dist-V
+                <span>Dist-V</span>
               </button>
             </div>
           </div>
 
-          <div className="text-[11px] font-mono text-amber-300/90 bg-amber-950/40 p-2 rounded-lg border border-amber-800/40">
-            💡 Drag any selected machine to move all {selectedIds.length} machines together!
+          <div className="text-[10px] text-slate-400 bg-slate-950 p-1.5 rounded border border-slate-850">
+            Drag any highlighted machine to translate all {selectedIds.length} units together.
           </div>
 
           <button
             type="button"
             onClick={() => {
-              if (confirm(`Delete ALL ${selectedIds.length} selected machines?`)) {
+              if (window.confirm(`Delete all ${selectedIds.length} selected machines?`)) {
                 onDeleteSelected?.();
               }
             }}
-            className="w-full py-1.5 px-2 bg-red-950/90 hover:bg-red-900 border border-red-700 text-red-200 rounded-lg text-[11px] font-mono font-bold transition-all text-center cursor-pointer"
+            className="w-full py-1 px-2 bg-red-950/40 hover:bg-red-950/80 border border-red-900/60 text-red-300 rounded text-[11px] transition-colors text-center cursor-pointer flex items-center justify-center gap-1.5"
           >
-            🗑️ DELETE ALL {selectedIds.length} MACHINES
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>DELETE {selectedIds.length} MACHINES</span>
           </button>
         </div>
       )}
 
-      {/* Single Machine Inspector Box (Appears when a machine is clicked) */}
+      {/* Single Machine Inspector Box */}
       {isEditMode && isSingleSelected && selectedMachine && (
-        <div className="bg-[#071329]/95 backdrop-blur-md border border-cyan-500/60 rounded-xl p-3 shadow-2xl flex flex-col gap-2.5 min-w-[300px] animate-fade-in">
+        <div className="bg-[#0b101b] border border-slate-800 rounded p-2.5 shadow-xl flex flex-col gap-2 min-w-[280px]">
           {/* Header */}
-          <div className="flex items-center justify-between text-xs font-mono pb-1 border-b border-slate-700/80">
-            <span className="text-cyan-400 font-bold truncate">
-              ⚙️ EDIT: {selectedMachine.id}
+          <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-800">
+            <span className="text-slate-200 font-bold truncate">
+              PROPERTIES: {selectedMachine.id}
             </span>
-            <span className="text-[10px] text-slate-400 uppercase">{selectedMachine.process}</span>
+            <span className="text-[10px] text-slate-500 uppercase">{selectedMachine.process}</span>
           </div>
 
           {/* Rename & Telemetry ID Fields */}
-          <div className="flex flex-col gap-1.5 text-xs font-mono">
+          <div className="flex flex-col gap-1.5 text-xs">
             <div>
-              <label className="text-slate-400 text-[10px] block mb-0.5">MACHINE NAME / LABEL:</label>
+              <label className="text-slate-500 text-[10px] block mb-0.5 uppercase tracking-wider">LABEL / NAME:</label>
               <input
                 type="text"
                 value={selectedMachine.name}
                 onChange={(e) =>
                   onRenameMachine?.(selectedMachine.id, e.target.value, selectedMachine.telemetryId)
                 }
-                className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-100 focus:outline-none focus:border-cyan-400 font-bold text-xs"
+                className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-0.5 text-slate-100 focus:outline-none focus:border-cyan-500 font-bold text-xs"
               />
             </div>
 
             <div>
-              <label className="text-slate-400 text-[10px] block mb-0.5">TELEMETRY ID (DB eqp_id):</label>
+              <label className="text-slate-500 text-[10px] block mb-0.5 uppercase tracking-wider">TELEMETRY ID (DB EQP_ID):</label>
               <input
                 type="text"
-                placeholder="e.g. LDI-01"
+                placeholder="e.g. DRL-054"
                 value={selectedMachine.telemetryId || ''}
                 onChange={(e) =>
                   onRenameMachine?.(selectedMachine.id, selectedMachine.name, e.target.value)
                 }
-                className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-200 focus:outline-none focus:border-cyan-400 text-xs"
+                className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-0.5 text-slate-200 focus:outline-none focus:border-cyan-500 text-xs"
               />
             </div>
           </div>
 
           {/* Width & Height Steppers */}
-          <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-1">
-            <div className="flex flex-col gap-1 bg-slate-900/80 p-1.5 rounded-lg border border-slate-700/50">
-              <span className="text-slate-400 text-[10px]">WIDTH: {currentW}px</span>
+          <div className="grid grid-cols-2 gap-1.5 text-xs pt-0.5">
+            <div className="flex flex-col gap-0.5 bg-slate-950 p-1.5 rounded border border-slate-800">
+              <span className="text-slate-500 text-[9px] uppercase">WIDTH: {currentW}PX</span>
               <div className="flex items-center justify-between gap-1">
                 <button
                   type="button"
                   onClick={() => onUpdateSize?.(selectedMachine.id, currentW - 4, currentH)}
-                  className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200 font-bold cursor-pointer"
+                  className="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded text-slate-200 font-bold cursor-pointer"
                 >
                   -
                 </button>
-                <span className="font-bold text-slate-100">{currentW}</span>
+                <span className="font-bold text-slate-200">{currentW}</span>
                 <button
                   type="button"
                   onClick={() => onUpdateSize?.(selectedMachine.id, currentW + 4, currentH)}
-                  className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200 font-bold cursor-pointer"
+                  className="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded text-slate-200 font-bold cursor-pointer"
                 >
                   +
                 </button>
               </div>
             </div>
 
-            <div className="flex flex-col gap-1 bg-slate-900/80 p-1.5 rounded-lg border border-slate-700/50">
-              <span className="text-slate-400 text-[10px]">HEIGHT: {currentH}px</span>
+            <div className="flex flex-col gap-0.5 bg-slate-950 p-1.5 rounded border border-slate-800">
+              <span className="text-slate-500 text-[9px] uppercase">HEIGHT: {currentH}PX</span>
               <div className="flex items-center justify-between gap-1">
                 <button
                   type="button"
                   onClick={() => onUpdateSize?.(selectedMachine.id, currentW, currentH - 4)}
-                  className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200 font-bold cursor-pointer"
+                  className="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded text-slate-200 font-bold cursor-pointer"
                 >
                   -
                 </button>
-                <span className="font-bold text-slate-100">{currentH}</span>
+                <span className="font-bold text-slate-200">{currentH}</span>
                 <button
                   type="button"
                   onClick={() => onUpdateSize?.(selectedMachine.id, currentW, currentH + 4)}
-                  className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-200 font-bold cursor-pointer"
+                  className="px-2 py-0.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded text-slate-200 font-bold cursor-pointer"
                 >
                   +
                 </button>
@@ -320,39 +344,41 @@ export const EditToolbar: React.FC<EditToolbarProps> = ({
           <button
             type="button"
             onClick={() => onSelectAllInZone?.(selectedMachine.process)}
-            className="w-full py-1 px-2 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded text-[11px] font-mono font-bold transition-all text-center border border-slate-700 cursor-pointer"
+            className="w-full py-1 px-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded text-[10px] font-semibold transition-colors text-center border border-slate-800 cursor-pointer"
           >
-            🔍 SELECT ALL IN {selectedMachine.process}
+            SELECT ALL IN {selectedMachine.process}
           </button>
 
           {/* Bulk Apply & Delete Actions */}
-          <div className="flex flex-col gap-1.5 pt-1 border-t border-slate-700/60">
+          <div className="flex flex-col gap-1 pt-1 border-t border-slate-800">
             <button
               type="button"
               onClick={() => {
                 if (
-                  confirm(
+                  window.confirm(
                     `Apply size (${currentW}×${currentH}px) to ALL machines in ${selectedMachine.process}?`
                   )
                 ) {
                   onApplySizeToZone?.(selectedMachine.process, currentW, currentH);
                 }
               }}
-              className="w-full py-1 px-2 bg-cyan-950 hover:bg-cyan-900 border border-cyan-700 text-cyan-200 rounded-lg text-[11px] font-mono font-semibold transition-all text-center cursor-pointer"
+              className="w-full py-1 px-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded text-[10px] transition-colors text-center cursor-pointer flex items-center justify-center gap-1"
             >
-              ⚡ APPLY SIZE TO ALL IN {selectedMachine.process}
+              <Sliders className="w-3 h-3 text-slate-400" />
+              <span>APPLY DIMENSIONS TO ZONE</span>
             </button>
 
             <button
               type="button"
               onClick={() => {
-                if (confirm(`Delete machine "${selectedMachine.name}" (${selectedMachine.id})?`)) {
+                if (window.confirm(`Delete machine "${selectedMachine.name}" (${selectedMachine.id})?`)) {
                   onDeleteMachine?.(selectedMachine.id);
                 }
               }}
-              className="w-full py-1 px-2 bg-red-950/80 hover:bg-red-900 border border-red-700 text-red-200 rounded-lg text-[11px] font-mono font-bold transition-all text-center cursor-pointer"
+              className="w-full py-1 px-2 bg-red-950/40 hover:bg-red-950/80 border border-red-900/60 text-red-300 rounded text-[10px] transition-colors text-center cursor-pointer flex items-center justify-center gap-1"
             >
-              🗑️ DELETE THIS MACHINE
+              <Trash2 className="w-3 h-3 text-red-400" />
+              <span>DELETE THIS UNIT</span>
             </button>
           </div>
         </div>
@@ -360,15 +386,17 @@ export const EditToolbar: React.FC<EditToolbarProps> = ({
 
       {/* Live Dragging Coordinates & Size Tooltip */}
       {isEditMode && draggingMachineInfo && (
-        <div className="bg-[#071329]/95 backdrop-blur-md border border-amber-500/80 rounded-lg px-3 py-1.5 text-xs font-mono text-amber-300 shadow-xl flex items-center gap-2 animate-fade-in">
-          <span className="font-bold">📍 {draggingMachineInfo.name || draggingMachineInfo.id}:</span>
+        <div className="bg-[#0b101b] border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-300 shadow-xl flex items-center gap-2">
+          <span className="font-semibold text-emerald-400">{draggingMachineInfo.name || draggingMachineInfo.id}:</span>
           <span>X: {draggingMachineInfo.x}</span>
           <span>Y: {draggingMachineInfo.y}</span>
           {draggingMachineInfo.count && draggingMachineInfo.count > 1 && (
-            <span className="text-cyan-300 font-bold">({draggingMachineInfo.count} units)</span>
+            <span className="text-slate-400">({draggingMachineInfo.count} units)</span>
           )}
         </div>
       )}
     </div>
   );
 };
+
+export default EditToolbar;

@@ -28,20 +28,12 @@ export default {
       keyframes: {
         pulseAlarm: {
           '0%, 100%': {
-            boxShadow: '0 0 20px rgba(255, 0, 60, 0.8), inset 0 0 15px rgba(255, 0, 60, 0.4)',
-            borderColor: '#FF003C',
+            borderColor: '#EF4444',
+            backgroundColor: 'rgba(239, 68, 68, 0.25)',
           },
           '50%': {
-            boxShadow: '0 0 5px rgba(255, 0, 60, 0.3)',
-            borderColor: 'rgba(255, 0, 60, 0.4)',
-          },
-        },
-        glowRun: {
-          '0%': {
-            boxShadow: '0 0 8px rgba(0, 255, 135, 0.3)',
-          },
-          '100%': {
-            boxShadow: '0 0 16px rgba(0, 255, 135, 0.6)',
+            borderColor: '#7F1D1D',
+            backgroundColor: 'rgba(239, 68, 68, 0.05)',
           },
         },
       },
