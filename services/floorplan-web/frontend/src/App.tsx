@@ -4,7 +4,7 @@ import { useFleetLayout } from './hooks/useFleetLayout';
 import { FloorplanPanzoomControls } from './components/FloorplanSVG';
 import { TopBar } from './components/TopBar';
 import { ProcessFilterBar } from './components/ProcessFilterBar';
-import { EditToolbar } from './components/EditToolbar';
+import { DevLayoutToolbar } from './components/DevLayoutToolbar';
 import { FloorplanSVG } from './components/FloorplanSVG';
 import { MachineDetailPopup } from './components/MachineDetailPopup';
 import { AlarmPanel } from './components/AlarmPanel';
@@ -58,6 +58,41 @@ export const App: React.FC = () => {
   const [draggingInfo, setDraggingInfo] = useState<{ id: string; name: string; x: number; y: number; w?: number; h?: number; count?: number } | null>(null);
 
   const panzoomRef = useRef<FloorplanPanzoomControls>(null);
+
+  /*
+    =============================================================================
+    [DEV MODE ONLY] สวิตช์เปิดเครื่องมือจัดผังโรงงานเต็มรูปแบบ (สำหรับ Developer)
+    เปลี่ยนเป็น true หรือพิมพ์ URL ?dev=true เพื่อเปิดเครื่องมือลากย้าย/ย่อขยาย/จัดแนว
+    =============================================================================
+  */
+  const ENABLE_DEV_LAYOUT_EDITOR = false || (typeof window !== 'undefined' && window.location.search.includes('dev=true'));
+
+  // Safe Operator Mapping persistence
+  const handleSaveMachineMapping = React.useCallback(
+    async (id: string, newName: string, newTelemetryId?: string) => {
+      const updatedMachines = fleetMachines.map((m) =>
+        m.id === id
+          ? {
+              ...m,
+              name: newName,
+              telemetryId: newTelemetryId || undefined,
+              hasLiveFeed: Boolean(newTelemetryId),
+            }
+          : m
+      );
+      renameMachine(id, newName, newTelemetryId);
+      try {
+        await fetch('/api/layout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ machines: updatedMachines, deletedIds: [] }),
+        });
+      } catch (err) {
+        console.error('Failed to persist machine mapping:', err);
+      }
+    },
+    [renameMachine, fleetMachines]
+  );
 
   // Compute category machine counts for the process filter bar
   const filterCounts = useMemo(() => {
@@ -128,9 +163,9 @@ export const App: React.FC = () => {
     }, 50);
   };
 
-  // Resolve selected machine object for detail drawer
+  // Resolve selected machine object for detail drawer (reactive from current fleet layout)
   const selectedMachineDef = selectedMachineId
-    ? FLEET_MACHINE_MAP.get(selectedMachineId) ?? null
+    ? fleetMachines.find((m) => m.id === selectedMachineId) ?? FLEET_MACHINE_MAP.get(selectedMachineId) ?? null
     : null;
 
   // Resolve selected machine object for edit inspector
@@ -149,17 +184,6 @@ export const App: React.FC = () => {
     // 2. Match via telemetry binding ID (e.g. LSR-001 -> LDI-01)
     if (selectedMachineDef?.telemetryId && machines[selectedMachineDef.telemetryId]) {
       return machines[selectedMachineDef.telemetryId];
-    }
-
-    // 3. Match via machine name or alias (e.g. 054 -> DRL054-M)
-    if (selectedMachineDef?.name && machines[selectedMachineDef.name]) {
-      return machines[selectedMachineDef.name];
-    }
-    if (selectedMachineDef?.name && machines[`DRL${selectedMachineDef.name}-M`]) {
-      return machines[`DRL${selectedMachineDef.name}-M`];
-    }
-    if (selectedMachineDef?.name && machines[`DRL-${selectedMachineDef.name}`]) {
-      return machines[`DRL-${selectedMachineDef.name}`];
     }
 
     // 3. Fallback unmonitored baseline model
@@ -182,14 +206,49 @@ export const App: React.FC = () => {
     };
   }, [selectedMachineId, selectedMachineDef, machines]);
 
+  // Filter active alarms strictly to machines present in active floorplan layout
+  const visibleAlarms = useMemo(() => {
+    const activeFleetIds = new Set<string>();
+    for (const m of fleetMachines) {
+      activeFleetIds.add(m.id);
+      if (m.telemetryId) activeFleetIds.add(m.telemetryId);
+    }
+    return activeAlarms.filter((a) => activeFleetIds.has(a.eqp_id));
+  }, [activeAlarms, fleetMachines]);
+
+  // Compute fleet status metrics strictly for machines present on the floorplan layout
+  const fleetStatusList = useMemo<LdiMachine[]>(() => {
+    return fleetMachines.map((fm) => {
+      const live = machines[fm.telemetryId || fm.id];
+      if (live) return live;
+      return {
+        eqp_id: fm.id,
+        status: fm.hasLiveFeed ? 0 : 5,
+        temperature: null,
+        humidity: null,
+        resist_dosage: null,
+        scan_speed: null,
+        air_vacuum: null,
+        thickness: null,
+        board_no: null,
+        total_board: null,
+        total_time: null,
+        mo: null,
+        fpn: null,
+        layer_name: null,
+        last_seen: null,
+      };
+    });
+  }, [fleetMachines, machines]);
+
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#080c16]">
       {/* Top Header Bar */}
       <TopBar
         connectionState={connectionState}
         retryCount={retryCount}
-        machines={machineList}
-        totalFleetCount={TOTAL_FLEET_COUNT}
+        machines={fleetStatusList}
+        totalFleetCount={fleetMachines.length}
         activeFilter={activeFilter}
         onSelectFilter={handleSelectFilter}
         panzoomControls={panzoomRef.current}
@@ -205,32 +264,34 @@ export const App: React.FC = () => {
 
       {/* Main Floorplan Canvas */}
       <main className="flex-1 relative overflow-hidden bg-[#080c16]">
-        {/* Interactive Drag & Position Editor Toolbar */}
-        <EditToolbar
-          isEditMode={isEditMode}
-          onToggleEditMode={() => {
-            setIsEditMode(!isEditMode);
-            if (isEditMode) clearSelection();
-          }}
-          onSave={saveLayoutToServer}
-          onReset={resetLayout}
-          onExport={exportFleetCode}
-          isDirty={isDirty}
-          saveStatus={saveStatus}
-          selectedIds={selectedIds}
-          selectedMachine={primarySelectedEditMachine}
-          onSelectAllInZone={(proc) => selectAllInProcess(proc, fleetMachines)}
-          onClearSelection={clearSelection}
-          onAlign={(type) => alignSelected(type, fleetMachines)}
-          onUpdateSize={updateMachineSize}
-          onApplySizeToZone={applySizeToProcess}
-          onRenameMachine={renameMachine}
-          onDeleteMachine={deleteMachine}
-          onDeleteSelected={deleteSelectedMachines}
-          onAddMachine={handleAddMachine}
-          getViewCenter={() => panzoomRef.current?.getViewCenter?.() ?? { x: 1600, y: 860 }}
-          draggingMachineInfo={draggingInfo}
-        />
+        {/* Dev Layout Toolbar: enabled via URL ?dev=true or feature flag */}
+        {ENABLE_DEV_LAYOUT_EDITOR && (
+          <DevLayoutToolbar
+            isEditMode={isEditMode}
+            onToggleEditMode={() => {
+              setIsEditMode(!isEditMode);
+              if (isEditMode) clearSelection();
+            }}
+            onSave={saveLayoutToServer}
+            onReset={resetLayout}
+            onExport={exportFleetCode}
+            isDirty={isDirty}
+            saveStatus={saveStatus}
+            selectedIds={selectedIds}
+            selectedMachine={primarySelectedEditMachine}
+            onSelectAllInZone={(proc) => selectAllInProcess(proc, fleetMachines)}
+            onClearSelection={clearSelection}
+            onAlign={(type) => alignSelected(type, fleetMachines)}
+            onUpdateSize={updateMachineSize}
+            onApplySizeToZone={applySizeToProcess}
+            onRenameMachine={renameMachine}
+            onDeleteMachine={deleteMachine}
+            onDeleteSelected={deleteSelectedMachines}
+            onAddMachine={handleAddMachine}
+            getViewCenter={() => panzoomRef.current?.getViewCenter?.() ?? { x: 1600, y: 860 }}
+            draggingMachineInfo={draggingInfo}
+          />
+        )}
 
         <FloorplanSVG
           ref={panzoomRef}
@@ -252,17 +313,21 @@ export const App: React.FC = () => {
 
         {/* Active Alarm Banner */}
         <AlarmPanel
-          alarms={activeAlarms}
+          alarms={visibleAlarms}
+          fleetMachines={fleetMachines}
           onFocusMachine={handleFocusMachine}
         />
 
-        {/* Machine Detail Slide-Over Inspection Drawer */}
+        {/* Machine Detail Slide-Over Inspection Drawer with Safe Operator Mapping */}
         {(selectedTelemetry || selectedMachineDef) && !isEditMode && (
           <MachineDetailPopup
             machine={selectedTelemetry}
             machineDef={selectedMachineDef}
             onClose={handleCloseDrawer}
             onFocusMachine={(x, y, id) => handleFocusMachine(x, y, id)}
+            onSaveMapping={handleSaveMachineMapping}
+            availableDbMachines={machineList}
+            fleetMachines={fleetMachines}
           />
         )}
       </main>

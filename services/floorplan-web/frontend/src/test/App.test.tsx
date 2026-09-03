@@ -65,11 +65,11 @@ describe('App Integration', () => {
     // Click DRILLING filter
     const drillBtn = screen.getByTestId('filter-btn-DRILLING');
     fireEvent.click(drillBtn);
-    expect(drillBtn.className).toContain('border-[#00F2FE]');
+    expect(drillBtn.className).toContain('bg-slate-800');
 
     // Click OXIDE filter
     const oxideBtn = screen.getByTestId('filter-btn-OXIDE');
     fireEvent.click(oxideBtn);
-    expect(oxideBtn.className).toContain('border-[#00F2FE]');
+    expect(oxideBtn.className).toContain('bg-slate-800');
   });
 });

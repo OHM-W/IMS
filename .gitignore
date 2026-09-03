@@ -7,6 +7,7 @@ secrets/
 .env
 *.key
 *.pem
+databases.json
 
 # Real production data (NEVER commit) — schema/views/functions/dashboards
 # are the only things this repo tracks; real LDI data lives here locally
@@ -130,6 +131,7 @@ venv/
 .coverage
 temp_probe.json
 implementation_plan*.md
+*.tsbuildinfo
 services/floorplan-web/backend/dist/
 services/floorplan-web/frontend/dist/
 services/floorplan-web/backend/data/databases.json

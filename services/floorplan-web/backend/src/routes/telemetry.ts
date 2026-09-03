@@ -25,18 +25,8 @@ telemetryRouter.get('/machines', async (req: Request, res: Response) => {
 telemetryRouter.get('/snapshot', async (req: Request, res: Response) => {
   try {
     const machines = await broadcaster.fetchTelemetry();
-    const machineMap: Record<string, any> = {};
-    for (const m of machines) {
-      machineMap[m.eqp_id] = m;
-    }
-
-    res.json({
-      type: 'telemetry_snapshot',
-      timestamp: new Date().toISOString(),
-      count: machines.length,
-      machines: machineMap,
-      list: machines,
-    });
+    const payload = broadcaster.buildPayload(machines);
+    res.json(payload);
   } catch (err: any) {
     console.error('[floorplan.routes.telemetry] Failed to fetch snapshot:', err.message);
     res.status(500).json({ error: err.message });

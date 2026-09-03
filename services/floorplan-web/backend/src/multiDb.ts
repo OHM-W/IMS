@@ -1,7 +1,27 @@
 import pg from 'pg';
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
 import { config } from './config.js';
+
+// Ensure root .env is loaded if present and not already loaded
+try {
+  const envCandidates = [
+    path.resolve(process.cwd(), '.env'),
+    path.resolve(process.cwd(), '../../.env'),
+    path.resolve(process.cwd(), '../../../.env'),
+    path.resolve(__dirname, '../../../.env'),
+    path.resolve(__dirname, '../../../../.env'),
+  ];
+  for (const envPath of envCandidates) {
+    if (fs.existsSync(envPath)) {
+      dotenv.config({ path: envPath });
+      break;
+    }
+  }
+} catch {
+  // ignore
+}
 
 const { Pool } = pg;
 
@@ -13,7 +33,12 @@ export interface DbConnectionSpec {
   database: string;
   user: string;
   password?: string;
+  password_env?: string;
   isPrimary?: boolean;
+  process_type?: string;
+  query?: string;
+  query_file?: string;
+  enabled?: boolean;
 }
 
 export interface RouteTarget {
@@ -24,6 +49,7 @@ export interface RouteTarget {
 export class MultiDbManager {
   private pools: Map<string, pg.Pool> = new Map();
   private specs: Map<string, DbConnectionSpec> = new Map();
+  private queryCache: Map<string, string> = new Map();
   private dbConfigFile: string;
 
   constructor() {
@@ -61,6 +87,7 @@ export class MultiDbManager {
     this.specs.set(key, spec);
 
     const resolvedHost = this.resolveHost(spec.host);
+    const resolvedPassword = (spec.password_env ? process.env[spec.password_env] : undefined) ?? spec.password;
 
     if (spec.type === 'postgres' || spec.type === 'timescaledb' || !spec.type) {
       try {
@@ -69,10 +96,13 @@ export class MultiDbManager {
           port: spec.port,
           database: spec.database,
           user: spec.user,
-          password: spec.password,
+          password: resolvedPassword,
           min: 1,
           max: 5,
           connectionTimeoutMillis: config.DB_TIMEOUT_MS,
+          idleTimeoutMillis: 30000,
+          keepAlive: true,
+          keepAliveInitialDelayMillis: 10000,
         });
 
         pool.on('error', (err) => {
@@ -105,6 +135,56 @@ export class MultiDbManager {
 
   public getPool(key: string): pg.Pool | undefined {
     return this.pools.get(key.toLowerCase());
+  }
+
+  public getSpec(key: string): DbConnectionSpec | undefined {
+    return this.specs.get(key.toLowerCase());
+  }
+
+  public getQuery(key: string): string | null {
+    const lowerKey = key.toLowerCase();
+    const spec = this.specs.get(lowerKey);
+    if (!spec || spec.enabled === false) return null;
+
+    if (spec.query && spec.query.trim().length > 0) {
+      return spec.query.trim();
+    }
+
+    if (spec.query_file) {
+      if (this.queryCache.has(lowerKey)) {
+        return this.queryCache.get(lowerKey)!;
+      }
+      try {
+        const candidatePaths = [
+          path.resolve(config.DATA_DIR, spec.query_file),
+          path.resolve(process.cwd(), spec.query_file),
+          path.resolve(spec.query_file),
+        ];
+        for (const p of candidatePaths) {
+          if (fs.existsSync(p)) {
+            const content = fs.readFileSync(p, 'utf-8').trim();
+            this.queryCache.set(lowerKey, content);
+            return content;
+          }
+        }
+        console.warn(`[multiDb:${key}] query_file not found: ${spec.query_file}`);
+      } catch (err: any) {
+        console.warn(`[multiDb:${key}] Failed to load query_file:`, err.message);
+      }
+    }
+
+    return null;
+  }
+
+  public getAllConfiguredPools(): Array<{ key: string; pool: pg.Pool; spec: DbConnectionSpec }> {
+    const list: Array<{ key: string; pool: pg.Pool; spec: DbConnectionSpec }> = [];
+    for (const [key, pool] of this.pools.entries()) {
+      const spec = this.specs.get(key);
+      if (spec) {
+        list.push({ key, pool, spec });
+      }
+    }
+    return list;
   }
 
   public getAllActivePools(): Array<{ key: string; pool: pg.Pool }> {

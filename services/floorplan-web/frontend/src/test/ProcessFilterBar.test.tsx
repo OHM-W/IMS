@@ -79,7 +79,7 @@ describe('ProcessFilterBar', () => {
     );
 
     const drillBtn = screen.getByTestId('filter-btn-DRILLING');
-    expect(drillBtn.className).toContain('border-[#00F2FE]');
+    expect(drillBtn.className).toContain('bg-slate-800');
 
     rerender(
       <ProcessFilterBar
@@ -89,6 +89,6 @@ describe('ProcessFilterBar', () => {
     );
 
     const cutBtn = screen.getByTestId('filter-btn-CUTTING');
-    expect(cutBtn.className).toContain('border-[#00F2FE]');
+    expect(cutBtn.className).toContain('bg-slate-800');
   });
 });

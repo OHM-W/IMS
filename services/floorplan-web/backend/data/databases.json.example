@@ -5,7 +5,9 @@
     "port": 5433,
     "database": "mydb",
     "user": "postgres",
-    "password": "change_to_your_password"
+    "password_env": "DRILL_DB_PASSWORD",
+    "process_type": "DRILLING",
+    "enabled": true
   },
   "chem_db": {
     "type": "postgres",
@@ -13,7 +15,10 @@
     "port": 5432,
     "database": "oxide_db",
     "user": "postgres",
-    "password": "change_to_your_password"
+    "password_env": "CHEM_DB_PASSWORD",
+    "process_type": "OXIDE",
+    "enabled": false,
+    "query": "SELECT line_id AS eqp_id, state AS status, bath_temp, ph_level, flow_rate, updated_at AS last_seen FROM public.oxide_line"
   },
   "cut_db": {
     "type": "postgres",
@@ -21,6 +26,8 @@
     "port": 5432,
     "database": "cutting_db",
     "user": "postgres",
-    "password": "change_to_your_password"
+    "password_env": "CUT_DB_PASSWORD",
+    "process_type": "CUTTING",
+    "enabled": false
   }
 }

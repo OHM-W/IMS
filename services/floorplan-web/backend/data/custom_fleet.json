@@ -1242,12 +1242,13 @@
       "name": "054",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL054-M",
       "svgX": 1020,
       "svgY": 892,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B06-055",
@@ -2286,71 +2287,6 @@
       "hasLiveFeed": false
     },
     {
-      "id": "LSR-004",
-      "name": "004",
-      "process": "LASER_DRILLING",
-      "processGroup": "CLEANROOM",
-      "telemetryId": "LDI-04",
-      "svgX": 2454,
-      "svgY": 596,
-      "cardWidth": 50,
-      "cardHeight": 26,
-      "isCompact": false,
-      "hasLiveFeed": true
-    },
-    {
-      "id": "LSR-003",
-      "name": "003",
-      "process": "LASER_DRILLING",
-      "processGroup": "CLEANROOM",
-      "telemetryId": "LDI-03",
-      "svgX": 2546,
-      "svgY": 620,
-      "cardWidth": 50,
-      "cardHeight": 26,
-      "isCompact": false,
-      "hasLiveFeed": true
-    },
-    {
-      "id": "LSR-005",
-      "name": "005",
-      "process": "LASER_DRILLING",
-      "processGroup": "CLEANROOM",
-      "telemetryId": "LDI-05",
-      "svgX": 2408,
-      "svgY": 726,
-      "cardWidth": 130,
-      "cardHeight": 83,
-      "isCompact": false,
-      "hasLiveFeed": true
-    },
-    {
-      "id": "LSR-002",
-      "name": "002",
-      "process": "LASER_DRILLING",
-      "processGroup": "CLEANROOM",
-      "telemetryId": "LDI-02",
-      "svgX": 2634,
-      "svgY": 636,
-      "cardWidth": 50,
-      "cardHeight": 26,
-      "isCompact": false,
-      "hasLiveFeed": true
-    },
-    {
-      "id": "LSR-001",
-      "name": "001",
-      "process": "LASER_DRILLING",
-      "processGroup": "CLEANROOM",
-      "telemetryId": "LDI-01",
-      "svgX": 2708,
-      "svgY": 754,
-      "cardWidth": 50,
-      "cardHeight": 26,
-      "isCompact": false,
-      "hasLiveFeed": true
-    },
-    {
       "id": "001",
       "name": "001",
       "process": "LASER_DRILLING",
@@ -2405,8 +2341,8 @@
       "processGroup": "CUSTOM",
       "svgX": 1516,
       "svgY": 1446,
-      "cardWidth": 50,
-      "cardHeight": 26,
+      "cardWidth": 30,
+      "cardHeight": 38,
       "isCompact": true,
       "hasLiveFeed": false
     },
@@ -2417,8 +2353,8 @@
       "processGroup": "CUSTOM",
       "svgX": 1716,
       "svgY": 718,
-      "cardWidth": 149,
-      "cardHeight": 29,
+      "cardWidth": 30,
+      "cardHeight": 38,
       "isCompact": true,
       "hasLiveFeed": false
     },
@@ -2429,8 +2365,8 @@
       "processGroup": "CUSTOM",
       "svgX": 1814,
       "svgY": 748,
-      "cardWidth": 51,
-      "cardHeight": 47,
+      "cardWidth": 30,
+      "cardHeight": 38,
       "isCompact": true,
       "hasLiveFeed": false
     },
@@ -2441,7 +2377,7 @@
       "processGroup": "CUSTOM",
       "svgX": 1596,
       "svgY": 748,
-      "cardWidth": 218,
+      "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
       "hasLiveFeed": false
@@ -2457,6 +2393,17 @@
     "BND-001",
     "ALU-PRS",
     "ALU-DLM",
-    "ALU-LTK"
+    "ALU-LTK",
+    "LSR-004",
+    "LSR-002",
+    "LSR-003",
+    "LSR-005",
+    "LSR-001",
+    "PP-BAY-01",
+    "PP-BAY-02",
+    "PP-BAY-03",
+    "PP-BAY-04",
+    "PP-BAY-05",
+    "PP-BAY-06"
   ]
 }

@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { MachineDef, ProcessCategory } from '../types/fleet';
 
-export interface EditToolbarProps {
+export interface DevLayoutToolbarProps {
   isEditMode: boolean;
   onToggleEditMode: () => void;
   onSave: () => void;
@@ -36,7 +36,7 @@ export interface EditToolbarProps {
   draggingMachineInfo?: { id: string; name: string; x: number; y: number; w?: number; h?: number; count?: number } | null;
 }
 
-export const EditToolbar: React.FC<EditToolbarProps> = ({
+export const DevLayoutToolbar: React.FC<DevLayoutToolbarProps> = ({
   isEditMode,
   onToggleEditMode,
   onSave,
@@ -399,4 +399,4 @@ export const EditToolbar: React.FC<EditToolbarProps> = ({
   );
 };
 
-export default EditToolbar;
+export default DevLayoutToolbar;

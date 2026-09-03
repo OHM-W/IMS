@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { LdiMachine, ConnectionState, WsPayload } from '../types/ldi';
-import { LDI_MACHINES } from '../constants/machines';
 
 export interface UseLdiWebSocketOptions {
   wsUrl?: string;
@@ -21,12 +20,16 @@ export interface UseLdiWebSocketResult {
   refreshSnapshot: () => Promise<void>;
 }
 
-// Generate default empty telemetry for all 10 machines
+const DEFAULT_LDI_IDS = [
+  'LDI-01', 'LDI-02', 'LDI-03', 'LDI-04', 'LDI-05',
+  'LDI-06', 'LDI-07', 'LDI-08', 'LDI-09', 'LDI-10',
+];
+
 function createInitialMachineMap(): Record<string, LdiMachine> {
   const map: Record<string, LdiMachine> = {};
-  for (const m of LDI_MACHINES) {
-    map[m.eqp_id] = {
-      eqp_id: m.eqp_id,
+  for (const id of DEFAULT_LDI_IDS) {
+    map[id] = {
+      eqp_id: id,
       status: 0,
       temperature: null,
       humidity: null,

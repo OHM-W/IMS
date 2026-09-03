@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { AlertOctagon, ChevronDown, ChevronUp, Crosshair } from 'lucide-react';
 import { LdiMachine } from '../types/ldi';
-import { MACHINE_MAP } from '../constants/machines';
+import { MachineDef } from '../types/fleet';
 
 interface AlarmPanelProps {
   alarms: LdiMachine[];
+  fleetMachines?: MachineDef[];
   onFocusMachine: (svgX: number, svgY: number, eqpId: string) => void;
 }
 
-export const AlarmPanel: React.FC<AlarmPanelProps> = ({ alarms, onFocusMachine }) => {
+export const AlarmPanel: React.FC<AlarmPanelProps> = ({
+  alarms,
+  fleetMachines,
+  onFocusMachine,
+}) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
   if (!alarms || alarms.length === 0) {
@@ -16,9 +21,13 @@ export const AlarmPanel: React.FC<AlarmPanelProps> = ({ alarms, onFocusMachine }
   }
 
   const handleItemClick = (machine: LdiMachine) => {
-    const coord = MACHINE_MAP.get(machine.eqp_id);
-    if (coord) {
-      onFocusMachine(coord.svgX, coord.svgY, machine.eqp_id);
+    // Look up machine definition in active floorplan fleet
+    const target = fleetMachines?.find(
+      (f) => f.id === machine.eqp_id || f.telemetryId === machine.eqp_id
+    );
+    if (target) {
+      onFocusMachine(target.svgX, target.svgY, target.id);
+      return;
     }
   };
 
@@ -47,7 +56,9 @@ export const AlarmPanel: React.FC<AlarmPanelProps> = ({ alarms, onFocusMachine }
       {isExpanded && (
         <div className="p-1.5 max-h-48 overflow-y-auto space-y-1 font-mono text-xs divide-y divide-red-950/40">
           {alarms.map((m) => {
-            const coord = MACHINE_MAP.get(m.eqp_id);
+            const target = fleetMachines?.find(
+              (f) => f.id === m.eqp_id || f.telemetryId === m.eqp_id
+            );
             return (
               <div
                 key={m.eqp_id}
@@ -57,7 +68,7 @@ export const AlarmPanel: React.FC<AlarmPanelProps> = ({ alarms, onFocusMachine }
                 <div>
                   <div className="font-bold text-red-200">{m.eqp_id}</div>
                   <div className="text-[10px] text-red-400/80">
-                    {coord?.bay || 'ZONE'} • {m.event_message || m.mo || 'Fault detected'}
+                    {target?.bay || target?.processGroup || 'ZONE'} • {m.event_message || m.mo || 'Fault detected'}
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">

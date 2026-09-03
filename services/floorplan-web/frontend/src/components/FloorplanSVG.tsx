@@ -9,6 +9,7 @@ import {
   SVG_VIEWBOX,
 } from '../constants/fleet';
 import { MachineNode } from './MachineNode';
+import { FloorplanLegend } from './FloorplanLegend';
 
 export interface FloorplanPanzoomControls extends PanzoomControls {
   focusProcess?: (filter: FleetFilterOption) => void;
@@ -47,26 +48,15 @@ const createPanzoom = (elem: HTMLElement | SVGElement, options?: any): PanzoomOb
     }
   }
   return {
-    bind: () => {},
     destroy: () => {},
-    eventNames: { down: 'pointerdown', move: 'pointermove', up: 'pointerup' },
-    getPan: () => ({ x: 0, y: 0 }),
+    reset: () => {},
+    zoom: () => {},
+    zoomWithWheel: () => {},
+    pan: () => ({ x: 0, y: 0 }),
     getScale: () => 1,
-    getOptions: () => ({} as any),
-    handleDown: () => {},
-    handleMove: () => {},
-    handleUp: () => {},
-    pan: () => ({ x: 0, y: 0, scale: 1, isSVG: false }),
-    reset: () => ({ x: 0, y: 0, scale: 1, isSVG: false }),
-    resetStyle: () => {},
+    getPan: () => ({ x: 0, y: 0 }),
     setOptions: () => {},
-    setStyle: () => {},
-    zoom: () => ({ x: 0, y: 0, scale: 1, isSVG: false }),
-    zoomIn: () => ({ x: 0, y: 0, scale: 1, isSVG: false }),
-    zoomOut: () => ({ x: 0, y: 0, scale: 1, isSVG: false }),
-    zoomToPoint: () => ({ x: 0, y: 0, scale: 1, isSVG: false }),
-    zoomWithWheel: () => ({ x: 0, y: 0, scale: 1, isSVG: false }),
-  };
+  } as any;
 };
 
 export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGProps>(
@@ -97,21 +87,6 @@ export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGPro
     const [draggingId, setDraggingId] = useState<string | null>(null);
     const [marqueeBox, setMarqueeBox] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
 
-    // Draggable Legend Position with LocalStorage memory
-    const [legendPos, setLegendPos] = useState<{ x: number; y: number }>(() => {
-      try {
-        const saved = localStorage.getItem('ims_floorplan_legend_pos');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (typeof parsed.x === 'number' && typeof parsed.y === 'number') {
-            return parsed;
-          }
-        }
-      } catch {}
-      return { x: 2950, y: 1370 };
-    });
-    const [isDraggingLegend, setIsDraggingLegend] = useState(false);
-
     // Initialize Panzoom
     useEffect(() => {
       if (!contentRef.current || !containerRef.current) return;
@@ -133,7 +108,6 @@ export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGPro
 
       container.addEventListener('wheel', handleWheel, { passive: false });
 
-      // Initial center fit
       setTimeout(() => {
         panzoom.reset();
       }, 100);
@@ -143,65 +117,6 @@ export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGPro
         panzoom.destroy();
       };
     }, []);
-
-    // Legend Box Drag Handler
-    const handleLegendPointerDown = useCallback((e: React.PointerEvent) => {
-      e.stopPropagation();
-      e.preventDefault();
-
-      const container = containerRef.current;
-      if (!container) return;
-
-      panzoomInstanceRef.current?.setOptions({ disablePan: true });
-
-      const rect = container.getBoundingClientRect();
-      const svgRatioX = (rect.width || 1200) / SVG_VIEWBOX.width;
-      const svgRatioY = (rect.height || 600) / SVG_VIEWBOX.height;
-      const baseScale = Math.min(svgRatioX, svgRatioY);
-      const currentZoom = panzoomInstanceRef.current?.getScale() || 1.0;
-      const effectiveScale = (baseScale > 0 ? baseScale : 1.0) * currentZoom;
-
-      const startX = e.clientX;
-      const startY = e.clientY;
-      const initialX = legendPos.x;
-      const initialY = legendPos.y;
-
-      setIsDraggingLegend(true);
-
-      const onPointerMove = (moveE: PointerEvent) => {
-        moveE.stopPropagation();
-        moveE.preventDefault();
-
-        const deltaSvgX = (moveE.clientX - startX) / effectiveScale;
-        const deltaSvgY = (moveE.clientY - startY) / effectiveScale;
-
-        const newX = Math.round(initialX + deltaSvgX);
-        const newY = Math.round(initialY + deltaSvgY);
-        setLegendPos({ x: newX, y: newY });
-      };
-
-      const onPointerUp = (upE: PointerEvent) => {
-        upE.stopPropagation();
-        setIsDraggingLegend(false);
-        panzoomInstanceRef.current?.setOptions({ disablePan: false });
-
-        const deltaSvgX = (upE.clientX - startX) / effectiveScale;
-        const deltaSvgY = (upE.clientY - startY) / effectiveScale;
-        const finalX = Math.round(initialX + deltaSvgX);
-        const finalY = Math.round(initialY + deltaSvgY);
-
-        setLegendPos({ x: finalX, y: finalY });
-        try {
-          localStorage.setItem('ims_floorplan_legend_pos', JSON.stringify({ x: finalX, y: finalY }));
-        } catch {}
-
-        window.removeEventListener('pointermove', onPointerMove, true);
-        window.removeEventListener('pointerup', onPointerUp, true);
-      };
-
-      window.addEventListener('pointermove', onPointerMove, true);
-      window.addEventListener('pointerup', onPointerUp, true);
-    }, [legendPos]);
 
     // Group / Single Machine Drag Handler
     const handleNodePointerDown = useCallback(
@@ -585,9 +500,7 @@ export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGPro
                 const telemetry =
                   (machine.telemetryId ? machines[machine.telemetryId] : undefined) ||
                   machines[machine.id] ||
-                  (machine.name ? machines[machine.name] : undefined) ||
-                  (machine.name ? machines[`DRL${machine.name}-M`] : undefined) ||
-                  (machine.name ? machines[`DRL-${machine.name}`] : undefined);
+                  (machine.name ? machines[machine.name] : undefined);
                 const isSelected =
                   selectedId === machine.id ||
                   (machine.telemetryId ? selectedId === machine.telemetryId : false);
@@ -661,70 +574,11 @@ export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGPro
               />
             )}
 
-            {/* Draggable High-Performance SCADA Status Legend */}
-            <g
-              id="scada-legend-box"
-              transform={`translate(${legendPos.x}, ${legendPos.y})`}
-              onPointerDown={handleLegendPointerDown}
-              className={`draggable-node select-none cursor-move transition-opacity ${
-                isDraggingLegend ? 'opacity-90' : 'hover:opacity-100'
-              }`}
-            >
-              {/* Matte Slate Panel Background */}
-              <rect
-                width="200"
-                height="240"
-                rx="4"
-                fill="#0b101b"
-                fillOpacity="0.96"
-                stroke="#1e293b"
-                strokeWidth="1"
-              />
-              
-              {/* Header */}
-              <text
-                x="15"
-                y="24"
-                fill="#94a3b8"
-                fontSize="11"
-                fontWeight="600"
-                fontFamily="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
-                letterSpacing="1"
-              >
-                STATUS LEGEND
-              </text>
-              <line x1="15" y1="32" x2="185" y2="32" stroke="#1e293b" strokeWidth="1" />
-
-              {/* 1. RUN */}
-              <rect x="15" y="44" width="12" height="12" rx="2" fill="#10b981" />
-              <text x="36" y="54" fill="#e2e8f0" fontSize="11" fontWeight="600" fontFamily="ui-monospace, monospace">RUN</text>
-              <text x="185" y="54" fill="#64748b" fontSize="10" fontFamily="ui-monospace, monospace" textAnchor="end">ACTIVE</text>
-
-              {/* 2. IDLE */}
-              <rect x="15" y="74" width="12" height="12" rx="2" fill="#f59e0b" />
-              <text x="36" y="84" fill="#e2e8f0" fontSize="11" fontWeight="600" fontFamily="ui-monospace, monospace">IDLE</text>
-              <text x="185" y="84" fill="#64748b" fontSize="10" fontFamily="ui-monospace, monospace" textAnchor="end">STANDBY</text>
-
-              {/* 3. ALARM */}
-              <rect x="15" y="104" width="12" height="12" rx="2" fill="#ef4444" />
-              <text x="36" y="114" fill="#f87171" fontSize="11" fontWeight="700" fontFamily="ui-monospace, monospace">ALARM</text>
-              <text x="185" y="114" fill="#ef4444" fontSize="10" fontWeight="600" fontFamily="ui-monospace, monospace" textAnchor="end">CRITICAL</text>
-
-              {/* 4. STOP / PM */}
-              <rect x="15" y="134" width="12" height="12" rx="2" fill="#06b6d4" />
-              <text x="36" y="144" fill="#e2e8f0" fontSize="11" fontWeight="600" fontFamily="ui-monospace, monospace">STOP / PM</text>
-              <text x="185" y="144" fill="#64748b" fontSize="10" fontFamily="ui-monospace, monospace" textAnchor="end">SERVICE</text>
-
-              {/* 5. OFF */}
-              <rect x="15" y="164" width="12" height="12" rx="2" fill="#64748b" />
-              <text x="36" y="174" fill="#94a3b8" fontSize="11" fontWeight="500" fontFamily="ui-monospace, monospace">OFF</text>
-              <text x="185" y="174" fill="#64748b" fontSize="10" fontFamily="ui-monospace, monospace" textAnchor="end">NO SYNC</text>
-
-              {/* 6. UNDEFINE */}
-              <rect x="15" y="194" width="12" height="12" rx="2" fill="none" stroke="#475569" strokeWidth="1" strokeDasharray="2 2" />
-              <text x="36" y="204" fill="#64748b" fontSize="11" fontWeight="500" fontFamily="ui-monospace, monospace">UNMAPPED</text>
-              <text x="185" y="204" fill="#475569" fontSize="10" fontFamily="ui-monospace, monospace" textAnchor="end">STATIC</text>
-            </g>
+            {/* High-Performance SCADA Status Legend HUD */}
+            <FloorplanLegend
+              containerRef={containerRef}
+              panzoomInstanceRef={panzoomInstanceRef}
+            />
           </g>
         </svg>
       </div>

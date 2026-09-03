@@ -14,6 +14,7 @@ export interface LdiMachine {
   eqp_id: string;
   status: number;
   process_type?: 'LASER' | 'DRILLING' | 'OXIDE' | 'CUTTING' | 'GENERAL';
+  db_key?: string;
 
   // LDI / Laser Telemetry Fields
   temperature: number | null;

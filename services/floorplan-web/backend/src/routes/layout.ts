@@ -22,7 +22,17 @@ layoutRouter.get('/layout', (req: Request, res: Response) => {
 
 layoutRouter.post('/layout', (req: Request, res: Response) => {
   try {
-    const { machines = [], deletedIds = [] } = req.body as {
+    if (
+      !req.body ||
+      typeof req.body !== 'object' ||
+      !Array.isArray(req.body.machines) ||
+      !Array.isArray(req.body.deletedIds) ||
+      req.body.machines.length > 5000
+    ) {
+      return res.status(400).json({ error: 'Invalid payload' });
+    }
+
+    const { machines, deletedIds } = req.body as {
       machines: MachineCustomDef[];
       deletedIds: string[];
     };

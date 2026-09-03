@@ -103,7 +103,7 @@ SELECT
     WHEN UPPER(e.event_type) IN ('STOP', 'IDLE') THEN 2
     WHEN UPPER(e.event_type) IN ('ALARM', 'ERROR') THEN 3
     WHEN UPPER(e.event_type) = 'TOOL_CHANGE' THEN 4
-    ELSE 1
+    ELSE 5
   END AS status,
   e.event_type,
   e.event_code,
@@ -182,30 +182,39 @@ export class Broadcaster {
     // 1. Fetch Primary TimescaleDB Telemetry (LDI)
     try {
       const res = await db.query(PRIMARY_TELEMETRY_SQL);
-      allMachines.push(...res.rows.map(this.formatRow));
+      allMachines.push(...res.rows.map((r) => this.formatRow(r, 'timescale')));
     } catch (err: any) {
       console.warn('[floorplan.broadcaster] Primary TimescaleDB query failed:', err.message);
     }
 
-    // 2. Fetch Drilling Database if registered (drill_db)
-    const drillPool = multiDb.getPool('drill_db');
-    if (drillPool) {
+    // 2. Fetch all external registered databases dynamically
+    const configuredPools = multiDb.getAllConfiguredPools();
+    for (const { key, pool, spec } of configuredPools) {
+      if (key === 'timescale' || spec.enabled === false) continue;
+
+      const query = multiDb.getQuery(key) || (key === 'drill_db' ? DRILL_DB_SQL : null);
+      if (!query) continue;
+
       try {
-        const drillRes = await drillPool.query(DRILL_DB_SQL);
-        allMachines.push(...drillRes.rows.map(this.formatRow));
+        const res = await pool.query(query);
+        allMachines.push(...res.rows.map((r) => this.formatRow(r, key, spec.process_type)));
       } catch (err: any) {
-        // table might not exist or connection failed
+        // Warning logged without crashing other DB streams
       }
     }
 
     return allMachines;
   }
 
-  private formatRow(row: any): LdiMachine {
-    if (row.process_type === 'DRILLING') {
+  private formatRow(row: any, dbKey = 'timescale', defaultProcessType?: string): LdiMachine {
+    const processType = row.process_type || defaultProcessType || (dbKey === 'drill_db' ? 'DRILLING' : 'LASER');
+
+    if (processType === 'DRILLING') {
       return {
+        ...row,
         eqp_id: String(row.eqp_id),
         process_type: 'DRILLING',
+        db_key: dbKey,
         status: Number(row.status ?? 0),
         event_type: row.event_type ? String(row.event_type) : null,
         event_code: row.event_code ? String(row.event_code) : null,
@@ -219,8 +228,10 @@ export class Broadcaster {
     }
 
     return {
+      ...row,
       eqp_id: String(row.eqp_id),
-      process_type: row.process_type || 'LASER',
+      process_type: processType,
+      db_key: dbKey,
       status: Number(row.status ?? 0),
       temperature: row.temperature != null ? Number(row.temperature) : null,
       humidity: row.humidity != null ? Number(row.humidity) : null,
@@ -235,26 +246,18 @@ export class Broadcaster {
       fpn: row.fpn ? String(row.fpn) : null,
       layer_name: row.layer_name ? String(row.layer_name) : null,
       last_seen: row.last_seen ? new Date(row.last_seen).toISOString() : null,
-    };
+    } as any;
   }
 
-  private buildPayload(machines: LdiMachine[]): WsPayload {
+  public buildPayload(machines: LdiMachine[]): WsPayload {
     const machineMap: Record<string, LdiMachine> = {};
     const activeAlarms: string[] = [];
 
     for (const m of machines) {
+      // Strict 1:1 Exact Match: Only exact equipment ID and explicit db_key:eqp_id
       machineMap[m.eqp_id] = m;
-      
-      // Alias drilling numbers (e.g. DRL054-M -> 054, DRL-054)
-      if (m.eqp_id.startsWith('DRL')) {
-        const numMatch = m.eqp_id.match(/(\d+)/);
-        if (numMatch) {
-          const num = numMatch[1];
-          machineMap[num] = m;
-          machineMap[`DRL-${num}`] = m;
-          machineMap[`drill_db:${m.eqp_id}`] = m;
-          machineMap[`drill_db:${num}`] = m;
-        }
+      if ((m as any).db_key) {
+        machineMap[`${(m as any).db_key}:${m.eqp_id}`] = m;
       }
 
       if (m.status === 3) {
