@@ -1,4 +1,3 @@
-import React from 'react';
 import { LdiMachine, MachineCoordinate } from '../types/ldi';
 import { MachineDef } from '../types/fleet';
 import { getStatusTheme } from '../constants/colors';
@@ -11,13 +10,13 @@ export interface MachineNodeProps {
   onSelect: (eqpId: string) => void;
 }
 
-export const MachineNode: React.FC<MachineNodeProps> = ({
+export const MachineNode = ({
   coord,
   telemetry,
   isSelected = false,
   isDimmed = false,
   onSelect,
-}) => {
+}: MachineNodeProps) => {
   const machineId = (coord as MachineDef).id || (coord as MachineCoordinate).eqp_id;
   const isCompact =
     (coord as MachineDef).isCompact ??

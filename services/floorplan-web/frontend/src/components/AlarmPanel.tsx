@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AlertOctagon, ChevronDown, ChevronUp, Crosshair } from 'lucide-react';
 import { LdiMachine } from '../types/ldi';
 import { MachineDef } from '../types/fleet';
@@ -9,11 +9,11 @@ interface AlarmPanelProps {
   onFocusMachine: (svgX: number, svgY: number, eqpId: string) => void;
 }
 
-export const AlarmPanel: React.FC<AlarmPanelProps> = ({
+export const AlarmPanel = ({
   alarms,
   fleetMachines,
   onFocusMachine,
-}) => {
+}: AlarmPanelProps) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
   if (!alarms || alarms.length === 0) {

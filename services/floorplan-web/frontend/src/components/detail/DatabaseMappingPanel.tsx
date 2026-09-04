@@ -12,13 +12,13 @@ export interface DatabaseMappingPanelProps {
   onSaveMapping?: (id: string, newName: string, newTelemetryId?: string) => Promise<void> | void;
 }
 
-export const DatabaseMappingPanel: React.FC<DatabaseMappingPanelProps> = ({
+export const DatabaseMappingPanel = ({
   machineDef,
   eqpId,
   availableDbMachines,
   fleetMachines,
   onSaveMapping,
-}) => {
+}: DatabaseMappingPanelProps) => {
   const [isEditingMapping, setIsEditingMapping] = useState<boolean>(false);
   const [editName, setEditName] = useState<string>(machineDef?.name || '');
   const [editTelemetryId, setEditTelemetryId] = useState<string>(

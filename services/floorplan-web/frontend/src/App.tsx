@@ -17,7 +17,7 @@ import {
 import { FleetFilterOption, MachineDef } from './types/fleet';
 import { LdiMachine } from './types/ldi';
 
-export const App: React.FC = () => {
+export const App = () => {
   const {
     machines,
     machineList,

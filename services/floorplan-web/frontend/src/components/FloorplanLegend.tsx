@@ -7,10 +7,10 @@ export interface FloorplanLegendProps {
   panzoomInstanceRef: React.RefObject<PanzoomObject | null>;
 }
 
-export const FloorplanLegend: React.FC<FloorplanLegendProps> = ({
+export const FloorplanLegend = ({
   containerRef,
   panzoomInstanceRef,
-}) => {
+}: FloorplanLegendProps) => {
   // Draggable Legend Position with LocalStorage memory
   const [legendPos, setLegendPos] = useState<{ x: number; y: number }>(() => {
     try {

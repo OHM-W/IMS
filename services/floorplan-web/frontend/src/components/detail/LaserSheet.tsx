@@ -1,4 +1,3 @@
-import React from 'react';
 import { LdiMachine } from '../../types/ldi';
 import { ToleranceLevel } from '../../constants/colors';
 
@@ -11,14 +10,14 @@ export interface LaserSheetProps {
   humTol: ToleranceLevel;
 }
 
-export const LaserSheet: React.FC<LaserSheetProps> = ({
+export const LaserSheet = ({
   machine,
   boardNo,
   totalBoard,
   progressPct,
   tempTol,
   humTol,
-}) => (
+}: LaserSheetProps) => (
   <div className="space-y-4 font-mono text-xs">
     {/* Manufacturing Order (MO) & Job Profile */}
     <div className="space-y-1.5">

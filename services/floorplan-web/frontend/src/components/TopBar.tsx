@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   ZoomIn,
   ZoomOut,
@@ -21,13 +21,13 @@ export interface TopBarProps {
   onRefresh?: () => void;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({
+export const TopBar = ({
   connectionState,
   retryCount,
   machines,
   totalFleetCount,
   panzoomControls,
-}) => {
+}: TopBarProps) => {
   const [timeStr, setTimeStr] = useState<string>('');
 
   useEffect(() => {

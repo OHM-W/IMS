@@ -36,7 +36,7 @@ export interface DevLayoutToolbarProps {
   draggingMachineInfo?: { id: string; name: string; x: number; y: number; w?: number; h?: number; count?: number } | null;
 }
 
-export const DevLayoutToolbar: React.FC<DevLayoutToolbarProps> = ({
+export const DevLayoutToolbar = ({
   isEditMode,
   onToggleEditMode,
   onSave,
@@ -57,7 +57,7 @@ export const DevLayoutToolbar: React.FC<DevLayoutToolbarProps> = ({
   onAddMachine,
   getViewCenter,
   draggingMachineInfo,
-}) => {
+}: DevLayoutToolbarProps) => {
   const [inputMachineName, setInputMachineName] = useState('004');
 
   const currentW = selectedMachine?.cardWidth ?? (selectedMachine?.isCompact ? 38 : 80);

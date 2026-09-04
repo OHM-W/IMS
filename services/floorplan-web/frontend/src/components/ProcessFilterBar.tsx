@@ -1,4 +1,3 @@
-import React from 'react';
 import { FleetFilterOption } from '../types/fleet';
 
 export interface ProcessFilterOptionDef {
@@ -25,11 +24,11 @@ export interface ProcessFilterBarProps {
   counts?: Partial<Record<FleetFilterOption, number>>;
 }
 
-export const ProcessFilterBar: React.FC<ProcessFilterBarProps> = ({
+export const ProcessFilterBar = ({
   activeFilter,
   onSelectFilter,
   counts = {},
-}) => {
+}: ProcessFilterBarProps) => {
   return (
     <nav
       data-testid="process-filter-bar"

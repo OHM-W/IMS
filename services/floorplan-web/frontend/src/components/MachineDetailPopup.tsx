@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { LdiMachine } from '../types/ldi';
 import { MachineDef } from '../types/fleet';
@@ -22,7 +22,7 @@ export interface MachineDetailPopupProps {
   fleetMachines?: MachineDef[];
 }
 
-export const MachineDetailPopup: React.FC<MachineDetailPopupProps> = ({
+export const MachineDetailPopup = ({
   machine,
   machineDef,
   onClose,
@@ -30,7 +30,7 @@ export const MachineDetailPopup: React.FC<MachineDetailPopupProps> = ({
   onSaveMapping,
   availableDbMachines,
   fleetMachines,
-}) => {
+}: MachineDetailPopupProps) => {
   const [copied, setCopied] = useState(false);
   const eqpId = machine?.eqp_id || machineDef?.id || '';
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Copy, Check } from 'lucide-react';
 import { LdiMachine } from '../../types/ldi';
 
@@ -8,11 +7,11 @@ export interface DrillSheetProps {
   copyProgramName: (name: string) => void;
 }
 
-export const DrillSheet: React.FC<DrillSheetProps> = ({
+export const DrillSheet = ({
   machine,
   copied,
   copyProgramName,
-}) => (
+}: DrillSheetProps) => (
   <div className="space-y-3.5">
     {/* Telemetry Status Section */}
     <div className="space-y-1">

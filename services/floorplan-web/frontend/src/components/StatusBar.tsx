@@ -1,11 +1,10 @@
-import React from 'react';
 import { Database, Zap, Navigation, Layers } from 'lucide-react';
 
 interface StatusBarProps {
   lastSeen: Date | null;
 }
 
-export const StatusBar: React.FC<StatusBarProps> = ({ lastSeen }) => {
+export const StatusBar = ({ lastSeen }: StatusBarProps) => {
   const lastSeenStr = lastSeen
     ? lastSeen.toLocaleTimeString('en-GB', { hour12: false })
     : '--:--:--';
