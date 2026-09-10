@@ -366,21 +366,21 @@ export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGPro
       [isEditMode, onUpdateSize, onDraggingChange]
     );
 
-    // Camera Navigation Helper
+    // Camera Navigation Helper: Centers targetX, targetY in SVG viewBox (3200x1550)
     const applyCameraTransform = (targetX: number, targetY: number, zoomLevel: number) => {
-      if (!containerRef.current || !panzoomInstanceRef.current) return;
-      const container = containerRef.current;
-      const rect = container.getBoundingClientRect();
+      if (!panzoomInstanceRef.current) return;
 
-      const svgRatioX = (rect.width || 1200) / SVG_VIEWBOX.width;
-      const svgRatioY = (rect.height || 600) / SVG_VIEWBOX.height;
-      const baseScale = Math.min(svgRatioX, svgRatioY);
+      const centerX = SVG_VIEWBOX.width / 2;
+      const centerY = SVG_VIEWBOX.height / 2;
 
-      const screenX = (rect.width || 1200) / 2 - targetX * baseScale * zoomLevel;
-      const screenY = (rect.height || 600) / 2 - targetY * baseScale * zoomLevel;
+      // Panzoom transform on <g> is: scale(zoom) translate(panX px, panY px) with origin (0, 0)
+      // To center target (targetX, targetY) at the viewBox center (centerX, centerY):
+      // zoom * (targetX + panX) = centerX  =>  panX = centerX / zoom - targetX
+      const panX = Math.round(centerX / zoomLevel - targetX);
+      const panY = Math.round(centerY / zoomLevel - targetY);
 
       panzoomInstanceRef.current.zoom(zoomLevel, { animate: true });
-      panzoomInstanceRef.current.pan(screenX, screenY, { animate: true });
+      panzoomInstanceRef.current.pan(panX, panY, { animate: true, force: true });
     };
 
     // Imperative Camera Controls
@@ -394,33 +394,26 @@ export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGPro
           panzoomInstanceRef.current?.zoomOut();
         },
         resetView: () => {
-          applyCameraTransform(SVG_VIEWBOX.width / 2, SVG_VIEWBOX.height / 2, 1.0);
           panzoomInstanceRef.current?.reset({ animate: true });
         },
         zoomToFit: () => {
-          applyCameraTransform(SVG_VIEWBOX.width / 2, SVG_VIEWBOX.height / 2, 1.0);
           panzoomInstanceRef.current?.reset({ animate: true });
         },
         zoomToMachine: (svgX: number, svgY: number, zoomLevel = 2.2) => {
           applyCameraTransform(svgX, svgY, zoomLevel);
         },
         getViewCenter: () => {
-          if (!containerRef.current || !panzoomInstanceRef.current) {
-            return { x: 1600, y: 860 };
+          if (!panzoomInstanceRef.current) {
+            return { x: 1600, y: 775 };
           }
-          const container = containerRef.current;
-          const rect = container.getBoundingClientRect();
           const pan = panzoomInstanceRef.current.getPan() || { x: 0, y: 0 };
           const zoom = panzoomInstanceRef.current.getScale() || 1.0;
-          const svgRatioX = (rect.width || 1200) / SVG_VIEWBOX.width;
-          const svgRatioY = (rect.height || 600) / SVG_VIEWBOX.height;
-          const baseScale = Math.min(svgRatioX, svgRatioY);
-          const effectiveScale = (baseScale > 0 ? baseScale : 1.0) * zoom;
 
-          const centerScreenX = rect.width / 2;
-          const centerScreenY = rect.height / 2;
-          const svgX = Math.round((centerScreenX - pan.x) / effectiveScale);
-          const svgY = Math.round((centerScreenY - pan.y) / effectiveScale);
+          const centerX = SVG_VIEWBOX.width / 2;
+          const centerY = SVG_VIEWBOX.height / 2;
+
+          const svgX = Math.round(centerX / zoom - pan.x);
+          const svgY = Math.round(centerY / zoom - pan.y);
           return {
             x: Math.max(50, Math.min(SVG_VIEWBOX.width - 100, svgX)),
             y: Math.max(50, Math.min(SVG_VIEWBOX.height - 100, svgY)),
@@ -428,19 +421,45 @@ export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGPro
         },
         focusCleanroom: () => {
           const cleanroomPreset = CAMERA_FOCUS_PRESETS.LASER_DRILLING || {
-            x: 2515,
-            y: 660,
-            zoom: 2.0,
+            x: 2440,
+            y: 665,
+            zoom: 2.2,
           };
           applyCameraTransform(cleanroomPreset.x, cleanroomPreset.y, cleanroomPreset.zoom);
         },
         focusProcess: (filter: FleetFilterOption) => {
-          const preset = CAMERA_FOCUS_PRESETS[filter] || {
-            x: SVG_VIEWBOX.width / 2,
-            y: SVG_VIEWBOX.height / 2,
-            zoom: 1.0,
-          };
-          applyCameraTransform(preset.x, preset.y, preset.zoom);
+          if (filter === 'ALL') {
+            panzoomInstanceRef.current?.reset({ animate: true });
+            return;
+          }
+
+          // Dynamically compute bounding box from active fleetMachines
+          const matching = fleetMachines.filter((m) =>
+            filter === 'DRILLING'
+              ? m.process === 'DRILLING_MAIN' || m.process === 'DRILLING_HOLD'
+              : m.process === filter
+          );
+
+          if (matching.length > 0) {
+            const minX = Math.min(...matching.map((m) => m.svgX));
+            const maxX = Math.max(...matching.map((m) => m.svgX + (m.cardWidth || 40)));
+            const minY = Math.min(...matching.map((m) => m.svgY));
+            const maxY = Math.max(...matching.map((m) => m.svgY + (m.cardHeight || 26)));
+
+            const centerX = Math.round((minX + maxX) / 2);
+            const centerY = Math.round((minY + maxY) / 2);
+
+            const preset = CAMERA_FOCUS_PRESETS[filter];
+            const zoom = preset?.zoom ?? (matching.length <= 5 ? 2.4 : 1.8);
+            applyCameraTransform(centerX, centerY, zoom);
+          } else {
+            const preset = CAMERA_FOCUS_PRESETS[filter] || {
+              x: SVG_VIEWBOX.width / 2,
+              y: SVG_VIEWBOX.height / 2,
+              zoom: 1.0,
+            };
+            applyCameraTransform(preset.x, preset.y, preset.zoom);
+          }
         },
         zoomToZone: (zoneId: ProcessCategory) => {
           const zone = ZONE_MAP[zoneId];
@@ -454,7 +473,7 @@ export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGPro
           applyCameraTransform(centerX, centerY, zoom);
         },
       }),
-      []
+      [fleetMachines]
     );
 
     const isMachineDimmed = (machine: MachineDef): boolean => {
@@ -497,10 +516,9 @@ export const FloorplanSVG = forwardRef<FloorplanPanzoomControls, FloorplanSVGPro
             {/* Complete 250 Machine Fleet Overlays via foreignObject */}
             <g id="machine-nodes-overlay">
               {fleetMachines.map((machine) => {
-                const telemetry =
-                  (machine.telemetryId ? machines[machine.telemetryId] : undefined) ||
-                  machines[machine.id] ||
-                  (machine.name ? machines[machine.name] : undefined);
+                const telemetry = machine.telemetryId
+                  ? machines[machine.telemetryId]
+                  : machines[machine.id];
                 const isSelected =
                   selectedId === machine.id ||
                   (machine.telemetryId ? selectedId === machine.telemetryId : false);

@@ -116,12 +116,12 @@ export const FACTORY_ZONES: ZoneDef[] = [
     id: 'LASER_DRILLING',
     name: 'Laser Drilling Cleanroom',
     displayName: 'LASER DRILLING (CLEANROOM)',
-    bounds: { xMin: 2150, yMin: 500, xMax: 2880, yMax: 820 },
-    focusView: { x: 2515, y: 660, zoom: 2.0 },
+    bounds: { xMin: 1500, yMin: 1400, xMax: 1650, yMax: 1550 },
+    focusView: { x: 1565, y: 1475, zoom: 2.4 },
     machineCount: 5,
     description: 'Cleanroom photolithography & laser micro-via direct imaging (001-005).',
     color: '#00FF87',
-    center: { x: 2515, y: 660 },
+    center: { x: 1565, y: 1475 },
   },
   {
     id: 'PP_STORAGE',
@@ -148,18 +148,18 @@ export const CAMERA_FOCUS_PRESETS: Record<
   FleetFilterOption,
   { x: number; y: number; zoom: number }
 > = {
-  ALL: { x: 1800, y: 1050, zoom: 0.95 },
-  DRILLING: { x: 970, y: 890, zoom: 1.5 },
-  DRILLING_HOLD: { x: 465, y: 900, zoom: 2.5 },
-  DRILLING_MAIN: { x: 970, y: 890, zoom: 1.5 },
-  XRY: { x: 1480, y: 840, zoom: 2.8 },
-  AUTO_LAY_UP: { x: 1900, y: 740, zoom: 2.2 },
-  BONDING: { x: 1575, y: 940, zoom: 3.0 },
-  OXIDE: { x: 1900, y: 1050, zoom: 2.2 },
-  PP_STORAGE: { x: 2860, y: 1020, zoom: 2.2 },
-  CUTTING: { x: 1340, y: 1350, zoom: 2.2 },
-  DE_OXIDE: { x: 1750, y: 1350, zoom: 2.6 },
-  LASER_DRILLING: { x: 2515, y: 660, zoom: 2.0 },
+  ALL: { x: 1600, y: 775, zoom: 1.0 },
+  DRILLING: { x: 940, y: 810, zoom: 1.5 },
+  DRILLING_HOLD: { x: 430, y: 720, zoom: 2.5 },
+  DRILLING_MAIN: { x: 940, y: 810, zoom: 1.5 },
+  XRY: { x: 1410, y: 940, zoom: 2.5 },
+  AUTO_LAY_UP: { x: 1720, y: 700, zoom: 2.2 },
+  BONDING: { x: 1575, y: 940, zoom: 2.8 },
+  OXIDE: { x: 1600, y: 1130, zoom: 2.2 },
+  PP_STORAGE: { x: 2755, y: 960, zoom: 2.0 },
+  CUTTING: { x: 1280, y: 1430, zoom: 2.0 },
+  DE_OXIDE: { x: 1440, y: 1410, zoom: 2.5 },
+  LASER_DRILLING: { x: 1565, y: 1475, zoom: 2.4 },
 };
 
 const pad3 = (n: number) => n.toString().padStart(3, '0');
@@ -214,11 +214,35 @@ export const MIDDLE_DRILLING_COLUMNS: DrillingColumnSpec[] = [
   { label: 'STANDALONE', array: 'STANDALONE', colIndex: 6, x: 820, yStart: 1040, yStep: 26, indices: [1, 2], idPrefix: 'DRL-S00' },
 ];
 
+export const DRILLING_TELEMETRY_IDS: Record<number, string> = {
+  1: 'DRL001-M', 2: 'DRL002-M', 3: 'DRL003-M', 4: 'DRL004-M', 5: 'DRL005-M',
+  6: 'DRL006-M', 7: 'DRL007-M', 8: 'DRL008-M', 9: 'DRL009-M', 10: 'DRL010-M',
+  11: 'DRL011-M', 12: 'DRL012-M', 13: 'DRL013-M', 14: 'DRL014-M', 15: 'DRL015-M',
+  16: 'DRL016-M', 17: 'DRL017-M', 18: 'DRL018-M', 19: 'DRL019-M', 20: 'DRL020-M',
+  21: 'DRL021-M', 22: 'DRL022-M', 23: 'DRL023-M', 24: 'DRL024-M', 25: 'DRL025-M',
+  26: 'DRL026-M', 27: 'DRL027-M', 28: 'DRL028-M', 29: 'DRL029-M', 30: 'DRL030-M',
+  31: 'DRL031-M', 32: 'DRL032-M', 33: 'DRL033-M', 34: 'DRL034-M', 35: 'DRL035-M',
+  37: 'DRL037-M', 38: 'DRL038-M', 39: 'DRL039-M', 40: 'DRL040-M', 41: 'DRL041-M',
+  42: 'DRL042-M', 43: 'DRL043-M', 44: 'DRL044-M', 45: 'DRL045-M', 46: 'DRL046-M',
+  47: 'DRL047-M', 50: 'DRL050-M', 52: 'DRL052-M', 53: 'DRL053-M', 54: 'DRL054-M',
+  55: 'DRL055-M', 56: 'DRL056-M', 59: 'DRL059-M', 60: 'DRL060-M', 61: 'DRL061-M',
+  62: 'DRL062-M', 63: 'DRL063-M', 64: 'DRL64-M', 65: 'DRL065-M', 66: 'DRL066-M',
+  67: 'DRL067-M', 68: 'DRL068-M', 69: 'DRL69-M', 70: 'DRL070-M', 71: 'DRL071-M',
+  72: 'DRL072-M', 73: 'DRL073-M', 74: 'DRL074-M', 75: 'DRL075-M', 76: 'DRL076-M',
+  77: 'DRL077-M', 78: 'DRL078-M', 79: 'DRL079-M', 80: 'DRL080-M', 81: 'DRL081-M',
+  82: 'DRL082-M', 83: 'DRL083-M', 84: 'DRL084-M', 85: 'DRL085-M', 86: 'DRL086-M',
+  87: 'DRL087-M', 88: 'DRL088-M', 89: 'DRL089-M', 90: 'DRL090-M', 91: 'DRL091-M',
+  92: 'DRL092-M', 93: 'DRL093-M', 94: 'DRL094-M', 95: 'DRL095-M', 96: 'DRL096-M',
+  97: 'DRL097-M', 98: 'DRL098-M', 99: 'DRL099-M', 101: 'DRL101-M', 102: 'DRL102-M',
+  103: 'DRL103-M', 104: 'DRL104-M',
+};
+
 function generateDrillingUnits(columnSpecs: DrillingColumnSpec[]): MachineDef[] {
   const machines: MachineDef[] = [];
   for (const col of columnSpecs) {
     col.indices.forEach((num, rowIndex) => {
       const machineId = `${col.idPrefix}-${pad3(num)}`;
+      const telemId = DRILLING_TELEMETRY_IDS[num];
       machines.push({
         id: machineId,
         name: `${pad3(num)}`,
@@ -233,7 +257,8 @@ function generateDrillingUnits(columnSpecs: DrillingColumnSpec[]): MachineDef[] 
         cardWidth: 38,
         cardHeight: 22,
         isCompact: true,
-        hasLiveFeed: false,
+        hasLiveFeed: Boolean(telemId),
+        telemetryId: telemId,
         specs: {
           spindleCount: 6,
           maxSpeedRpm: 200000,

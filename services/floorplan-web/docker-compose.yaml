@@ -1,0 +1,43 @@
+services:
+  floorplan-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ims-floorplan-web
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8085}:80"
+    environment:
+      - NODE_ENV=production
+      # Primary Telemetry Connection (TimescaleDB / PostgreSQL)
+      - PGHOST=${PGHOST:-ims-timescaledb}
+      - PGPORT=${PGPORT:-5432}
+      - PGDATABASE=${PGDATABASE:-${POSTGRES_DB:-ims}}
+      - PGUSER=${PGUSER:-${POSTGRES_USER:-postgres}}
+      - PGPASSWORD=${POSTGRES_PASSWORD:-${PGPASSWORD:-postgres}}
+      # Multi-DB Passwords (matches databases.json)
+      - DRILL_DB_PASSWORD=${DRILL_DB_PASSWORD:-}
+      # Telemetry Polling Parameters
+      - BROADCAST_INTERVAL_MS=${BROADCAST_INTERVAL_MS:-2000}
+      - STALENESS_THRESHOLD_MINUTES=${STALENESS_THRESHOLD_MINUTES:-15}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # Persists custom machine layout and database configurations
+      - ./backend/data:/app/data
+      - ./frontend/dist:/var/www/html:ro
+    networks:
+      - default
+      - ims_internal
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:80/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+networks:
+  default:
+  ims_internal:
+    name: ims_ims-internal
+    external: true

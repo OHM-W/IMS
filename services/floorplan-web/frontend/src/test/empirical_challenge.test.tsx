@@ -317,7 +317,7 @@ describe('Empirical Challenge 2: App.tsx Telemetry Binding & Collision Resistanc
     expect(drawerScope.getByText('RUN')).toBeInTheDocument();
   });
 
-  it('evaluates FloorplanSVG overlay telemetry resolution: reveals lingering name fallback in SVG node overlay', () => {
+  it('evaluates FloorplanSVG overlay telemetry resolution: strictly prevents name fallback in SVG node overlay', () => {
     // Machine with name="LDI-01" but NO telemetryId
     const collisionCard: MachineDef = {
       id: 'DRILL-COLLISION',
@@ -347,16 +347,49 @@ describe('Empirical Challenge 2: App.tsx Telemetry Binding & Collision Resistanc
     expect(node).toBeInTheDocument();
 
     const nodeScope = within(node);
-    // In FloorplanSVG.tsx line 588:
-    // const telemetry = (machine.telemetryId ? machines[machine.telemetryId] : undefined) ||
-    //                   machines[machine.id] ||
-    //                   (machine.name ? machines[machine.name] : undefined);
-    // Because machine.name === 'LDI-01', the SVG node binds to liveTelemetryMap['LDI-01']!
-    // Thus the SVG card renders RUN and 23.4°C even though App.tsx detail drawer does not!
-    const svgCardBadge = nodeScope.getByText('RUN');
-    expect(svgCardBadge).toBeInTheDocument();
-    const svgCardTemp = nodeScope.getByText('23.4°C');
-    expect(svgCardTemp).toBeInTheDocument();
+    // Strict 1:1 matching: card without explicit telemetryId must NOT bind to LDI-01 by name
+    expect(nodeScope.queryByText('RUN')).not.toBeInTheDocument();
+    expect(nodeScope.queryByText('23.4°C')).not.toBeInTheDocument();
+  });
+
+  it('renders machine as OFF/gray when telemetryId is bound to non-existent database ID', () => {
+    // Machine mapped to DRL057-M (not in live database stream)
+    const unmappedDbCard: MachineDef = {
+      id: 'DRL-B06-054',
+      name: '054',
+      process: 'DRILLING_MAIN',
+      telemetryId: 'DRL057-M', // Does not exist in live DB
+      hasLiveFeed: true,
+      svgX: 1250,
+      svgY: 826,
+      cardWidth: 38,
+      cardHeight: 22,
+      isCompact: true,
+    };
+
+    const liveTelemetryMap: Record<string, LdiMachine> = {
+      'DRL054-M': {
+        ...mockLiveTelemetry,
+        eqp_id: 'DRL054-M',
+        status: 1, // RUN
+      },
+    };
+
+    render(
+      <FloorplanSVG
+        machines={liveTelemetryMap}
+        fleetMachines={[unmappedDbCard]}
+        selectedId={null}
+        onSelectMachine={vi.fn()}
+      />
+    );
+
+    const node = screen.getByTestId('machine-node-DRL-B06-054');
+    expect(node).toBeInTheDocument();
+    // Compact card title reflects status theme label (OFF for status 0)
+    expect(node).toHaveAttribute('title', '054 (OFF)');
+    // Must NOT show RUN theme
+    expect(node).not.toHaveClass('bg-emerald-500');
   });
 });
 

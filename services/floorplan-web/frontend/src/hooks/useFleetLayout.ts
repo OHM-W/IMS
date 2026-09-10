@@ -100,6 +100,7 @@ export function useFleetLayout() {
                   cardHeight: item.cardHeight,
                   name: item.name,
                   telemetryId: item.telemetryId,
+                  hasLiveFeed: item.hasLiveFeed ?? Boolean(item.telemetryId),
                   process: item.process,
                 };
               } else {
@@ -118,8 +119,8 @@ export function useFleetLayout() {
                 });
               }
             }
-            setOverrides((prev) => ({ ...serverOverrides, ...prev }));
-            setAddedMachines((prev) => (prev.length > 0 ? prev : serverAdded));
+            setOverrides((prev) => ({ ...prev, ...serverOverrides }));
+            setAddedMachines((prev) => (serverAdded.length > 0 ? serverAdded : prev));
           }
         }
       })
@@ -213,17 +214,26 @@ export function useFleetLayout() {
     [addedMachines, deletedIds, persistLocally]
   );
 
-  // Rename machine / update telemetry ID
+  // Rename machine / update telemetry ID / update process
   const renameMachine = useCallback(
-    (id: string, newName: string, newTelemetryId?: string) => {
+    (id: string, newName: string, newTelemetryId?: string, newProcess?: ProcessCategory) => {
+      const targetTelemetryId =
+        newTelemetryId !== undefined
+          ? newTelemetryId.trim() === ''
+            ? ''
+            : newTelemetryId.trim()
+          : undefined;
+      const targetHasLiveFeed = Boolean(targetTelemetryId);
+
       setOverrides((prev) => {
         const updated = {
           ...prev,
           [id]: {
             ...prev[id],
             name: newName,
-            telemetryId: newTelemetryId || undefined,
-            hasLiveFeed: Boolean(newTelemetryId),
+            telemetryId: targetTelemetryId,
+            hasLiveFeed: targetHasLiveFeed,
+            ...(newProcess ? { process: newProcess } : {}),
           },
         };
         persistLocally(updated, addedMachines, deletedIds);
@@ -236,8 +246,9 @@ export function useFleetLayout() {
             ? {
                 ...m,
                 name: newName,
-                telemetryId: newTelemetryId || undefined,
-                hasLiveFeed: Boolean(newTelemetryId),
+                telemetryId: targetTelemetryId || undefined,
+                hasLiveFeed: targetHasLiveFeed,
+                ...(newProcess ? { process: newProcess } : {}),
               }
             : m
         );
@@ -394,11 +405,21 @@ export function useFleetLayout() {
     return combined.map((m) => {
       const custom = overrides[m.id];
       if (custom) {
+        const isExplicitlyUnbound = custom.telemetryId === '';
+        const resolvedTelemetryId = isExplicitlyUnbound
+          ? undefined
+          : custom.telemetryId !== undefined
+          ? custom.telemetryId
+          : m.telemetryId;
+
         return {
           ...m,
           name: custom.name ?? m.name,
-          telemetryId: custom.telemetryId !== undefined ? custom.telemetryId : m.telemetryId,
-          hasLiveFeed: custom.hasLiveFeed !== undefined ? custom.hasLiveFeed : m.hasLiveFeed,
+          telemetryId: resolvedTelemetryId,
+          hasLiveFeed:
+            custom.hasLiveFeed !== undefined
+              ? custom.hasLiveFeed
+              : Boolean(resolvedTelemetryId),
           svgX: custom.svgX !== undefined ? custom.svgX : m.svgX,
           svgY: custom.svgY !== undefined ? custom.svgY : m.svgY,
           cardWidth: custom.cardWidth !== undefined ? custom.cardWidth : m.cardWidth,
@@ -476,6 +497,7 @@ export function useFleetLayout() {
     clearSelection,
     fleetMachines,
     addedMachines,
+    deletedIds,
     moveGroupPositions,
     updateMachinePosition,
     updateMachineSize,

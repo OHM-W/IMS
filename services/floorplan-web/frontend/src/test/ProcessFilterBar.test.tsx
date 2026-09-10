@@ -4,13 +4,14 @@ import { ProcessFilterBar, PROCESS_FILTER_OPTIONS } from '../components/ProcessF
 import { FleetFilterOption } from '../types/fleet';
 
 describe('ProcessFilterBar', () => {
-  it('renders all 7 process filter buttons with count badges', () => {
+  it('renders all 8 process filter buttons with count badges', () => {
     const handleSelect = vi.fn();
     const mockCounts: Partial<Record<FleetFilterOption, number>> = {
       ALL: 250,
       DRILLING: 203,
       AUTO_LAY_UP: 8,
       OXIDE: 12,
+      DE_OXIDE: 3,
       CUTTING: 11,
       LASER_DRILLING: 5,
       XRY: 3,
@@ -26,22 +27,23 @@ describe('ProcessFilterBar', () => {
 
     expect(screen.getByTestId('process-filter-bar')).toBeInTheDocument();
 
-    // Verify all 7 buttons are rendered
-    expect(PROCESS_FILTER_OPTIONS.length).toBe(7);
+    // Verify all 8 buttons are rendered
+    expect(PROCESS_FILTER_OPTIONS.length).toBe(8);
     for (const opt of PROCESS_FILTER_OPTIONS) {
       const btn = screen.getByTestId(`filter-btn-${opt.id}`);
       expect(btn).toBeInTheDocument();
       expect(within(btn).getByText(opt.label)).toBeInTheDocument();
     }
 
-    // Verify counts are displayed
-    expect(screen.getByText('250')).toBeInTheDocument();
-    expect(screen.getByText('203')).toBeInTheDocument();
-    expect(screen.getByText('8')).toBeInTheDocument();
-    expect(screen.getByText('12')).toBeInTheDocument();
-    expect(screen.getByText('11')).toBeInTheDocument();
-    expect(screen.getByText('5')).toBeInTheDocument();
-    expect(screen.getByText('3')).toBeInTheDocument();
+    // Verify counts are displayed within each button
+    expect(within(screen.getByTestId('filter-btn-ALL')).getByText('250')).toBeInTheDocument();
+    expect(within(screen.getByTestId('filter-btn-DRILLING')).getByText('203')).toBeInTheDocument();
+    expect(within(screen.getByTestId('filter-btn-AUTO_LAY_UP')).getByText('8')).toBeInTheDocument();
+    expect(within(screen.getByTestId('filter-btn-OXIDE')).getByText('12')).toBeInTheDocument();
+    expect(within(screen.getByTestId('filter-btn-DE_OXIDE')).getByText('3')).toBeInTheDocument();
+    expect(within(screen.getByTestId('filter-btn-CUTTING')).getByText('11')).toBeInTheDocument();
+    expect(within(screen.getByTestId('filter-btn-LASER_DRILLING')).getByText('5')).toBeInTheDocument();
+    expect(within(screen.getByTestId('filter-btn-XRY')).getByText('3')).toBeInTheDocument();
   });
 
   it('clicking a filter button invokes onSelectFilter with correct category ID', () => {
@@ -58,6 +60,11 @@ describe('ProcessFilterBar', () => {
     const drillBtn = screen.getByTestId('filter-btn-DRILLING');
     fireEvent.click(drillBtn);
     expect(handleSelect).toHaveBeenCalledWith('DRILLING');
+
+    // Click DE_OXIDE
+    const deoxideBtn = screen.getByTestId('filter-btn-DE_OXIDE');
+    fireEvent.click(deoxideBtn);
+    expect(handleSelect).toHaveBeenCalledWith('DE_OXIDE');
 
     // Click LASER_DRILLING
     const laserBtn = screen.getByTestId('filter-btn-LASER_DRILLING');

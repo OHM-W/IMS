@@ -4,120 +4,7 @@ import { multiDb } from './multiDb.js';
 import { config } from './config.js';
 import { LdiMachine, WsPayload } from './types.js';
 
-const PRIMARY_TELEMETRY_SQL = `
-WITH latest_telemetry AS (
-  SELECT DISTINCT ON (d.eqp_id)
-    d.eqp_id,
-    d.state,
-    ROUND(d.temperature::NUMERIC, 1) AS temperature,
-    ROUND(d.humidity::NUMERIC, 1) AS humidity,
-    ROUND(d.resist_dosage::NUMERIC, 2) AS resist_dosage,
-    ROUND(d.scan_speed::NUMERIC, 1) AS scan_speed,
-    ROUND(d.air_vacuum::NUMERIC, 1) AS air_vacuum,
-    ROUND(d.thickness::NUMERIC, 3) AS thickness,
-    d.board_no,
-    d.total_board,
-    ROUND(d.total_time::NUMERIC, 1) AS total_time,
-    d.mo,
-    d.fpn,
-    d.layer_name,
-    d."time" AS last_seen
-  FROM public.ldi_data d
-  ORDER BY d.eqp_id, d."time" DESC
-),
-active_alarms AS (
-  SELECT DISTINCT a.equipmentid
-  FROM public.ldi_alarm_log a
-  JOIN public.ldi_alarm_ms_code m ON a.errorcode::TEXT = m.alarm_code::TEXT
-  WHERE a.logdate > NOW() - INTERVAL '${config.ALARM_WINDOW_MINUTES} minutes'
-    AND m.severity IN ('Critical', 'Major')
-)
-SELECT
-  t.eqp_id,
-  'LASER' AS process_type,
-  CASE
-    WHEN t.last_seen < NOW() - INTERVAL '${config.STALENESS_THRESHOLD_MINUTES} minutes' THEN 0
-    WHEN a.equipmentid IS NOT NULL THEN 3
-    WHEN t.state = true THEN 1
-    ELSE 2
-  END AS status,
-  t.temperature,
-  t.humidity,
-  t.resist_dosage,
-  t.scan_speed,
-  t.air_vacuum,
-  t.thickness,
-  t.board_no,
-  t.total_board,
-  t.total_time,
-  t.mo,
-  t.fpn,
-  t.layer_name,
-  t.last_seen
-FROM latest_telemetry t
-LEFT JOIN active_alarms a ON a.equipmentid = t.eqp_id
-ORDER BY t.eqp_id;
-`;
 
-const DRILL_DB_SQL = `
-WITH latest_event AS (
-  SELECT DISTINCT ON (equipment_id)
-    equipment_id,
-    event_type,
-    event_code,
-    event_message,
-    level,
-    event_time
-  FROM public.tbl_dr_event
-  ORDER BY equipment_id, event_time DESC
-),
-latest_program AS (
-  SELECT DISTINCT ON (equipment_id)
-    equipment_id,
-    event_message AS program_name
-  FROM public.tbl_dr_event
-  WHERE event_type = 'PROGRAM_LOAD'
-  ORDER BY equipment_id, event_time DESC
-),
-latest_tool AS (
-  SELECT DISTINCT ON (equipment_id)
-    equipment_id,
-    event_message AS tool_info
-  FROM public.tbl_dr_event
-  WHERE event_type = 'TOOL_CHANGE'
-  ORDER BY equipment_id, event_time DESC
-),
-latest_hits AS (
-  SELECT DISTINCT ON (equipment_id)
-    equipment_id,
-    event_message AS hits_info
-  FROM public.tbl_dr_event
-  WHERE event_message LIKE 'Run Hits:%'
-  ORDER BY equipment_id, event_time DESC
-)
-SELECT
-  e.equipment_id AS eqp_id,
-  'DRILLING' AS process_type,
-  CASE
-    WHEN UPPER(e.event_type) = 'RUN' THEN 1
-    WHEN UPPER(e.event_type) IN ('STOP', 'IDLE') THEN 2
-    WHEN UPPER(e.event_type) IN ('ALARM', 'ERROR') THEN 3
-    WHEN UPPER(e.event_type) = 'TOOL_CHANGE' THEN 4
-    ELSE 5
-  END AS status,
-  e.event_type,
-  e.event_code,
-  e.event_message,
-  p.program_name,
-  t.tool_info,
-  h.hits_info,
-  e.level,
-  e.event_time AS last_seen
-FROM latest_event e
-LEFT JOIN latest_program p ON p.equipment_id = e.equipment_id
-LEFT JOIN latest_tool t ON t.equipment_id = e.equipment_id
-LEFT JOIN latest_hits h ON h.equipment_id = e.equipment_id;
-`;
 
 export class Broadcaster {
   private clients: Set<WebSocket> = new Set();
@@ -181,8 +68,15 @@ export class Broadcaster {
 
     // 1. Fetch Primary TimescaleDB Telemetry (LDI)
     try {
-      const res = await db.query(PRIMARY_TELEMETRY_SQL);
-      allMachines.push(...res.rows.map((r) => this.formatRow(r, 'timescale')));
+      const primaryQuery = multiDb.getQuery('timescale', {
+        ALARM_WINDOW_MINUTES: config.ALARM_WINDOW_MINUTES,
+        STALENESS_THRESHOLD_MINUTES: config.STALENESS_THRESHOLD_MINUTES,
+      });
+
+      if (primaryQuery) {
+        const res = await db.query(primaryQuery);
+        allMachines.push(...res.rows.map((r) => this.formatRow(r, 'timescale')));
+      }
     } catch (err: any) {
       console.warn('[floorplan.broadcaster] Primary TimescaleDB query failed:', err.message);
     }
@@ -192,7 +86,7 @@ export class Broadcaster {
     for (const { key, pool, spec } of configuredPools) {
       if (key === 'timescale' || spec.enabled === false) continue;
 
-      const query = multiDb.getQuery(key) || (key === 'drill_db' ? DRILL_DB_SQL : null);
+      const query = multiDb.getQuery(key);
       if (!query) continue;
 
       try {
@@ -207,45 +101,27 @@ export class Broadcaster {
   }
 
   private formatRow(row: any, dbKey = 'timescale', defaultProcessType?: string): LdiMachine {
-    const processType = row.process_type || defaultProcessType || (dbKey === 'drill_db' ? 'DRILLING' : 'LASER');
+    if (!row || typeof row !== 'object') {
+      return {} as any;
+    }
 
-    if (processType === 'DRILLING') {
-      return {
-        ...row,
-        eqp_id: String(row.eqp_id),
-        process_type: 'DRILLING',
-        db_key: dbKey,
-        status: Number(row.status ?? 0),
-        event_type: row.event_type ? String(row.event_type) : null,
-        event_code: row.event_code ? String(row.event_code) : null,
-        event_message: row.event_message ? String(row.event_message) : null,
-        program_name: row.program_name ? String(row.program_name) : null,
-        tool_info: row.tool_info ? String(row.tool_info) : null,
-        hits_info: row.hits_info ? String(row.hits_info) : null,
-        level: row.level ? String(row.level) : null,
-        last_seen: row.last_seen ? new Date(row.last_seen).toISOString() : null,
-      } as any;
+    const { eqp_id, status, process_type, last_seen, db_key, ...rest } = row;
+    const dynamicMetrics: Record<string, any> = { ...rest };
+
+    // Dynamic numeric parsing: converts numeric strings from PostgreSQL into native numbers
+    for (const [key, val] of Object.entries(dynamicMetrics)) {
+      if (val !== null && typeof val === 'string' && val.trim() !== '' && !isNaN(Number(val))) {
+        dynamicMetrics[key] = Number(val);
+      }
     }
 
     return {
-      ...row,
-      eqp_id: String(row.eqp_id),
-      process_type: processType,
+      ...dynamicMetrics,
+      eqp_id: String(eqp_id ?? ''),
+      status: Number(status ?? 0),
+      process_type: process_type || defaultProcessType || (dbKey === 'drill_db' ? 'DRILLING' : 'LASER'),
+      last_seen: last_seen ? new Date(last_seen).toISOString() : null,
       db_key: dbKey,
-      status: Number(row.status ?? 0),
-      temperature: row.temperature != null ? Number(row.temperature) : null,
-      humidity: row.humidity != null ? Number(row.humidity) : null,
-      resist_dosage: row.resist_dosage != null ? Number(row.resist_dosage) : null,
-      scan_speed: row.scan_speed != null ? Number(row.scan_speed) : null,
-      air_vacuum: row.air_vacuum != null ? Number(row.air_vacuum) : null,
-      thickness: row.thickness != null ? Number(row.thickness) : null,
-      board_no: row.board_no != null ? Number(row.board_no) : null,
-      total_board: row.total_board != null ? Number(row.total_board) : null,
-      total_time: row.total_time != null ? Number(row.total_time) : null,
-      mo: row.mo ? String(row.mo) : null,
-      fpn: row.fpn ? String(row.fpn) : null,
-      layer_name: row.layer_name ? String(row.layer_name) : null,
-      last_seen: row.last_seen ? new Date(row.last_seen).toISOString() : null,
     } as any;
   }
 

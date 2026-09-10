@@ -1,9 +1,9 @@
-import { LdiMachine, MachineCoordinate } from '../types/ldi';
+import { LdiMachine } from '../types/ldi';
 import { MachineDef } from '../types/fleet';
 import { getStatusTheme } from '../constants/colors';
 
 export interface MachineNodeProps {
-  coord: MachineDef | MachineCoordinate;
+  coord: MachineDef;
   telemetry?: LdiMachine;
   isSelected?: boolean;
   isDimmed?: boolean;
@@ -17,16 +17,12 @@ export const MachineNode = ({
   isDimmed = false,
   onSelect,
 }: MachineNodeProps) => {
-  const machineId = (coord as MachineDef).id || (coord as MachineCoordinate).eqp_id;
-  const isCompact =
-    (coord as MachineDef).isCompact ??
-    ((coord as MachineCoordinate).width !== undefined
-      ? (coord as MachineCoordinate).width < 75
-      : false);
+  const machineId = coord.id;
+  const isCompact = coord.isCompact ?? false;
 
   // Status resolution
   let defaultStatus = 0; // default OFF
-  if ((coord as MachineDef).hasLiveFeed === false) {
+  if (coord.hasLiveFeed === false) {
     defaultStatus = 5; // UNDEFINE for unmonitored baseline
   }
   const status = telemetry?.status !== undefined ? telemetry.status : defaultStatus;

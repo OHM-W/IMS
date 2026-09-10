@@ -1,0 +1,341 @@
+{
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "adz7dcc",
+    "generation": 11,
+    "creationTimestamp": "2026-09-08T09:47:00Z",
+    "labels": {},
+    "annotations": {}
+  },
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "query": {
+            "kind": "DataQuery",
+            "group": "grafana",
+            "version": "v0",
+            "spec": {}
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "#00F2FE",
+          "name": "Annotations & Alerts",
+          "builtIn": true
+        }
+      }
+    ],
+    "cursorSync": "Crosshair",
+    "description": "Vendor-inspired drilling fleet cards backed only by public.machine_event evidence.",
+    "editable": true,
+    "elements": {
+      "panel-1": {
+        "kind": "Panel",
+        "spec": {
+          "id": 1,
+          "title": "",
+          "description": "One clickable card per selected machine. Values come only from public.machine_event; missing fields remain N/A and historical errors are not labelled active.",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "code",
+                        "format": "table",
+                        "rawQuery": true,
+                        "rawSql": "SET jit = off;\n/* REALTIME DRILLING FLEET OPERATIONS - DYNAMIC TIME-WINDOW KPI (ULTRAFAST INDEX-SEEK) */\nWITH RECURSIVE all_eqp AS (\n   (SELECT equipment_id FROM public.machine_event ORDER BY equipment_id LIMIT 1)\n   UNION ALL\n   SELECT (SELECT equipment_id FROM public.machine_event WHERE equipment_id > t.equipment_id ORDER BY equipment_id LIMIT 1)\n   FROM all_eqp t\n   WHERE t.equipment_id IS NOT NULL\n),\nlatest_per_eqp AS (\n  SELECT e.equipment_id, me.*\n  FROM all_eqp e\n  CROSS JOIN LATERAL (\n    SELECT event_type, event_code, event_message, event_time, spindle, id\n    FROM public.machine_event m\n    WHERE m.equipment_id = e.equipment_id\n      AND $__timeFilter(m.event_time)\n    ORDER BY m.event_time DESC, m.id DESC\n    LIMIT 1\n  ) me\n  WHERE e.equipment_id IS NOT NULL\n),\nwindow_tool_events AS (\n  SELECT COUNT(*) AS tool_event_count\n  FROM public.machine_event\n  WHERE $__timeFilter(event_time)\n    AND (event_type = 'TOOL_CHANGE' OR event_code IN ('0417', '0214', '0215', '0110', '0408'))\n),\nclassified AS (\n  SELECT\n    l.equipment_id,\n    l.event_type,\n    l.event_code,\n    l.event_message,\n    l.event_time,\n    l.spindle,\n    l.id,\n    p.prog,\n    rf.rpm,\n    rf.feed,\n    h.holes,\n    CASE \n      WHEN l.event_code = '0408' THEN 'BIT BROKEN'\n      WHEN l.event_type IN ('ALARM', 'E') THEN 'ALARM'\n      WHEN l.event_type = 'STOP' OR l.event_code = '0108' THEN 'STOP'\n      WHEN l.event_type = 'TOOL_CHANGE' OR l.event_code = '0110' THEN 'TOOL_CHANGE'\n      WHEN l.event_type = 'PROGRAM_LOAD' OR l.event_code = '0103' THEN 'FINISHED'\n      ELSE 'RUN'\n    END AS \"StateLabel\",\n    CASE \n      WHEN l.event_code = '0408' THEN 'alarm'\n      WHEN l.event_type IN ('ALARM', 'E') THEN 'alarm'\n      WHEN l.event_type = 'STOP' OR l.event_code = '0108' THEN 'stop'\n      WHEN l.event_type = 'TOOL_CHANGE' OR l.event_code = '0110' THEN 'warning'\n      WHEN l.event_type = 'PROGRAM_LOAD' OR l.event_code = '0103' THEN 'finished'\n      ELSE 'run'\n    END AS \"StateClass\"\n  FROM latest_per_eqp l\n  LEFT JOIN LATERAL (\n    SELECT (regexp_match(event_message, '(?i)([a-zA-Z0-9_-]+\\.tlp)'))[1] AS prog\n    FROM public.machine_event me\n    WHERE me.equipment_id = l.equipment_id\n      AND me.event_time <= to_timestamp(${__to} / 1000.0)\n      AND (me.event_code IN ('0101', '0103') OR me.event_message LIKE '%.tlp%')\n    ORDER BY me.event_time DESC, me.id DESC\n    LIMIT 1\n  ) p ON true\n  LEFT JOIN LATERAL (\n    SELECT \n      ROUND((regexp_match(event_message, '(?i)\\[Rpm\\]:[^>]+->[[:space:]]*([0-9.]+)'))[1]::numeric)::text || 'k' AS rpm,\n      ROUND((regexp_match(event_message, '(?i)\\[Feed\\]:[^>]+->[[:space:]]*([0-9.]+)'))[1]::numeric, 1)::text AS feed\n    FROM public.machine_event me\n    WHERE me.equipment_id = l.equipment_id\n      AND me.event_time <= to_timestamp(${__to} / 1000.0)\n      AND me.event_code = '0109'\n    ORDER BY me.event_time DESC, me.id DESC\n    LIMIT 1\n  ) rf ON true\n  LEFT JOIN LATERAL (\n    SELECT \n      to_char((regexp_match(event_message, '(?i)(?:at hole|Hole:|start:)[[:space:]]*([0-9]+)'))[1]::bigint, 'FM999,999,999') || ' (' ||\n      CASE \n        WHEN event_code = '0110' THEN 'Tool Change'\n        WHEN event_code = '0108' THEN 'Machine Stop'\n        WHEN event_code IN ('0417', '0120') THEN 'Tool is Broken'\n        WHEN event_code = '0112' THEN 'Cycle Start'\n        ELSE 'Running'\n      END || ')' AS holes\n    FROM public.machine_event me\n    WHERE me.equipment_id = l.equipment_id\n      AND me.event_time <= to_timestamp(${__to} / 1000.0)\n      AND me.event_code IN ('0110', '0108', '0417', '0120', '0112')\n      AND me.event_message ~* '(?i)(?:at hole|Hole:|start:)[[:space:]]*([0-9]+)'\n    ORDER BY me.event_time DESC, me.id DESC\n    LIMIT 1\n  ) h ON true\n),\ncalculated AS (\n  SELECT \n    c.equipment_id AS \"Machine\",\n    c.\"StateLabel\",\n    c.\"StateClass\",\n    COALESCE(\n      CASE \n        WHEN c.event_code ~ '^[0-9]+$' AND (c.event_type IN ('ALARM', 'E') OR c.event_code = '0408') THEN 'E-' || c.event_code\n        WHEN c.event_code ~ '^[0-9]+$' AND c.event_type IN ('RUN', 'M', 'EVENT', 'TOOL_CHANGE', 'PROGRAM_LOAD', 'STOP') THEN 'M-' || c.event_code\n        WHEN c.event_code ~ '^[0-9]+$' THEN 'M-' || c.event_code\n        ELSE c.event_code\n      END, 'N/A'\n    ) AS \"Code\",\n    COALESCE(c.event_message, 'Normal execution') AS \"Message\",\n    CASE\n      WHEN c.event_message ~* 'T[0-9]+' AND c.event_message ~* 'C[0-9]+(?:\\.[0-9]+)?' THEN\n        UPPER((regexp_match(c.event_message, '(T[0-9]+)', 'i'))[1]) || ' (' || \n        (regexp_match(c.event_message, 'C([0-9]+(?:\\.[0-9]+)?)', 'i'))[1] || 'mm)'\n      WHEN c.event_message ~* '->[[:space:]]*T[1-9][0-9]*M[0-9]+' THEN\n        UPPER((regexp_match(c.event_message, '->[[:space:]]*(T[0-9]+)', 'i'))[1]) || ' (' || \n        UPPER((regexp_match(c.event_message, '->[[:space:]]*T[0-9]+(M[0-9]+)', 'i'))[1]) || ')'\n      WHEN c.event_message ~* 'ATC[[:space:]]*T[1-9][0-9]*M[0-9]+' THEN\n        UPPER((regexp_match(c.event_message, 'ATC[[:space:]]*(T[0-9]+)', 'i'))[1]) || ' (' || \n        UPPER((regexp_match(c.event_message, 'ATC[[:space:]]*T[0-9]+(M[0-9]+)', 'i'))[1]) || ')'\n      WHEN c.event_message ~* '^(T[0-9]+)[[:space:]]+' THEN\n        UPPER((regexp_match(c.event_message, '^(T[0-9]+)', 'i'))[1])\n      WHEN c.event_message ~* '[[:<:]](T[0-9]{1,4})[[:>:]]' THEN\n        UPPER((regexp_match(c.event_message, '[[:<:]](T[0-9]{1,4})[[:>:]]', 'i'))[1])\n      ELSE 'N/A'\n    END AS \"ToolDia\",\n    COALESCE(c.spindle, 'SPINDLE_MAIN_1') AS \"SpindleContext\",\n    to_char(c.event_time AT TIME ZONE 'Asia/Bangkok', 'HH12:MI:SS AM') AS \"LastTime\",\n    to_char(c.event_time AT TIME ZONE 'Asia/Bangkok', 'YYYY-MM-DD HH24:MI:SS') AS \"ObservedAt\",\n    CASE\n      WHEN to_timestamp(${__to} / 1000.0) - c.event_time < INTERVAL '10 seconds' THEN 'Just now'\n      WHEN to_timestamp(${__to} / 1000.0) - c.event_time < INTERVAL '1 minute' THEN ROUND(EXTRACT(EPOCH FROM (to_timestamp(${__to} / 1000.0) - c.event_time)))::TEXT || 's ago'\n      WHEN to_timestamp(${__to} / 1000.0) - c.event_time < INTERVAL '1 hour' THEN ROUND(EXTRACT(EPOCH FROM (to_timestamp(${__to} / 1000.0) - c.event_time)) / 60)::TEXT || 'm ago'\n      WHEN to_timestamp(${__to} / 1000.0) - c.event_time < INTERVAL '1 day' THEN ROUND(EXTRACT(EPOCH FROM (to_timestamp(${__to} / 1000.0) - c.event_time)) / 3600)::TEXT || 'h ago'\n      ELSE ROUND(EXTRACT(EPOCH FROM (to_timestamp(${__to} / 1000.0) - c.event_time)) / 86400)::TEXT || 'd ago'\n    END AS \"TimeAgo\",\n    COALESCE(c.holes, 'N/A') AS \"Holes\",\n    COALESCE(c.prog, 'N/A') AS \"Program\",\n    COALESCE(c.rpm, 'N/A') AS \"RPM\",\n    COALESCE(c.feed, 'N/A') AS \"FEED\",\n    COUNT(*) OVER () AS \"TotalCount\",\n    COUNT(*) FILTER (WHERE c.\"StateClass\" = 'run') OVER () AS \"RunCount\",\n    COUNT(*) FILTER (WHERE c.\"StateClass\" = 'stop') OVER () AS \"StopCount\",\n    COUNT(*) FILTER (WHERE c.\"StateClass\" = 'alarm') OVER () AS \"AlarmCount\",\n    COUNT(*) FILTER (WHERE c.\"StateClass\" = 'warning') OVER () AS \"ToolChangeCount\",\n    COUNT(*) FILTER (WHERE c.\"StateClass\" = 'finished') OVER () AS \"FinishedCount\",\n    COUNT(*) FILTER (WHERE c.event_time < to_timestamp(${__to} / 1000.0) - INTERVAL '5 minutes') OVER () AS \"StaleCount\",\n    (SELECT tool_event_count FROM window_tool_events) AS \"ToolCount\",\n    CASE WHEN ${status_filter:sqlstring} = 'All' THEN 'is-active' ELSE '' END AS \"ActiveFilterAll\",\n    CASE WHEN ${status_filter:sqlstring} = 'RUN' THEN 'is-active' ELSE '' END AS \"ActiveFilterRun\",\n    CASE WHEN ${status_filter:sqlstring} = 'ALARM' THEN 'is-active' ELSE '' END AS \"ActiveFilterAlarm\",\n    CASE WHEN ${status_filter:sqlstring} = 'TOOL_CHANGE' THEN 'is-active' ELSE '' END AS \"ActiveFilterTool\",\n    CASE WHEN ${status_filter:sqlstring} = 'FINISHED' THEN 'is-active' ELSE '' END AS \"ActiveFilterFinished\",\n    CASE WHEN ${status_filter:sqlstring} = 'STOP' THEN 'is-active' ELSE '' END AS \"ActiveFilterStop\"\n  FROM classified c\n),\nfiltered AS (\n  SELECT * FROM calculated\n  WHERE (${status_filter:sqlstring} = 'All' \n     OR \"StateLabel\" = ${status_filter:sqlstring}\n     OR (${status_filter:sqlstring} = 'ALARM' AND \"StateClass\" = 'alarm'))\n    AND ('All' IN (${machine_id:sqlstring}) OR \"Machine\" IN (${machine_id:sqlstring}))\n    AND (${program_search:sqlstring} = '' OR \"Program\" ILIKE '%' || ${program_search:sqlstring} || '%')\n),\nfallback AS (\n  SELECT \n    NULL::text AS \"Machine\",\n    NULL::text AS \"StateLabel\",\n    NULL::text AS \"StateClass\",\n    NULL::text AS \"Code\",\n    NULL::text AS \"Message\",\n    NULL::text AS \"ToolDia\",\n    NULL::text AS \"SpindleContext\",\n    NULL::text AS \"LastTime\",\n    NULL::text AS \"ObservedAt\",\n    NULL::text AS \"TimeAgo\",\n    NULL::text AS \"Holes\",\n    NULL::text AS \"Program\",\n    NULL::text AS \"RPM\",\n    NULL::text AS \"FEED\",\n    COALESCE((SELECT \"TotalCount\" FROM calculated LIMIT 1), 0::bigint) AS \"TotalCount\",\n    COALESCE((SELECT \"RunCount\" FROM calculated LIMIT 1), 0::bigint) AS \"RunCount\",\n    COALESCE((SELECT \"StopCount\" FROM calculated LIMIT 1), 0::bigint) AS \"StopCount\",\n    COALESCE((SELECT \"AlarmCount\" FROM calculated LIMIT 1), 0::bigint) AS \"AlarmCount\",\n    COALESCE((SELECT \"ToolChangeCount\" FROM calculated LIMIT 1), 0::bigint) AS \"ToolChangeCount\",\n    COALESCE((SELECT \"FinishedCount\" FROM calculated LIMIT 1), 0::bigint) AS \"FinishedCount\",\n    COALESCE((SELECT \"StaleCount\" FROM calculated LIMIT 1), 0::bigint) AS \"StaleCount\",\n    COALESCE((SELECT tool_event_count FROM window_tool_events), 0::bigint) AS \"ToolCount\",\n    CASE WHEN ${status_filter:sqlstring} = 'All' THEN 'is-active' ELSE '' END AS \"ActiveFilterAll\",\n    CASE WHEN ${status_filter:sqlstring} = 'RUN' THEN 'is-active' ELSE '' END AS \"ActiveFilterRun\",\n    CASE WHEN ${status_filter:sqlstring} = 'ALARM' THEN 'is-active' ELSE '' END AS \"ActiveFilterAlarm\",\n    CASE WHEN ${status_filter:sqlstring} = 'TOOL_CHANGE' THEN 'is-active' ELSE '' END AS \"ActiveFilterTool\",\n    CASE WHEN ${status_filter:sqlstring} = 'FINISHED' THEN 'is-active' ELSE '' END AS \"ActiveFilterFinished\",\n    CASE WHEN ${status_filter:sqlstring} = 'STOP' THEN 'is-active' ELSE '' END AS \"ActiveFilterStop\"\n  WHERE NOT EXISTS (SELECT 1 FROM filtered)\n  LIMIT 1\n)\nSELECT * FROM filtered\nUNION ALL\nSELECT * FROM fallback\nORDER BY \"Machine\" NULLS LAST;",
+                        "sql": {
+                          "columns": [
+                            {
+                              "parameters": [],
+                              "type": "function"
+                            }
+                          ],
+                          "groupBy": [
+                            {
+                              "property": {
+                                "type": "string"
+                              },
+                              "type": "groupBy"
+                            }
+                          ],
+                          "limit": 50
+                        }
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "marcusolsson-dynamictext-panel",
+            "version": "6.3.0",
+            "spec": {
+              "options": {
+                "afterRender": "const el = context.element;\nif (!el) return;\n\nwindow.__imsSetFilter = function(filter) {\n  if (context.grafana && context.grafana.locationService && typeof context.grafana.locationService.partial === 'function') {\n    context.grafana.locationService.partial({\n      '${__url_time_range}': null,\n      '%24%7B__url_time_range%7D': null,\n      'var-status_filter': filter\n    });\n  } else {\n    const p = new URLSearchParams(window.location.search);\n    p.delete('${__url_time_range}');\n    p.delete('%24%7B__url_time_range%7D');\n    p.set('var-status_filter', filter);\n    window.history.pushState({}, '', window.location.pathname + '?' + p.toString() + window.location.hash);\n    window.dispatchEvent(new PopStateEvent('popstate'));\n  }\n};\n\nwindow.__imsSetMachine = function(machine) {\n  if (context.grafana && context.grafana.locationService && typeof context.grafana.locationService.partial === 'function') {\n    context.grafana.locationService.partial({\n      '${__url_time_range}': null,\n      '%24%7B__url_time_range%7D': null,\n      'var-machine_id': machine\n    });\n  } else {\n    const p = new URLSearchParams(window.location.search);\n    p.delete('${__url_time_range}');\n    p.delete('%24%7B__url_time_range%7D');\n    p.set('var-machine_id', machine);\n    window.history.pushState({}, '', window.location.pathname + '?' + p.toString() + window.location.hash);\n    window.dispatchEvent(new PopStateEvent('popstate'));\n  }\n};\n\nconst handleClick = (e) => {\n  const pill = e.target.closest('.drill-fpill');\n  if (pill) {\n    e.preventDefault();\n    e.stopPropagation();\n    const filter = pill.getAttribute('data-filter');\n    if (filter) window.__imsSetFilter(filter);\n    return;\n  }\n  const machine = e.target.closest('.drill-m-name');\n  if (machine) {\n    e.preventDefault();\n    e.stopPropagation();\n    const m = machine.getAttribute('data-machine');\n    if (m) window.__imsSetMachine(m);\n    return;\n  }\n};\n\nel.addEventListener('click', handleClick);\n\nreturn () => {\n  el.removeEventListener('click', handleClick);\n};",
+                "content": "<div class=\"drill-container\">\n<div class=\"drill-header\">\n<div class=\"drill-header-left\">\n<h1>\nDRILLING — REALTIME OPERATIONS\n<span class=\"drill-live-badge\">Dynamic Live</span>\n</h1>\n<div class=\"drill-header-sub\">\nภาพรวมสถานะการทำงานของเครื่องเจาะ (Drilling Fleet Status) แบบเรียลไทม์ ข้อมูลอัปเดตอัตโนมัติ พร้อมระบบแจ้งเตือน RUN / ALARM / STOP / WARNING\n</div>\n</div>\n\n<div class=\"drill-filter-pills\">\n<span class=\"drill-filter-label\">Filter:</span>\n<a href=\"javascript:void(0)\" data-filter=\"All\" onclick=\"window.__imsSetFilter && window.__imsSetFilter('All'); return false;\" class=\"drill-fpill fpill-all {{data.0.ActiveFilterAll}}\">ALL ({{data.0.TotalCount}})</a>\n<a href=\"javascript:void(0)\" data-filter=\"RUN\" onclick=\"window.__imsSetFilter && window.__imsSetFilter('RUN'); return false;\" class=\"drill-fpill fpill-run {{data.0.ActiveFilterRun}}\">🟢 RUN ({{data.0.RunCount}})</a>\n<a href=\"javascript:void(0)\" data-filter=\"ALARM\" onclick=\"window.__imsSetFilter && window.__imsSetFilter('ALARM'); return false;\" class=\"drill-fpill fpill-alarm {{data.0.ActiveFilterAlarm}}\">🔴 ALARM ({{data.0.AlarmCount}})</a>\n<a href=\"javascript:void(0)\" data-filter=\"TOOL_CHANGE\" onclick=\"window.__imsSetFilter && window.__imsSetFilter('TOOL_CHANGE'); return false;\" class=\"drill-fpill fpill-tool {{data.0.ActiveFilterTool}}\">🟡 TOOL_CHANGE ({{data.0.ToolChangeCount}})</a>\n<a href=\"javascript:void(0)\" data-filter=\"FINISHED\" onclick=\"window.__imsSetFilter && window.__imsSetFilter('FINISHED'); return false;\" class=\"drill-fpill fpill-finished {{data.0.ActiveFilterFinished}}\">🔵 FINISHED ({{data.0.FinishedCount}})</a>\n<a href=\"javascript:void(0)\" data-filter=\"STOP\" onclick=\"window.__imsSetFilter && window.__imsSetFilter('STOP'); return false;\" class=\"drill-fpill fpill-stop {{data.0.ActiveFilterStop}}\">🟠 STOP ({{data.0.StopCount}})</a>\n</div>\n</div>\n\n<div class=\"drill-kpi-row\">\n<div class=\"drill-kpi-card kpi-total\">\n<div class=\"drill-kpi-title\">TOTAL MACHINES</div>\n<div class=\"drill-kpi-val\">{{data.0.TotalCount}}</div>\n<div class=\"drill-kpi-desc\">In Selected Range</div>\n</div>\n<div class=\"drill-kpi-card kpi-run\">\n<div class=\"drill-kpi-title\">ACTIVE RUN</div>\n<div class=\"drill-kpi-val\">{{data.0.RunCount}}</div>\n<div class=\"drill-kpi-desc\">Confirmed Status Payload</div>\n</div>\n<div class=\"drill-kpi-card kpi-stop\">\n<div class=\"drill-kpi-title\">STOPPED</div>\n<div class=\"drill-kpi-val\">{{data.0.StopCount}}</div>\n<div class=\"drill-kpi-desc\">Normal Cycle Idle</div>\n</div>\n<div class=\"drill-kpi-card kpi-alarm\">\n<div class=\"drill-kpi-title\">ACTIVE ALARM</div>\n<div class=\"drill-kpi-val\">{{data.0.AlarmCount}}</div>\n<div class=\"drill-kpi-desc\">Requires Intervention</div>\n</div>\n<div class=\"drill-kpi-card kpi-stale\">\n<div class=\"drill-kpi-title\">STALE / NO DATA</div>\n<div class=\"drill-kpi-val\">{{data.0.StaleCount}}</div>\n<div class=\"drill-kpi-desc\">&gt; 5 Minutes Age</div>\n</div>\n<div class=\"drill-kpi-card kpi-tool\">\n<div class=\"drill-kpi-title\">TOOL EVENTS (WINDOW)</div>\n<div class=\"drill-kpi-val\">{{data.0.ToolCount}}</div>\n<div class=\"drill-kpi-desc\">In Selected Period</div>\n</div>\n</div>\n\n<div class=\"drill-cards-grid\">\n{{#if data.0.Machine}}\n{{#each data}}\n<div class=\"drill-m-card state-{{StateClass}}\">\n<div>\n<div class=\"drill-card-header\">\n<div class=\"drill-m-title\">\n<a href=\"javascript:void(0)\" data-machine=\"{{Machine}}\" onclick=\"window.__imsSetMachine && window.__imsSetMachine('{{Machine}}'); return false;\" class=\"drill-m-name\" title=\"Filter to {{Machine}}\">{{Machine}}</a>\n<span class=\"drill-status-pill\">{{StateLabel}}</span>\n</div>\n<span class=\"drill-m-timeago\">{{TimeAgo}}</span>\n</div>\n\n<div class=\"drill-detail-table\">\n<div class=\"drill-detail-row\">\n<span class=\"drill-detail-label\">Current Code:</span>\n<span class=\"drill-detail-val drill-code-val\">{{Code}}</span>\n</div>\n<div class=\"drill-detail-row\">\n<span class=\"drill-detail-label\">Program:</span>\n<span class=\"drill-detail-val drill-prog-val\" title=\"{{Program}}\">{{Program}}</span>\n</div>\n<div class=\"drill-detail-row\">\n<span class=\"drill-detail-label\">Hole Progress:</span>\n<span class=\"drill-detail-val drill-hole-val\">{{Holes}}</span>\n</div>\n<div class=\"drill-detail-row\">\n<span class=\"drill-detail-label\">Tool / Dia:</span>\n<span class=\"drill-detail-val drill-tool-val\">{{ToolDia}}</span>\n</div>\n<div class=\"drill-detail-row\">\n<span class=\"drill-detail-label\">Message:</span>\n<span class=\"drill-detail-val drill-msg-val\" title=\"{{Message}}\">{{Message}}</span>\n</div>\n</div>\n</div>\n\n<div>\n<div class=\"drill-mid-pills\">\n<span class=\"drill-pill-tag\">RPM: <span class=\"drill-pill-val-rpm\">{{RPM}}</span></span>\n<span class=\"drill-pill-sep\">|</span>\n<span class=\"drill-pill-tag\">FEED: <span class=\"drill-pill-val-feed\">{{FEED}}</span></span>\n</div>\n\n<div class=\"drill-card-footer\">\n<span class=\"drill-footer-last\">Last: {{LastTime}}</span>\n</div>\n</div>\n</div>\n{{/each}}\n{{else}}\n<div class=\"drill-empty-fleet\">\n<div class=\"drill-empty-title\">ไม่พบเครื่องเจาะที่ส่งข้อมูลในช่วงเวลานี้</div>\n<div class=\"drill-empty-desc\">ไม่มีข้อมูล Event ตรงกับตัวกรองหรือช่วงเวลาที่เลือก คุณสามารถเลือกขยายช่วงเวลาใน Time Picker หรือคลิกปุ่ม Filter ด้านบนได้ทันที</div>\n</div>\n{{/if}}\n</div>\n</div>",
+                "contentPartials": [],
+                "defaultContent": "",
+                "editor": {
+                  "format": "none",
+                  "language": "html"
+                },
+                "editors": [
+                  "afterRender"
+                ],
+                "externalStyles": [],
+                "helpers": "context.markdown.disable('code');",
+                "renderMode": "allRows",
+                "styles": "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');\n\n.drill-container {\nfont-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;\ncolor: #E2E8F0;\nbackground: transparent;\npadding: 4px 0 24px 0;\nbox-sizing: border-box;\n}\n\n/* Top Header Banner */\n.drill-header {\nbackground: #14171D;\nborder-radius: 12px;\npadding: 16px 22px;\ndisplay: flex;\njustify-content: space-between;\nalign-items: center;\nmargin-bottom: 18px;\nborder: 1px solid #232731;\nbox-shadow: 0 4px 16px rgba(0,0,0,0.35);\nflex-wrap: wrap;\ngap: 12px;\n}\n.drill-header-left h1 {\nmargin: 0;\nfont-size: 20px;\nfont-weight: 800;\ncolor: #F8FAFC;\nletter-spacing: -0.01em;\ndisplay: flex;\nalign-items: center;\ngap: 12px;\n}\n.drill-live-badge {\nfont-size: 11px;\nfont-weight: 700;\npadding: 3px 10px;\nborder-radius: 20px;\nbackground: rgba(16, 185, 129, 0.15);\ncolor: #34D399;\nborder: 1px solid rgba(16, 185, 129, 0.35);\ndisplay: inline-flex;\nalign-items: center;\ngap: 6px;\n}\n.drill-live-badge::before {\ncontent: '';\nwidth: 7px;\nheight: 7px;\nborder-radius: 50%;\nbackground: #10B981;\nbox-shadow: 0 0 8px #10B981;\ndisplay: inline-block;\n}\n.drill-header-sub {\nmargin-top: 6px;\nfont-size: 12px;\ncolor: #94A3B8;\nline-height: 1.4;\n}\n\n/* Quick Filter Pills with Full Dashboard Path to prevent routing bounce */\n.drill-filter-pills {\ndisplay: flex;\nalign-items: center;\ngap: 8px;\nflex-wrap: wrap;\n}\n.drill-filter-label {\nfont-size: 11px;\nfont-weight: 700;\ncolor: #94A3B8;\ntext-transform: uppercase;\nmargin-right: 2px;\n}\n.drill-fpill {\npadding: 6px 12px;\nborder-radius: 8px;\nfont-size: 11.5px;\nfont-weight: 700;\ntext-decoration: none;\ntransition: all 0.15s ease;\nborder: 1px solid #2F3542;\nbackground: #1E222A;\ncolor: #94A3B8;\ndisplay: inline-flex;\nalign-items: center;\ngap: 5px;\n}\n.drill-fpill:hover {\ntransform: translateY(-1px);\ncolor: #FFFFFF;\n}\n.drill-fpill.fpill-all:hover { border-color: #3B82F6; background: rgba(59, 130, 246, 0.15); color: #60A5FA; }\n.drill-fpill.fpill-run:hover { border-color: #10B981; background: rgba(16, 185, 129, 0.15); color: #34D399; }\n.drill-fpill.fpill-alarm:hover { border-color: #EF4444; background: rgba(239, 68, 68, 0.15); color: #F87171; }\n.drill-fpill.fpill-tool:hover { border-color: #EAB308; background: rgba(234, 179, 8, 0.15); color: #FDE047; }\n.drill-fpill.fpill-finished:hover { border-color: #3B82F6; background: rgba(59, 130, 246, 0.15); color: #60A5FA; }\n.drill-fpill.fpill-stop:hover { border-color: #F59E0B; background: rgba(245, 158, 11, 0.15); color: #FBBF24; }\n\n/* KPI Summary Cards */\n.drill-kpi-row {\ndisplay: grid;\ngrid-template-columns: repeat(6, 1fr);\ngap: 14px;\nmargin-bottom: 20px;\n}\n.drill-kpi-card {\nbackground: #14171D;\nborder-radius: 10px;\npadding: 14px 12px;\ntext-align: center;\nborder: 1px solid #232731;\nbox-shadow: 0 4px 12px rgba(0,0,0,0.25);\ntransition: transform 0.15s, border-color 0.15s;\n}\n.drill-kpi-card:hover {\ntransform: translateY(-2px);\nborder-color: #374151;\n}\n.drill-kpi-card.kpi-total { border-top: 3px solid #3B82F6; }\n.drill-kpi-card.kpi-run { border-top: 3px solid #10B981; }\n.drill-kpi-card.kpi-stop { border-top: 3px solid #F59E0B; }\n.drill-kpi-card.kpi-alarm { border-top: 3px solid #EF4444; }\n.drill-kpi-card.kpi-stale { border-top: 3px solid #64748B; }\n.drill-kpi-card.kpi-tool { border-top: 3px solid #06B6D4; }\n\n.drill-kpi-title {\nfont-size: 10px;\nfont-weight: 700;\ncolor: #94A3B8;\nletter-spacing: 0.05em;\ntext-transform: uppercase;\nmargin-bottom: 6px;\n}\n.drill-kpi-val {\nfont-size: 26px;\nfont-weight: 800;\nline-height: 1;\nmargin-bottom: 6px;\n}\n.kpi-total .drill-kpi-val { color: #F8FAFC; }\n.kpi-run .drill-kpi-val { color: #34D399; }\n.kpi-stop .drill-kpi-val { color: #FBBF24; }\n.kpi-alarm .drill-kpi-val { color: #F87171; }\n.kpi-stale .drill-kpi-val { color: #94A3B8; }\n.kpi-tool .drill-kpi-val { color: #38BDF8; }\n\n.drill-kpi-desc {\nfont-size: 10px;\ncolor: #64748B;\nwhite-space: nowrap;\noverflow: hidden;\ntext-overflow: ellipsis;\n}\n\n/* Machine Cards Grid */\n.drill-cards-grid {\ndisplay: grid;\ngrid-template-columns: repeat(auto-fill, minmax(290px, 1fr));\ngap: 16px;\n}\n.drill-m-card {\nbackground: #14171D;\nborder-radius: 12px;\npadding: 16px;\nborder: 1.5px solid #232731;\ndisplay: flex;\nflex-direction: column;\njustify-content: space-between;\nmin-height: 265px;\nbox-shadow: 0 4px 14px rgba(0,0,0,0.3);\ntransition: all 0.2s ease;\n}\n.drill-m-card:hover {\ntransform: translateY(-2px);\nbox-shadow: 0 8px 24px rgba(0,0,0,0.45);\n}\n\n/* Status Border & Glow */\n.drill-m-card.state-run {\nborder-color: rgba(16, 185, 129, 0.45);\nbox-shadow: 0 4px 14px rgba(16, 185, 129, 0.08);\n}\n.drill-m-card.state-alarm {\nborder-color: rgba(239, 68, 68, 0.6);\nbox-shadow: 0 4px 16px rgba(239, 68, 68, 0.15);\n}\n.drill-m-card.state-stop {\nborder-color: rgba(245, 158, 11, 0.5);\nbox-shadow: 0 4px 14px rgba(245, 158, 11, 0.08);\n}\n.drill-m-card.state-warning {\nborder-color: rgba(234, 179, 8, 0.5);\n}\n.drill-m-card.state-finished {\nborder-color: rgba(59, 130, 246, 0.5);\n}\n\n/* Card Header */\n.drill-card-header {\ndisplay: flex;\nalign-items: center;\njustify-content: space-between;\nmargin-bottom: 12px;\n}\n.drill-m-title {\ndisplay: flex;\nalign-items: center;\ngap: 8px;\n}\n.drill-m-name {\nfont-size: 16px;\nfont-weight: 800;\ncolor: #F8FAFC;\ntext-decoration: none;\ncursor: pointer;\ntransition: color 0.15s ease;\n}\n.drill-m-name:hover {\ncolor: #38BDF8;\ntext-decoration: underline;\n}\n\n.drill-empty-fleet {\ngrid-column: 1 / -1;\nbackground: #14171D;\nborder: 1px solid #232731;\nborder-radius: 12px;\npadding: 50px 24px;\ntext-align: center;\nbox-shadow: 0 4px 16px rgba(0,0,0,0.3);\nmargin: 8px 0 24px 0;\n}\n.drill-empty-icon {\nfont-size: 38px;\nmargin-bottom: 12px;\n}\n.drill-empty-title {\nfont-size: 17px;\nfont-weight: 700;\ncolor: #F8FAFC;\nmargin-bottom: 6px;\n}\n.drill-empty-desc {\nfont-size: 13px;\ncolor: #94A3B8;\n}\n.drill-status-pill {\nfont-size: 10.5px;\nfont-weight: 700;\npadding: 2px 8px;\nborder-radius: 12px;\ndisplay: inline-flex;\nalign-items: center;\ngap: 4px;\n}\n.drill-status-pill::before {\ncontent: '';\nwidth: 6px;\nheight: 6px;\nborder-radius: 50%;\ndisplay: inline-block;\n}\n.state-run .drill-status-pill { background: rgba(16, 185, 129, 0.18); color: #34D399; }\n.state-run .drill-status-pill::before { background: #10B981; }\n.state-alarm .drill-status-pill { background: rgba(239, 68, 68, 0.22); color: #F87171; }\n.state-alarm .drill-status-pill::before { background: #EF4444; }\n.state-stop .drill-status-pill { background: rgba(245, 158, 11, 0.2); color: #FBBF24; }\n.state-stop .drill-status-pill::before { background: #F59E0B; }\n.state-warning .drill-status-pill { background: rgba(234, 179, 8, 0.2); color: #FDE047; }\n.state-warning .drill-status-pill::before { background: #EAB308; }\n.state-finished .drill-status-pill { background: rgba(59, 130, 246, 0.2); color: #60A5FA; }\n.state-finished .drill-status-pill::before { background: #3B82F6; }\n\n.drill-m-timeago {\nfont-size: 11px;\ncolor: #94A3B8;\nfont-weight: 500;\n}\n\n/* Card Body Details */\n.drill-detail-table {\ndisplay: flex;\nflex-direction: column;\ngap: 6px;\nfont-size: 12px;\nmargin-bottom: 12px;\n}\n.drill-detail-row {\ndisplay: grid;\ngrid-template-columns: 95px 1fr;\nalign-items: baseline;\ngap: 6px;\n}\n.drill-detail-label {\ncolor: #94A3B8;\nfont-weight: 500;\nfont-size: 11.5px;\n}\n.drill-detail-val {\ncolor: #E2E8F0;\nfont-weight: 600;\nwhite-space: nowrap;\noverflow: hidden;\ntext-overflow: ellipsis;\n}\n.drill-code-val {\nfont-family: 'JetBrains Mono', monospace;\nfont-weight: 700;\n}\n.state-alarm .drill-code-val { color: #F87171; }\n.state-run .drill-code-val { color: #34D399; }\n.state-stop .drill-code-val { color: #FBBF24; }\n\n.drill-prog-val {\nfont-family: 'JetBrains Mono', monospace;\ncolor: #38BDF8;\nfont-weight: 600;\nfont-size: 11.5px;\n}\n.drill-hole-val {\nfont-family: 'JetBrains Mono', monospace;\ncolor: #FBBF24;\nfont-weight: 700;\nfont-size: 11.5px;\n}\n.drill-tool-val {\ncolor: #F1F5F9;\nfont-weight: 600;\n}\n.drill-msg-val {\ncolor: #94A3B8;\nfont-size: 11px;\n}\n\n/* Mid Info Pills (Balanced 2-Column: RPM | FEED) */\n.drill-mid-pills {\ndisplay: flex;\njustify-content: space-around;\nalign-items: center;\ngap: 8px;\nmargin-bottom: 12px;\nbackground: #0E1014;\npadding: 7px 14px;\nborder-radius: 6px;\nborder: 1px solid #1E222A;\n}\n.drill-pill-tag {\nfont-size: 11px;\ncolor: #94A3B8;\nfont-weight: 600;\n}\n.drill-pill-val-rpm {\ncolor: #38BDF8;\nfont-family: 'JetBrains Mono', monospace;\nfont-weight: 700;\n}\n.drill-pill-val-feed {\ncolor: #34D399;\nfont-family: 'JetBrains Mono', monospace;\nfont-weight: 700;\n}\n.drill-pill-sep {\ncolor: #334155;\nfont-weight: 700;\n}\n\n/* Card Footer */\n.drill-card-footer {\ndisplay: flex;\njustify-content: space-between;\nalign-items: center;\npadding-top: 10px;\nborder-top: 1px solid #232731;\nfont-size: 11px;\n}\n.drill-footer-last {\ncolor: #64748B;\n}\n.drill-footer-link {\ncolor: #F59E0B;\nfont-weight: 600;\ntext-decoration: none;\ncursor: pointer;\n}\n.drill-footer-link:hover {\ntext-decoration: underline;\ncolor: #FBBF24;\n}\n\n.drill-empty {\npadding: 40px;\ntext-align: center;\ncolor: #94A3B8;\nfont-size: 15px;\nbackground: #14171D;\nborder-radius: 12px;\nborder: 1px solid #232731;\n}\n\n/* ACTIVE FILTER PILLS (FLAT SOLID BADGES - NO GLOW) */\n.drill-fpill.is-active {\n  font-weight: 700;\n  color: #FFFFFF !important;\n  box-shadow: none !important;\n  transform: none !important;\n}\n.drill-fpill.fpill-all.is-active {\n  background: #2563EB !important;\n  border-color: #2563EB !important;\n  color: #FFFFFF !important;\n}\n.drill-fpill.fpill-run.is-active {\n  background: #059669 !important;\n  border-color: #059669 !important;\n  color: #FFFFFF !important;\n}\n.drill-fpill.fpill-alarm.is-active {\n  background: #DC2626 !important;\n  border-color: #DC2626 !important;\n  color: #FFFFFF !important;\n}\n.drill-fpill.fpill-tool.is-active {\n  background: #D97706 !important;\n  border-color: #D97706 !important;\n  color: #FFFFFF !important;\n}\n.drill-fpill.fpill-finished.is-active {\n  background: #2563EB !important;\n  border-color: #2563EB !important;\n  color: #FFFFFF !important;\n}\n.drill-fpill.fpill-stop.is-active {\n  background: #D97706 !important;\n  border-color: #D97706 !important;\n  color: #FFFFFF !important;\n}\n",
+                "wrap": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      }
+    },
+    "layout": {
+      "kind": "GridLayout",
+      "spec": {
+        "items": [
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 0,
+              "width": 24,
+              "height": 24,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-1"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": [
+      {
+        "title": "1 · Machine Cards",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "",
+        "url": "/d/ims-drilling-machine-cards/ims-drilling-machine-cards",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "2 · Fleet List",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "",
+        "url": "/d/ims-drilling-fleet-list/ims-drilling-fleet-list",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "3 · Machine Detail",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "",
+        "url": "/d/ims-drilling-machine-detail/ims-drilling-machine-detail",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "4 · History",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "",
+        "url": "/d/ims-drilling-history/ims-drilling-history",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "5 · Anomaly Analysis",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "",
+        "url": "/d/ims-drilling-anomaly-analysis/ims-drilling-anomaly-analysis",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "6 · Settings",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "",
+        "url": "/d/ims-drilling-settings/ims-drilling-settings",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      }
+    ],
+    "liveNow": true,
+    "preload": false,
+    "tags": [],
+    "timeSettings": {
+      "timezone": "browser",
+      "from": "2026-08-31T17:00:00.000Z",
+      "to": "2026-09-10T16:59:59.000Z",
+      "autoRefresh": "5s",
+      "autoRefreshIntervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m"
+      ],
+      "hideTimepicker": false,
+      "fiscalYearStartMonth": 0
+    },
+    "title": "IMS Drilling",
+    "variables": [
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "status_filter",
+          "query": "All,RUN,ALARM,TOOL_CHANGE,FINISHED,STOP",
+          "current": {
+            "text": "All",
+            "value": "All"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Status",
+          "hide": "dontHide",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "machine_id",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "label": "Machine",
+          "hide": "dontHide",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "postgres",
+            "version": "v0",
+            "spec": {
+              "__legacyStringValue": "WITH RECURSIVE t AS (\n   (SELECT equipment_id FROM public.machine_event ORDER BY equipment_id LIMIT 1)\n   UNION ALL\n   SELECT (SELECT equipment_id FROM public.machine_event WHERE equipment_id > t.equipment_id ORDER BY equipment_id LIMIT 1)\n   FROM t\n   WHERE t.equipment_id IS NOT NULL\n)\nSELECT 'All' AS __text, 'All' AS __value \nUNION ALL \nSELECT equipment_id AS __text, equipment_id AS __value \nFROM t WHERE equipment_id IS NOT NULL;"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "alphabeticalAsc",
+          "definition": "WITH RECURSIVE t AS (\n   (SELECT equipment_id FROM public.machine_event ORDER BY equipment_id LIMIT 1)\n   UNION ALL\n   SELECT (SELECT equipment_id FROM public.machine_event WHERE equipment_id > t.equipment_id ORDER BY equipment_id LIMIT 1)\n   FROM t\n   WHERE t.equipment_id IS NOT NULL\n)\nSELECT 'All' AS __text, 'All' AS __value \nUNION ALL \nSELECT equipment_id AS __text, equipment_id AS __value \nFROM t WHERE equipment_id IS NOT NULL;",
+          "options": [],
+          "multi": true,
+          "includeAll": false,
+          "allowCustomValue": true
+        }
+      },
+      {
+        "kind": "TextVariable",
+        "spec": {
+          "name": "program_search",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "query": "",
+          "label": "Program contains",
+          "hide": "dontHide",
+          "skipUrlSync": false
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "focus_machine",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "label": "Focus machine",
+          "hide": "hideVariable",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "postgres",
+            "version": "v0",
+            "spec": {
+              "__legacyStringValue": "WITH RECURSIVE t AS (\n   (SELECT equipment_id FROM public.machine_event ORDER BY equipment_id LIMIT 1)\n   UNION ALL\n   SELECT (SELECT equipment_id FROM public.machine_event WHERE equipment_id > t.equipment_id ORDER BY equipment_id LIMIT 1)\n   FROM t\n   WHERE t.equipment_id IS NOT NULL\n)\nSELECT equipment_id AS __text, equipment_id AS __value \nFROM t WHERE equipment_id IS NOT NULL;"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "alphabeticalAsc",
+          "definition": "WITH RECURSIVE t AS (\n   (SELECT equipment_id FROM public.machine_event ORDER BY equipment_id LIMIT 1)\n   UNION ALL\n   SELECT (SELECT equipment_id FROM public.machine_event WHERE equipment_id > t.equipment_id ORDER BY equipment_id LIMIT 1)\n   FROM t\n   WHERE t.equipment_id IS NOT NULL\n)\nSELECT equipment_id AS __text, equipment_id AS __value \nFROM t WHERE equipment_id IS NOT NULL;",
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "allowCustomValue": true
+        }
+      }
+    ]
+  }
+}

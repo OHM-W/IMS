@@ -1,0 +1,901 @@
+{
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "ims-drilling-anomaly-analysis",
+    "generation": 10,
+    "creationTimestamp": "2026-09-09T02:25:42Z",
+    "labels": {},
+    "annotations": {}
+  },
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "query": {
+            "kind": "DataQuery",
+            "group": "grafana",
+            "version": "v0",
+            "spec": {}
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "#00F2FE",
+          "name": "Annotations & Alerts",
+          "builtIn": true
+        }
+      }
+    ],
+    "cursorSync": "Crosshair",
+    "description": "Fleet-wide failure analysis, rule-based anomaly detection, statistical rate deviations, and ingestion pipeline traceability.",
+    "editable": true,
+    "elements": {
+      "panel-14": {
+        "kind": "Panel",
+        "spec": {
+          "id": 14,
+          "title": "Detected Anomalies (Rule-Based)",
+          "description": "Rule-based anomaly detection covering extended stop durations, telemetry dropouts, alarm bursts, and tool life limits",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "format": "table",
+                        "rawSql": "WITH latest_status AS (\n  SELECT DISTINCT ON (equipment_id) equipment_id,event_time,event_type,event_message\n  FROM public.machine_event WHERE message_type='status' ORDER BY equipment_id,event_time DESC,id DESC\n), status_points AS (\n  SELECT equipment_id,event_time,event_type,event_message,LEAD(event_time) OVER (PARTITION BY equipment_id ORDER BY event_time,id) AS next_time\n  FROM public.machine_event WHERE message_type='status' AND $__timeFilter(event_time)\n), alarm_bursts AS (\n  SELECT equipment_id,date_bin(INTERVAL '5 minutes',event_time,TIMESTAMPTZ '1970-01-01') AS bucket,COUNT(*) AS errors,MIN(event_code) AS example_code\n  FROM public.machine_event WHERE message_type='alarm' AND level='E' AND $__timeFilter(event_time)\n  GROUP BY equipment_id,bucket HAVING COUNT(*)>=${alarm_burst:raw}\n), anomalies AS (\n  SELECT 'CRITICAL'::TEXT AS severity,'Telemetry age exceeds setting'::TEXT AS anomaly,equipment_id,event_time AS detected_at,\n    'Latest state='||event_type||'; age='||ROUND(EXTRACT(EPOCH FROM (NOW()-event_time))/3600)::TEXT||'h' AS evidence,'>'||${stale_hours:raw}||' hours' AS threshold\n  FROM latest_status WHERE NOW()-event_time>(${stale_hours:raw}||' hours')::INTERVAL\n  UNION ALL SELECT 'HIGH','Long observed STOP',equipment_id,event_time,\n    'STOP duration='||ROUND(EXTRACT(EPOCH FROM (next_time-event_time))/60)::TEXT||'m; '||COALESCE(event_message,''),'>'||${stop_minutes:raw}||' minutes'\n  FROM status_points WHERE event_type='STOP' AND next_time IS NOT NULL AND next_time-event_time>(${stop_minutes:raw}||' minutes')::INTERVAL\n  UNION ALL SELECT 'HIGH','Historical error burst',equipment_id,bucket,errors::TEXT||' level-E records in 5m; example='||COALESCE(example_code,''),'>='||${alarm_burst:raw}||' records / 5m' FROM alarm_bursts\n  UNION ALL SELECT 'MEDIUM','Tool reached reported life',equipment_id,event_time,COALESCE(event_code,'')||' '||COALESCE(event_message,''),'event_code=0119'\n    FROM public.machine_event WHERE event_code='0119' AND $__timeFilter(event_time)\n  UNION ALL SELECT 'MEDIUM','Decoder reported a problem',equipment_id,event_time,COALESCE(decode_status,'NULL')||': '||COALESCE(decode_error,''),'decode_status not successful'\n    FROM public.machine_event WHERE $__timeFilter(event_time) AND (decode_error IS NOT NULL OR COALESCE(UPPER(decode_status),'') NOT IN ('SUCCESS','DECODED','OK','DECODED_MSGMANAGE'))\n)\nSELECT severity AS \"Severity\",anomaly AS \"What\",equipment_id AS \"Machine\",detected_at AS \"When\",evidence AS \"Evidence\",threshold AS \"Rule\"\nFROM anomalies\nWHERE ('All' IN (${machine_id:sqlstring}) OR equipment_id IN (${machine_id:sqlstring}))\nORDER BY detected_at DESC,severity LIMIT 200"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "postgres-1",
+                        "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "table",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "cellHeight": "sm",
+                "enablePagination": false,
+                "showHeader": true,
+                "sortBy": []
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "#64748B"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Severity"
+                    },
+                    "properties": [
+                      {
+                        "id": "mappings",
+                        "value": [
+                          {
+                            "options": {
+                              "CRITICAL": {
+                                "color": "#EF4444",
+                                "index": 0,
+                                "text": "CRITICAL"
+                              },
+                              "HIGH": {
+                                "color": "#F59E0B",
+                                "index": 1,
+                                "text": "HIGH"
+                              },
+                              "MEDIUM": {
+                                "color": "#00F2FE",
+                                "index": 2,
+                                "text": "MEDIUM"
+                              }
+                            },
+                            "type": "value"
+                          }
+                        ]
+                      },
+                      {
+                        "id": "custom.cellOptions",
+                        "value": {
+                          "type": "color-background"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "panel-18": {
+        "kind": "Panel",
+        "spec": {
+          "id": 18,
+          "title": "Event Rate Deviation (15m Z-Score)",
+          "description": "Statistical anomaly detection flagging significant spikes or dropouts in event transmission frequency",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "format": "table",
+                        "rawSql": "WITH bins AS (\n  SELECT equipment_id, date_bin(INTERVAL '15 minutes', event_time, TIMESTAMPTZ '1970-01-01') AS bucket, COUNT(*) AS event_count\n  FROM public.machine_event\n  WHERE $__timeFilter(event_time)\n    AND ('All' IN (${machine_id:singlequote}) OR equipment_id IN (${machine_id:singlequote}))\n  GROUP BY equipment_id,bucket\n), stats AS (\n  SELECT equipment_id,AVG(event_count) AS mean_count,STDDEV_POP(event_count) AS sd_count\n  FROM bins GROUP BY equipment_id\n), scored AS (\n  SELECT b.equipment_id,b.bucket,b.event_count,s.mean_count,s.sd_count,\n    CASE WHEN s.sd_count>0 THEN (b.event_count-s.mean_count)/s.sd_count END AS z_score\n  FROM bins b JOIN stats s USING (equipment_id)\n)\nSELECT equipment_id AS \"Machine ID\",bucket AS \"Bucket\",event_count AS \"Events\",ROUND(mean_count::NUMERIC,1) AS \"Mean\",ROUND(sd_count::NUMERIC,1) AS \"Std Dev\",ROUND(z_score::NUMERIC,2) AS \"Z Score\"\nFROM scored WHERE ABS(z_score)>=2\nORDER BY ABS(z_score) DESC,bucket DESC\nLIMIT 200"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "postgres-1",
+                        "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "table",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "cellHeight": "sm",
+                "enablePagination": false,
+                "showHeader": true,
+                "sortBy": []
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "#64748B"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "fixed",
+                    "fixedColor": "#64748B"
+                  },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Z Score"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.cellOptions",
+                        "value": {
+                          "type": "color-background"
+                        }
+                      },
+                      {
+                        "id": "thresholds",
+                        "value": {
+                          "mode": "absolute",
+                          "steps": [
+                            {
+                              "color": "#00F2FE",
+                              "value": 0
+                            },
+                            {
+                              "color": "#F59E0B",
+                              "value": 2
+                            },
+                            {
+                              "color": "#EF4444",
+                              "value": 3
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "panel-201": {
+        "kind": "Panel",
+        "spec": {
+          "id": 201,
+          "title": "Top Recurring Errors",
+          "description": "Ranking of most frequent machine alarm and error codes across the fleet for preventive maintenance",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "format": "table",
+                        "rawSql": "SELECT CASE WHEN event_code ~ '^[0-9]{4}$' THEN 'E'||event_code ELSE event_code END AS \"Error Code\", COUNT(*) AS \"Records\", COUNT(DISTINCT equipment_id) AS \"Machines\", MAX(event_time) AS \"Last Observed\", MAX(event_message) AS \"Example Evidence\"\nFROM public.machine_event\nWHERE $__timeFilter(event_time) AND message_type='alarm' AND level='E'\nGROUP BY event_code\nORDER BY \"Records\" DESC\nLIMIT 20"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "postgres-1",
+                        "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "table",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "cellHeight": "sm",
+                "enablePagination": false,
+                "showHeader": true,
+                "sortBy": []
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "#64748B"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "fixed",
+                    "fixedColor": "#64748B"
+                  },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-202": {
+        "kind": "Panel",
+        "spec": {
+          "id": 202,
+          "title": "Data Coverage by Message Type",
+          "description": "Summary of ingested telemetry message volumes, active machines, and recorded time horizons",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "format": "table",
+                        "rawSql": "/* NO_TIMEFILTER_INTENTIONAL: complete source capability inventory. */\nSELECT COALESCE(message_type,'NULL') AS \"Message Type\",COUNT(*) AS \"Records\",COUNT(DISTINCT equipment_id) AS \"Machines\",MIN(event_time) AS \"First Observed\",MAX(event_time) AS \"Last Observed\",CASE WHEN message_type='status' THEN 'Eligible for verified state mapping' WHEN message_type='alarm' THEN 'Historical alarm evidence' ELSE 'Recorded event evidence only' END AS \"Dashboard Use\"\nFROM public.machine_event\nGROUP BY message_type\nORDER BY \"Records\" DESC"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "postgres-1",
+                        "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "table",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "cellHeight": "sm",
+                "enablePagination": false,
+                "showHeader": true,
+                "sortBy": []
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "#64748B"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "fixed",
+                    "fixedColor": "#64748B"
+                  },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-203": {
+        "kind": "Panel",
+        "spec": {
+          "id": 203,
+          "title": "Ingestion & Pipeline Health",
+          "description": "Source traceability, file origins, ingestion timestamps, and pipeline latency (ms) per machine",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "format": "table",
+                        "rawSql": "/* NO_TIMEFILTER_INTENTIONAL: latest ingestion and decoder metadata for every machine. */\nSELECT DISTINCT ON (equipment_id) equipment_id AS \"Machine ID\",source AS \"Source\",source_file AS \"Source File\",event_time AS \"Latest Event\",sent_time AS \"Sent\",received_at AS \"Received\",\n  ROUND((1000.0*EXTRACT(EPOCH FROM (received_at-sent_time)))::NUMERIC,1) AS \"Ingestion ms\",decode_status AS \"Decode Status\",decoder_version AS \"Decoder Version\",'LATEST_KNOWN' AS \"State Policy\"\nFROM public.machine_event ORDER BY equipment_id,event_time DESC,id DESC LIMIT 100"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "postgres-1",
+                        "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "table",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "cellHeight": "sm",
+                "enablePagination": false,
+                "showHeader": true,
+                "sortBy": []
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "#64748B"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-9000": {
+        "kind": "Panel",
+        "spec": {
+          "id": 9000,
+          "title": "",
+          "description": "Shared navigation for the six linked DRILLING operator pages.",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "text",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "code": {
+                  "language": "plaintext",
+                  "showLineNumbers": false,
+                  "showMiniMap": false
+                },
+                "content": "# IMS DRILLING · 4 Reliability & System Health\n\n[1 · Fleet Overview (Command Center)](/d/adz7dcc/ims-drilling?orgId=1&${__url_time_range}) &nbsp;|&nbsp;\n[2 · Machine Investigation](/d/ims-drilling-machine-detail/ed64786?orgId=1&${__url_time_range}&var-focus_machine=${focus_machine}) &nbsp;|&nbsp;\n[3 · Shift Production History](/d/ims-drilling-history/ims-drilling-e28094-3-shift-production-history?orgId=1&${__url_time_range}&var-focus_machine=${focus_machine}) &nbsp;|&nbsp;\n**4 · Reliability & System Health (Active)**\n",
+                "mode": "markdown"
+              },
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      }
+    },
+    "layout": {
+      "kind": "GridLayout",
+      "spec": {
+        "items": [
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 0,
+              "width": 24,
+              "height": 2,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-9000"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 2,
+              "width": 14,
+              "height": 10,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-14"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 14,
+              "y": 2,
+              "width": 10,
+              "height": 10,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-201"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 12,
+              "width": 12,
+              "height": 8,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-18"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 12,
+              "y": 12,
+              "width": 12,
+              "height": 8,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-202"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 20,
+              "width": 24,
+              "height": 9,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-203"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": [
+      {
+        "title": "1 · Fleet Overview (Command Center)",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "Real-time fleet operations and machine KPI overview across all 93 machines",
+        "url": "/d/adz7dcc/ims-drilling",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "2 · Machine Investigation",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "Deep single-machine diagnostics, live telemetry state, spindle tool inspections, and errors",
+        "url": "/d/ims-drilling-machine-detail/ed64786",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "3 · Shift Production",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "7-day Day & Night shift performance, CNC Retro View, and tabular production report",
+        "url": "/d/ims-drilling-history/ims-drilling-e28094-3-shift-production-history",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "4 · Reliability & Health",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "Rule-based anomaly detection, top recurring errors, and telemetry ingestion pipeline health",
+        "url": "/d/ims-drilling-anomaly-analysis/963b915",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      }
+    ],
+    "liveNow": true,
+    "preload": false,
+    "tags": [
+      "IMS",
+      "DRILLING",
+      "manufacturing",
+      "real-data",
+      "machine-event",
+      "six-page-suite"
+    ],
+    "timeSettings": {
+      "timezone": "browser",
+      "from": "now-30d",
+      "to": "now",
+      "autoRefresh": "30s",
+      "autoRefreshIntervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m"
+      ],
+      "hideTimepicker": false,
+      "fiscalYearStartMonth": 0
+    },
+    "title": "IMS Drilling — 4 Reliability & System Health",
+    "variables": [
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "machine_id",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "label": "Machine",
+          "hide": "hideVariable",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "postgres",
+            "version": "v0",
+            "spec": {
+              "__legacyStringValue": "SELECT 'All' AS __text, 'All' AS __value UNION ALL SELECT DISTINCT equipment_id AS __text, equipment_id AS __value FROM public.machine_event WHERE equipment_id IS NOT NULL ORDER BY 1"
+            },
+            "labels": {
+              "grafana.app/export-label": "postgres-1",
+              "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "alphabeticalAsc",
+          "definition": "SELECT 'All' AS __text, 'All' AS __value UNION ALL SELECT DISTINCT equipment_id AS __text, equipment_id AS __value FROM public.machine_event WHERE equipment_id IS NOT NULL ORDER BY 1",
+          "options": [],
+          "multi": true,
+          "includeAll": false,
+          "allowCustomValue": true
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "focus_machine",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "label": "Focus machine",
+          "hide": "hideVariable",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "postgres",
+            "version": "v0",
+            "spec": {
+              "__legacyStringValue": "SELECT DISTINCT equipment_id AS __text, equipment_id AS __value FROM public.machine_event WHERE equipment_id IS NOT NULL ORDER BY 1"
+            },
+            "labels": {
+              "grafana.app/export-label": "postgres-1",
+              "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "alphabeticalAsc",
+          "definition": "SELECT DISTINCT equipment_id AS __text, equipment_id AS __value FROM public.machine_event WHERE equipment_id IS NOT NULL ORDER BY 1",
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "allowCustomValue": true
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "status_filter",
+          "query": "All,RUN,STOP",
+          "current": {
+            "text": "All",
+            "value": "All"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Status",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "event_filter",
+          "query": "All,status,event,alarm",
+          "current": {
+            "text": "All",
+            "value": "All"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Evidence type",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "TextVariable",
+        "spec": {
+          "name": "program_search",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "query": "",
+          "label": "Program contains",
+          "hide": "hideVariable",
+          "skipUrlSync": false
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "stale_hours",
+          "query": "24,72,168,720",
+          "current": {
+            "text": "168",
+            "value": "168"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Stale after (hours)",
+          "hide": "dontHide",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "stop_minutes",
+          "query": "15,30,60,240",
+          "current": {
+            "text": "30",
+            "value": "30"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Long STOP (minutes)",
+          "hide": "dontHide",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "alarm_burst",
+          "query": "3,5,10,20",
+          "current": {
+            "text": "5",
+            "value": "5"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Error burst / 5m",
+          "hide": "dontHide",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "raw_limit",
+          "query": "100,250,500",
+          "current": {
+            "text": "250",
+            "value": "250"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Evidence rows",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      }
+    ]
+  }
+}

@@ -27,8 +27,10 @@ export const DrillSheet = ({
                 ? 'text-emerald-400'
                 : machine?.event_type === 'STOP'
                 ? 'text-amber-400'
-                : machine?.event_type === 'ALARM'
+                : machine?.event_type === 'ALARM' || machine?.event_type?.toLowerCase().includes('broken')
                 ? 'text-red-400'
+                : machine?.event_type === 'TOOL_CHANGE'
+                ? 'text-cyan-400'
                 : 'text-slate-300'
             }`}
           >
@@ -37,7 +39,14 @@ export const DrillSheet = ({
         </div>
         <div className="flex justify-between items-center px-3 py-2">
           <span className="text-slate-500 text-[11px]">EVENT CODE</span>
-          <span className="text-slate-200 font-semibold">{machine?.event_code || 'N/A'}</span>
+          <span className="text-slate-200 font-semibold flex items-center gap-1.5">
+            {machine?.event_code || 'N/A'}
+            {(machine?.event_code === '204' || machine?.event_code === '0204') && (
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-950/80 text-amber-300 border border-amber-600/60">
+                STOP DURATION
+              </span>
+            )}
+          </span>
         </div>
         <div className="px-3 py-2">
           <span className="text-slate-500 text-[11px] block mb-1">EVENT MESSAGE</span>
@@ -74,31 +83,41 @@ export const DrillSheet = ({
         SPINDLE & TOOL GEOMETRY (6 HEADS)
       </div>
       <div className="bg-slate-950 border border-slate-800 p-2.5 rounded font-mono space-y-2">
+        {machine?.spindle && (
+          <div className="flex justify-between items-center text-[11px] pb-1 border-b border-slate-800/60">
+            <span className="text-slate-500">SPINDLE CONTEXT:</span>
+            <span className="text-cyan-400 font-semibold">{machine.spindle}</span>
+          </div>
+        )}
         <div className="text-slate-300 text-[11px] leading-relaxed break-words">
           {machine?.tool_info || '—'}
         </div>
         {machine?.hits_info && (
           <div className="pt-2 border-t border-slate-800 flex justify-between items-center text-[11px]">
-            <span className="text-slate-500">CYCLE HITS:</span>
+            <span className="text-slate-500">HOLE COUNT / HITS:</span>
             <span className="text-emerald-400 font-bold">{machine.hits_info}</span>
           </div>
         )}
       </div>
     </div>
 
-    {/* Hardware Specifications */}
+    {/* Spindle Dynamics (RPM & FEED) */}
     <div className="space-y-1">
       <div className="text-[10px] font-mono font-bold tracking-widest text-slate-500 uppercase">
-        EQUIPMENT SPECIFICATIONS
+        SPINDLE DYNAMICS (RPM & FEED)
       </div>
       <div className="grid grid-cols-2 gap-2 font-mono text-xs">
         <div className="p-2 bg-slate-950 border border-slate-800 rounded">
-          <span className="text-slate-500 text-[10px] block">SPINDLE HEADS</span>
-          <span className="text-slate-200 font-semibold">6 Multi-Spindle</span>
+          <span className="text-slate-500 text-[10px] block">RPM</span>
+          <span className={`font-semibold ${machine?.rpm ? 'text-emerald-400' : 'text-slate-500'}`}>
+            {machine?.rpm || 'N/A'}
+          </span>
         </div>
         <div className="p-2 bg-slate-950 border border-slate-800 rounded">
-          <span className="text-slate-500 text-[10px] block">RATED SPEED</span>
-          <span className="text-slate-200 font-semibold">200,000 RPM</span>
+          <span className="text-slate-500 text-[10px] block">FEED</span>
+          <span className={`font-semibold ${machine?.feed ? 'text-emerald-400' : 'text-slate-500'}`}>
+            {machine?.feed || 'N/A'}
+          </span>
         </div>
       </div>
     </div>

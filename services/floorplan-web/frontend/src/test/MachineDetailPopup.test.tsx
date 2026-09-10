@@ -78,4 +78,45 @@ describe('MachineDetailPopup', () => {
     fireEvent.click(closeBtn);
     expect(handleClose).toHaveBeenCalled();
   });
+
+  it('renders dynamic sensor properties grid for schema-agnostic custom equipment', () => {
+    const customMachine: LdiMachine = {
+      eqp_id: 'CHEM-01',
+      status: 1,
+      process_type: 'OXIDE',
+      last_seen: '2026-09-10T08:00:00Z',
+      ph_val: 7.25,
+      acid_level: 14.8,
+      tank_temp: 65.5,
+      flow_rate: 120,
+    } as any;
+
+    render(
+      <MachineDetailPopup
+        machine={customMachine}
+        onClose={vi.fn()}
+      />
+    );
+
+    // Equipment Profile
+    expect(screen.getAllByText('CHEM-01').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText('OXIDE')).toBeInTheDocument();
+
+    // Dynamic section header badge
+    expect(screen.getByText('LIVE TELEMETRY & SENSOR METRICS')).toBeInTheDocument();
+    expect(screen.getByText(/DYNAMIC/)).toBeInTheDocument();
+
+    // Dynamic metrics rendered as labels and values
+    expect(screen.getByText('ph val')).toBeInTheDocument();
+    expect(screen.getByText('7.25')).toBeInTheDocument();
+
+    expect(screen.getByText('acid level')).toBeInTheDocument();
+    expect(screen.getByText('14.80')).toBeInTheDocument();
+
+    expect(screen.getByText('tank temp')).toBeInTheDocument();
+    expect(screen.getByText('65.50')).toBeInTheDocument();
+
+    expect(screen.getByText('flow rate')).toBeInTheDocument();
+    expect(screen.getByText('120')).toBeInTheDocument();
+  });
 });

@@ -7,27 +7,19 @@
     "user": "postgres",
     "password_env": "DRILL_DB_PASSWORD",
     "process_type": "DRILLING",
+    "query_file": "queries/drill_db.sql",
     "enabled": true
   },
-  "chem_db": {
+  "example_db": {
     "type": "postgres",
-    "host": "192.168.1.60",
+    "host": "192.168.1.80",
     "port": 5432,
-    "database": "oxide_db",
+    "database": "example_db",
     "user": "postgres",
-    "password_env": "CHEM_DB_PASSWORD",
-    "process_type": "OXIDE",
-    "enabled": false,
-    "query": "SELECT line_id AS eqp_id, state AS status, bath_temp, ph_level, flow_rate, updated_at AS last_seen FROM public.oxide_line"
-  },
-  "cut_db": {
-    "type": "postgres",
-    "host": "192.168.1.70",
-    "port": 5432,
-    "database": "cutting_db",
-    "user": "postgres",
-    "password_env": "CUT_DB_PASSWORD",
-    "process_type": "CUTTING",
+    "password_env": "EXAMPLE_DB_PASSWORD",
+    "process_type": "EXAMPLE",
+    "query":"SELECT * FROM example_table;",
     "enabled": false
   }
 }
+

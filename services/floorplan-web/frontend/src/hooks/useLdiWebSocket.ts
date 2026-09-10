@@ -89,17 +89,6 @@ export function useLdiWebSocket(options: UseLdiWebSocketOptions = {}): UseLdiWeb
       for (const item of items) {
         if (item && item.eqp_id) {
           next[item.eqp_id] = { ...item };
-          // If drilling machine (e.g. DRL054-M), alias under pure number '054' and full ID 'DRL-B06-054'
-          if (item.eqp_id.startsWith('DRL')) {
-            const numMatch = item.eqp_id.match(/(\d+)/);
-            if (numMatch) {
-              const num = numMatch[1];
-              next[num] = { ...item };
-              next[`DRL-${num}`] = { ...item };
-              next[`DRL-B06-${num}`] = { ...item };
-              next[`DRL-B06-054`] = { ...item };
-            }
-          }
         }
       }
       return next;
@@ -211,6 +200,11 @@ export function useLdiWebSocket(options: UseLdiWebSocketOptions = {}): UseLdiWeb
     }
   }, [resolveWsUrl, initialBackoffMs, maxBackoffMs, updateMachines]);
 
+  const connectionStateRef = useRef<ConnectionState>(connectionState);
+  useEffect(() => {
+    connectionStateRef.current = connectionState;
+  }, [connectionState]);
+
   // Initial mount: load snapshot & connect WS
   useEffect(() => {
     isUnmountedRef.current = false;
@@ -220,7 +214,7 @@ export function useLdiWebSocket(options: UseLdiWebSocketOptions = {}): UseLdiWeb
     // Fallback polling if WS disconnected
     if (enableHttpFallback) {
       fallbackPollTimerRef.current = setInterval(() => {
-        if (connectionState !== 'connected') {
+        if (connectionStateRef.current !== 'connected') {
           refreshSnapshot();
         }
       }, 5000);
@@ -241,7 +235,7 @@ export function useLdiWebSocket(options: UseLdiWebSocketOptions = {}): UseLdiWeb
         fallbackPollTimerRef.current = null;
       }
     };
-  }, [connectWs, refreshSnapshot, enableHttpFallback, connectionState]);
+  }, [connectWs, refreshSnapshot, enableHttpFallback]);
 
   const reconnect = useCallback(() => {
     retryCountRef.current = 0;

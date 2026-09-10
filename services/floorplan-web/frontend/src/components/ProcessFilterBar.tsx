@@ -13,6 +13,7 @@ export const PROCESS_FILTER_OPTIONS: ProcessFilterOptionDef[] = [
   { id: 'DRILLING', label: 'DRILLING', shortLabel: 'DRILL', defaultCount: 203 },
   { id: 'AUTO_LAY_UP', label: 'AUTO LAY UP', shortLabel: 'LAYUP', defaultCount: 8 },
   { id: 'OXIDE', label: 'OXIDE LINE', shortLabel: 'OXIDE', defaultCount: 12 },
+  { id: 'DE_OXIDE', label: 'DE-OXIDE', shortLabel: 'DE-OX', defaultCount: 3 },
   { id: 'CUTTING', label: 'CUTTING', shortLabel: 'CUT', defaultCount: 11 },
   { id: 'LASER_DRILLING', label: 'LASER DRILL', shortLabel: 'LASER', defaultCount: 5 },
   { id: 'XRY', label: 'X-RAY', shortLabel: 'XRY', defaultCount: 3 },

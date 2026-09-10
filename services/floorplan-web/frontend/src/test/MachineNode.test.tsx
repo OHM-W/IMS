@@ -1,17 +1,19 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MachineNode } from '../components/MachineNode';
-import { MachineCoordinate, LdiMachine } from '../types/ldi';
+import { LdiMachine } from '../types/ldi';
+import { MachineDef } from '../types/fleet';
 
-const mockCoord: MachineCoordinate = {
-  eqp_id: 'LDI-01',
-  name: 'LDI Machine 01',
+const mockCoord: MachineDef = {
+  id: 'LDI-01',
+  name: 'LDI-01',
+  process: 'LASER_DRILLING',
   svgX: 2210,
   svgY: 560,
-  width: 110,
-  height: 90,
+  cardWidth: 110,
+  cardHeight: 90,
   bay: 'Bay 1',
-  zone: 'Cleanroom',
+  zoneId: 'Cleanroom',
 };
 
 describe('MachineNode', () => {

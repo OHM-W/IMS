@@ -26,7 +26,9 @@ export const AlarmPanel = ({
       (f) => f.id === machine.eqp_id || f.telemetryId === machine.eqp_id
     );
     if (target) {
-      onFocusMachine(target.svgX, target.svgY, target.id);
+      const centerX = Math.round(target.svgX + (target.cardWidth || 40) / 2);
+      const centerY = Math.round(target.svgY + (target.cardHeight || 26) / 2);
+      onFocusMachine(centerX, centerY, target.id);
       return;
     }
   };

@@ -13,6 +13,19 @@ import {
 } from 'lucide-react';
 import { MachineDef, ProcessCategory } from '../types/fleet';
 
+export const PROCESS_OPTIONS: { id: ProcessCategory; label: string }[] = [
+  { id: 'DRILLING_MAIN', label: 'Drilling Main' },
+  { id: 'DRILLING_HOLD', label: 'Drilling Hold' },
+  { id: 'AUTO_LAY_UP', label: 'Auto Lay Up' },
+  { id: 'BONDING', label: 'Bonding' },
+  { id: 'OXIDE', label: 'Oxide Line' },
+  { id: 'PP_STORAGE', label: 'PP Storage' },
+  { id: 'CUTTING', label: 'Cutting' },
+  { id: 'DE_OXIDE', label: 'De-Oxide' },
+  { id: 'LASER_DRILLING', label: 'Laser Drill' },
+  { id: 'XRY', label: 'X-Ray' },
+];
+
 export interface DevLayoutToolbarProps {
   isEditMode: boolean;
   onToggleEditMode: () => void;
@@ -28,7 +41,7 @@ export interface DevLayoutToolbarProps {
   onAlign?: (type: 'left' | 'top' | 'distribute-h' | 'distribute-v') => void;
   onUpdateSize?: (id: string, width: number, height: number) => void;
   onApplySizeToZone?: (process: ProcessCategory, width: number, height: number) => void;
-  onRenameMachine?: (id: string, newName: string, newTelemetryId?: string) => void;
+  onRenameMachine?: (id: string, newName: string, newTelemetryId?: string, newProcess?: ProcessCategory) => void;
   onDeleteMachine?: (id: string) => void;
   onDeleteSelected?: () => void;
   onAddMachine?: (newMachine: MachineDef) => void;
@@ -59,6 +72,7 @@ export const DevLayoutToolbar = ({
   draggingMachineInfo,
 }: DevLayoutToolbarProps) => {
   const [inputMachineName, setInputMachineName] = useState('004');
+  const [inputProcess, setInputProcess] = useState<ProcessCategory>('DRILLING_MAIN');
 
   const currentW = selectedMachine?.cardWidth ?? (selectedMachine?.isCompact ? 38 : 80);
   const currentH = selectedMachine?.cardHeight ?? (selectedMachine?.isCompact ? 22 : 50);
@@ -72,8 +86,8 @@ export const DevLayoutToolbar = ({
     const created: MachineDef = {
       id: uniqueId,
       name: nameToUse,
-      process: 'DRILLING_MAIN',
-      processGroup: 'CUSTOM',
+      process: inputProcess,
+      processGroup: inputProcess,
       svgX: Math.round(viewCenter.x - 25),
       svgY: Math.round(viewCenter.y - 13),
       cardWidth: 50,
@@ -116,8 +130,20 @@ export const DevLayoutToolbar = ({
                 placeholder="Name"
                 value={inputMachineName}
                 onChange={(e) => setInputMachineName(e.target.value)}
-                className="w-20 bg-slate-950 border border-slate-700 focus:border-cyan-500 rounded px-2 py-0.5 text-slate-100 text-xs focus:outline-none"
+                className="w-16 bg-slate-950 border border-slate-700 focus:border-cyan-500 rounded px-2 py-0.5 text-slate-100 text-xs focus:outline-none"
               />
+              <select
+                value={inputProcess}
+                onChange={(e) => setInputProcess(e.target.value as ProcessCategory)}
+                className="bg-slate-950 border border-slate-700 text-cyan-400 text-xs rounded px-1.5 py-0.5 focus:outline-none focus:border-cyan-500 font-mono"
+                title="Select Manufacturing Process Zone"
+              >
+                {PROCESS_OPTIONS.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
               <button
                 type="submit"
                 title="Create card at center"
@@ -275,10 +301,37 @@ export const DevLayoutToolbar = ({
                 type="text"
                 value={selectedMachine.name}
                 onChange={(e) =>
-                  onRenameMachine?.(selectedMachine.id, e.target.value, selectedMachine.telemetryId)
+                  onRenameMachine?.(
+                    selectedMachine.id,
+                    e.target.value,
+                    selectedMachine.telemetryId,
+                    selectedMachine.process
+                  )
                 }
                 className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-0.5 text-slate-100 focus:outline-none focus:border-cyan-500 font-bold text-xs"
               />
+            </div>
+
+            <div>
+              <label className="text-slate-500 text-[10px] block mb-0.5 uppercase tracking-wider">PROCESS ZONE:</label>
+              <select
+                value={selectedMachine.process}
+                onChange={(e) =>
+                  onRenameMachine?.(
+                    selectedMachine.id,
+                    selectedMachine.name,
+                    selectedMachine.telemetryId,
+                    e.target.value as ProcessCategory
+                  )
+                }
+                className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-cyan-400 font-bold focus:outline-none focus:border-cyan-500 text-xs font-mono"
+              >
+                {PROCESS_OPTIONS.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label} ({p.id})
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -288,7 +341,12 @@ export const DevLayoutToolbar = ({
                 placeholder="e.g. DRL-054"
                 value={selectedMachine.telemetryId || ''}
                 onChange={(e) =>
-                  onRenameMachine?.(selectedMachine.id, selectedMachine.name, e.target.value)
+                  onRenameMachine?.(
+                    selectedMachine.id,
+                    selectedMachine.name,
+                    e.target.value,
+                    selectedMachine.process
+                  )
                 }
                 className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-0.5 text-slate-200 focus:outline-none focus:border-cyan-500 text-xs"
               />

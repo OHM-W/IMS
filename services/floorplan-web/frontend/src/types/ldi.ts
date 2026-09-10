@@ -13,7 +13,7 @@ export type MachineStatus = 0 | 1 | 2 | 3 | 4 | 5;
 export interface LdiMachine {
   eqp_id: string;
   status: number;
-  process_type?: 'LASER' | 'DRILLING' | 'OXIDE' | 'CUTTING' | 'GENERAL';
+  process_type?: string;
   db_key?: string;
 
   // LDI / Laser Telemetry Fields
@@ -37,47 +37,27 @@ export interface LdiMachine {
   program_name?: string | null;
   tool_info?: string | null;
   hits_info?: string | null;
+  spindle?: string | null;
+  rpm?: string | null;
+  feed?: string | null;
   level?: string | null;
 
   last_seen: string | null;
+
+  // Extensible for future databases / custom equipment fields
+  [key: string]: any;
 }
 
-export type WsPayload = LdiMachine[];
-
-export interface MachineCoordinate {
-  eqp_id: string;
-  name: string;
-  svgX: number;
-  svgY: number;
-  width: number;
-  height: number;
-  bay: string;
-  zone: string;
-}
-
-export interface HistoryRecord {
-  time: string;
-  temperature: number | null;
-  humidity: number | null;
-  resist_dosage: number | null;
-  scan_speed: number | null;
-  air_vacuum: number | null;
-  thickness: number | null;
-  board_no: number | null;
-  total_board: number | null;
-  state: boolean | null;
-}
+export type WsPayload = {
+  type: string;
+  timestamp: string;
+  count: number;
+  machines: Record<string, LdiMachine>;
+  list: LdiMachine[];
+  active_alarms: string[];
+} | LdiMachine[];
 
 export type ConnectionState = 'connecting' | 'connected' | 'reconnecting' | 'disconnected';
-
-export interface SystemHealth {
-  status: string;
-  db_connected: boolean;
-  timestamp: string;
-  pool_free?: number;
-  pool_used?: number;
-  ws_clients_count?: number;
-}
 
 export interface PanzoomControls {
   zoomIn: () => void;
@@ -87,3 +67,4 @@ export interface PanzoomControls {
   zoomToMachine: (svgX: number, svgY: number, zoomLevel?: number) => void;
   focusCleanroom: () => void;
 }
+

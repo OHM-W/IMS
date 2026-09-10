@@ -17,6 +17,24 @@ import {
 import { FleetFilterOption, MachineDef } from './types/fleet';
 import { LdiMachine } from './types/ldi';
 
+const createEmptyTelemetry = (eqpId: string, status: number): LdiMachine => ({
+  eqp_id: eqpId,
+  status,
+  temperature: null,
+  humidity: null,
+  resist_dosage: null,
+  scan_speed: null,
+  air_vacuum: null,
+  thickness: null,
+  board_no: null,
+  total_board: null,
+  total_time: null,
+  mo: null,
+  fpn: null,
+  layer_name: null,
+  last_seen: null,
+});
+
 export const App = () => {
   const {
     machines,
@@ -37,6 +55,7 @@ export const App = () => {
     selectByMarquee,
     clearSelection,
     fleetMachines,
+    deletedIds,
     moveGroupPositions,
     updateMachinePosition,
     updateMachineSize,
@@ -65,18 +84,25 @@ export const App = () => {
     เปลี่ยนเป็น true หรือพิมพ์ URL ?dev=true เพื่อเปิดเครื่องมือลากย้าย/ย่อขยาย/จัดแนว
     =============================================================================
   */
-  const ENABLE_DEV_LAYOUT_EDITOR = false || (typeof window !== 'undefined' && window.location.search.includes('dev=true'));
+  const ENABLE_DEV_LAYOUT_EDITOR =
+    typeof window !== 'undefined' &&
+    (window.location.search.includes('dev=true') || window.location.hash.includes('dev=true'));
 
   // Safe Operator Mapping persistence
   const handleSaveMachineMapping = React.useCallback(
     async (id: string, newName: string, newTelemetryId?: string) => {
+      const cleanTelemetryId =
+        newTelemetryId !== undefined && newTelemetryId.trim() !== ''
+          ? newTelemetryId.trim()
+          : undefined;
+
       const updatedMachines = fleetMachines.map((m) =>
         m.id === id
           ? {
               ...m,
               name: newName,
-              telemetryId: newTelemetryId || undefined,
-              hasLiveFeed: Boolean(newTelemetryId),
+              telemetryId: cleanTelemetryId,
+              hasLiveFeed: Boolean(cleanTelemetryId),
             }
           : m
       );
@@ -85,13 +111,13 @@ export const App = () => {
         await fetch('/api/layout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ machines: updatedMachines, deletedIds: [] }),
+          body: JSON.stringify({ machines: updatedMachines, deletedIds }),
         });
       } catch (err) {
         console.error('Failed to persist machine mapping:', err);
       }
     },
-    [renameMachine, fleetMachines]
+    [renameMachine, fleetMachines, deletedIds]
   );
 
   // Compute category machine counts for the process filter bar
@@ -101,6 +127,7 @@ export const App = () => {
       DRILLING: 0,
       AUTO_LAY_UP: 0,
       OXIDE: 0,
+      DE_OXIDE: 0,
       CUTTING: 0,
       LASER_DRILLING: 0,
       XRY: 0,
@@ -159,7 +186,9 @@ export const App = () => {
     addMachine(newMachine);
     toggleSelectMachine(newMachine.id, false);
     setTimeout(() => {
-      panzoomRef.current?.zoomToMachine(newMachine.svgX, newMachine.svgY, 2.2);
+      const cx = Math.round(newMachine.svgX + (newMachine.cardWidth || 40) / 2);
+      const cy = Math.round(newMachine.svgY + (newMachine.cardHeight || 26) / 2);
+      panzoomRef.current?.zoomToMachine(cx, cy, 2.2);
     }, 50);
   };
 
@@ -176,34 +205,22 @@ export const App = () => {
   const selectedTelemetry: LdiMachine | null = useMemo(() => {
     if (!selectedMachineId) return null;
 
-    // 1. Direct match in live stream map
+    // 1. If explicit telemetry binding ID is configured, strict 1:1 lookup
+    if (selectedMachineDef?.telemetryId) {
+      if (machines[selectedMachineDef.telemetryId]) {
+        return machines[selectedMachineDef.telemetryId];
+      }
+      // Bound ID not found in live DB -> return unmonitored baseline model (status 0 / OFF)
+      return createEmptyTelemetry(selectedMachineDef.telemetryId, 0);
+    }
+
+    // 2. Direct match in live stream map (only if no explicit telemetryId)
     if (machines[selectedMachineId]) {
       return machines[selectedMachineId];
     }
 
-    // 2. Match via telemetry binding ID (e.g. LSR-001 -> LDI-01)
-    if (selectedMachineDef?.telemetryId && machines[selectedMachineDef.telemetryId]) {
-      return machines[selectedMachineDef.telemetryId];
-    }
-
     // 3. Fallback unmonitored baseline model
-    return {
-      eqp_id: selectedMachineId,
-      status: selectedMachineDef?.hasLiveFeed ? 0 : 5,
-      temperature: null,
-      humidity: null,
-      resist_dosage: null,
-      scan_speed: null,
-      air_vacuum: null,
-      thickness: null,
-      board_no: null,
-      total_board: null,
-      total_time: null,
-      mo: null,
-      fpn: null,
-      layer_name: null,
-      last_seen: null,
-    };
+    return createEmptyTelemetry(selectedMachineId, selectedMachineDef?.hasLiveFeed ? 0 : 5);
   }, [selectedMachineId, selectedMachineDef, machines]);
 
   // Filter active alarms strictly to machines present in active floorplan layout
@@ -219,11 +236,11 @@ export const App = () => {
   // Compute fleet status metrics strictly for machines present on the floorplan layout
   const fleetStatusList = useMemo<LdiMachine[]>(() => {
     return fleetMachines.map((fm) => {
-      const live = machines[fm.telemetryId || fm.id];
+      const live = fm.telemetryId ? machines[fm.telemetryId] : machines[fm.id];
       if (live) return live;
       return {
-        eqp_id: fm.id,
-        status: fm.hasLiveFeed ? 0 : 5,
+        eqp_id: fm.telemetryId || fm.id,
+        status: fm.telemetryId ? 0 : (fm.hasLiveFeed ? 0 : 5),
         temperature: null,
         humidity: null,
         resist_dosage: null,
@@ -321,6 +338,7 @@ export const App = () => {
         {/* Machine Detail Slide-Over Inspection Drawer with Safe Operator Mapping */}
         {(selectedTelemetry || selectedMachineDef) && !isEditMode && (
           <MachineDetailPopup
+            key={selectedMachineDef?.id || selectedMachineId || 'detail-drawer'}
             machine={selectedTelemetry}
             machineDef={selectedMachineDef}
             onClose={handleCloseDrawer}

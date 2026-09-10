@@ -19,27 +19,6 @@ export interface StatusTheme {
   pulse: boolean;
 }
 
-export const ISA_STATUS_TOKENS = {
-  RUN: { code: 1, label: 'Run', color: '#10B981', glow: 'none' },
-  IDLE: { code: 2, label: 'Idle', color: '#F59E0B', glow: 'none' },
-  ALARM: { code: 3, label: 'Down / Alarm', color: '#EF4444', glow: 'none' },
-  STOP: { code: 4, label: 'Initial / PM / Stop', color: '#06B6D4', glow: 'none' },
-  OFF: { code: 0, label: 'Off', color: '#64748B', glow: 'none' },
-  UNDEFINE: { code: 5, label: 'Undefine', color: '#475569', glow: 'none' },
-} as const;
-
-export const STATUS_COLORS: Record<
-  StatusToken,
-  { hex: string; glow: string; label: string; code: number }
-> = {
-  RUN:      { hex: '#10B981', glow: 'none', label: 'Run', code: 1 },
-  IDLE:     { hex: '#F59E0B', glow: 'none', label: 'Idle', code: 2 },
-  ALARM:    { hex: '#EF4444', glow: 'none', label: 'Down / Alarm', code: 3 },
-  STOP:     { hex: '#06B6D4', glow: 'none', label: 'Initial / PM / Stop', code: 4 },
-  OFF:      { hex: '#64748B', glow: 'none', label: 'Off', code: 0 },
-  UNDEFINE: { hex: '#475569', glow: 'none', label: 'Undefine', code: 5 },
-};
-
 export const ISA_STATUS_COLORS: Record<
   'RUN' | 'IDLE' | 'ALARM' | 'STOP' | 'LOTO' | 'OFF' | 'UNDEFINE',
   StatusTheme
@@ -128,6 +107,30 @@ export const ISA_STATUS_COLORS: Record<
     borderClass: 'border-slate-800',
     pulse: false,
   },
+};
+
+/**
+ * Derived ISA-101 Token & Color dictionaries (Single Source of Truth: ISA_STATUS_COLORS)
+ */
+export const ISA_STATUS_TOKENS = {
+  RUN: { code: ISA_STATUS_COLORS.RUN.code, label: 'Run', color: ISA_STATUS_COLORS.RUN.hex, glow: 'none' },
+  IDLE: { code: ISA_STATUS_COLORS.IDLE.code, label: 'Idle', color: ISA_STATUS_COLORS.IDLE.hex, glow: 'none' },
+  ALARM: { code: ISA_STATUS_COLORS.ALARM.code, label: 'Down / Alarm', color: ISA_STATUS_COLORS.ALARM.hex, glow: 'none' },
+  STOP: { code: ISA_STATUS_COLORS.STOP.code, label: 'Initial / PM / Stop', color: ISA_STATUS_COLORS.STOP.hex, glow: 'none' },
+  OFF: { code: ISA_STATUS_COLORS.OFF.code, label: 'Off', color: ISA_STATUS_COLORS.OFF.hex, glow: 'none' },
+  UNDEFINE: { code: ISA_STATUS_COLORS.UNDEFINE.code, label: 'Undefine', color: ISA_STATUS_COLORS.UNDEFINE.hex, glow: 'none' },
+} as const;
+
+export const STATUS_COLORS: Record<
+  StatusToken,
+  { hex: string; glow: string; label: string; code: number }
+> = {
+  RUN:      { hex: ISA_STATUS_COLORS.RUN.hex, glow: 'none', label: 'Run', code: 1 },
+  IDLE:     { hex: ISA_STATUS_COLORS.IDLE.hex, glow: 'none', label: 'Idle', code: 2 },
+  ALARM:    { hex: ISA_STATUS_COLORS.ALARM.hex, glow: 'none', label: 'Down / Alarm', code: 3 },
+  STOP:     { hex: ISA_STATUS_COLORS.STOP.hex, glow: 'none', label: 'Initial / PM / Stop', code: 4 },
+  OFF:      { hex: ISA_STATUS_COLORS.OFF.hex, glow: 'none', label: 'Off', code: 0 },
+  UNDEFINE: { hex: ISA_STATUS_COLORS.UNDEFINE.hex, glow: 'none', label: 'Undefine', code: 5 },
 };
 
 /**

@@ -26,6 +26,9 @@ export interface LdiMachine {
   program_name?: string | null;
   tool_info?: string | null;
   hits_info?: string | null;
+  spindle?: string | null;
+  rpm?: string | null;
+  feed?: string | null;
   level?: string | null;
 
   last_seen: string | null;

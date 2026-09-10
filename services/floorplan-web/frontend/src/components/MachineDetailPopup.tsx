@@ -7,9 +7,10 @@ import {
   getTemperatureTolerance,
   getHumidityTolerance,
 } from '../constants/colors';
-import { FLEET_MACHINE_MAP, FLEET_MACHINES } from '../constants/fleet';
+import { FLEET_MACHINE_MAP } from '../constants/fleet';
 import { DrillSheet } from './detail/DrillSheet';
 import { LaserSheet } from './detail/LaserSheet';
+import { GeneralSheet } from './detail/GeneralSheet';
 import { DatabaseMappingPanel } from './detail/DatabaseMappingPanel';
 
 export interface MachineDetailPopupProps {
@@ -36,9 +37,8 @@ export const MachineDetailPopup = ({
 
   const resolvedDef =
     machineDef ||
+    (eqpId ? FLEET_MACHINE_MAP.get(eqpId) : null) ||
     fleetMachines?.find((f) => f.id === eqpId || f.telemetryId === eqpId) ||
-    FLEET_MACHINE_MAP.get(eqpId) ||
-    FLEET_MACHINES.find((f) => f.id === eqpId || f.telemetryId === eqpId) ||
     null;
 
   const status =
@@ -54,6 +54,12 @@ export const MachineDetailPopup = ({
     resolvedDef?.process === 'DRILLING_MAIN' ||
     resolvedDef?.process === 'DRILLING_HOLD' ||
     eqpId.startsWith('DRL');
+
+  const isLaserMachine =
+    machine?.process_type === 'LASER' ||
+    machine?.process_type === 'LDI' ||
+    resolvedDef?.process === 'LASER_DRILLING' ||
+    eqpId.startsWith('LDI');
 
   const tempTol = getTemperatureTolerance(machine?.temperature);
   const humTol = getHumidityTolerance(machine?.humidity);
@@ -79,7 +85,13 @@ export const MachineDetailPopup = ({
   const handleFocus = () => {
     if (onFocusMachine) {
       if (resolvedDef) {
-        onFocusMachine(resolvedDef.svgX, resolvedDef.svgY, resolvedDef.id);
+        const w = resolvedDef.cardWidth ?? (resolvedDef.isCompact ? 38 : 80);
+        const h = resolvedDef.cardHeight ?? (resolvedDef.isCompact ? 22 : 50);
+        onFocusMachine(
+          resolvedDef.svgX + Math.round(w / 2),
+          resolvedDef.svgY + Math.round(h / 2),
+          resolvedDef.id
+        );
       } else if (machine) {
         onFocusMachine(0, 0, eqpId);
       }
@@ -178,14 +190,14 @@ export const MachineDetailPopup = ({
           <span className="text-slate-300 font-semibold">{formatLastSeen(machine?.last_seen)}</span>
         </div>
 
-        {/* Render Specialized Sheet: Drilling Machine vs Photolithography Laser Machine */}
+        {/* Render Specialized Sheet: Drilling vs Laser/LDI vs General Factory Machine */}
         {isDrillingMachine ? (
           <DrillSheet
             machine={machine}
             copied={copied}
             copyProgramName={copyProgramName}
           />
-        ) : (
+        ) : isLaserMachine ? (
           <LaserSheet
             machine={machine}
             boardNo={boardNo}
@@ -194,6 +206,8 @@ export const MachineDetailPopup = ({
             tempTol={tempTol}
             humTol={humTol}
           />
+        ) : (
+          <GeneralSheet machine={machine} machineDef={resolvedDef} />
         )}
       </div>
     </div>

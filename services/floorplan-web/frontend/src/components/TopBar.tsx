@@ -1,18 +1,10 @@
 import { useState, useEffect } from 'react';
-import {
-  ZoomIn,
-  ZoomOut,
-  RotateCcw,
-  Maximize2,
-  Radio,
-  Sliders,
-} from 'lucide-react';
 import { ConnectionState, LdiMachine, PanzoomControls } from '../types/ldi';
 import { FleetFilterOption } from '../types/fleet';
 
 export interface TopBarProps {
-  connectionState: ConnectionState;
-  retryCount: number;
+  connectionState?: ConnectionState;
+  retryCount?: number;
   machines: LdiMachine[];
   totalFleetCount?: number;
   activeFilter?: FleetFilterOption;
@@ -22,11 +14,8 @@ export interface TopBarProps {
 }
 
 export const TopBar = ({
-  connectionState,
-  retryCount,
   machines,
   totalFleetCount,
-  panzoomControls,
 }: TopBarProps) => {
   const [timeStr, setTimeStr] = useState<string>('');
 
@@ -48,40 +37,6 @@ export const TopBar = ({
   const off = machines.filter((m) => m.status === 0 || m.status === undefined).length;
   const undefine = machines.filter((m) => m.status === 5).length;
 
-  const renderConnectionBadge = () => {
-    switch (connectionState) {
-      case 'connected':
-        return (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-950/60 border border-emerald-600/60 rounded text-xs font-mono text-emerald-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span className="font-semibold tracking-wide">TELEMETRY LIVE</span>
-          </div>
-        );
-      case 'connecting':
-        return (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-950/60 border border-amber-600/60 rounded text-xs font-mono text-amber-400">
-            <Radio className="w-3.5 h-3.5 animate-spin" />
-            <span>CONNECTING</span>
-          </div>
-        );
-      case 'reconnecting':
-        return (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-950/80 border border-amber-500 rounded text-xs font-mono text-amber-300">
-            <Radio className="w-3.5 h-3.5 animate-pulse" />
-            <span>RETRY ({retryCount})</span>
-          </div>
-        );
-      case 'disconnected':
-      default:
-        return (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-red-950/80 border border-red-500 rounded text-xs font-mono text-red-300 font-bold">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-            <span>DISCONNECTED</span>
-          </div>
-        );
-    }
-  };
-
   return (
     <header
       data-testid="top-bar"
@@ -89,19 +44,13 @@ export const TopBar = ({
     >
       {/* Brand & Factory Metadata */}
       <div className="flex items-center gap-3">
-        <div className="px-2 py-1 bg-slate-900 border border-slate-700/80 rounded flex items-center gap-1.5 text-slate-200">
-          <Sliders className="w-4 h-4 text-emerald-400" />
-          <span className="font-mono text-xs font-bold tracking-wider">IMS SCADA</span>
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xs font-semibold tracking-tight text-slate-200 uppercase font-sans">
-              Factory Floor 1F • Plant Twin
-            </h1>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 bg-slate-800/80 border border-slate-700/60 text-slate-400 rounded">
-              REV 2.4
-            </span>
-          </div>
+        <div className="flex items-center gap-2">
+          <h1 className="text-xs font-semibold tracking-tight text-slate-200 uppercase font-sans">
+            Factory Floor 1F • Plant Twin
+          </h1>
+          <span className="text-[10px] font-mono px-1.5 py-0.5 bg-slate-800/80 border border-slate-700/60 text-slate-400 rounded">
+            REV 2.4
+          </span>
         </div>
       </div>
 
@@ -148,44 +97,8 @@ export const TopBar = ({
         )}
       </div>
 
-      {/* Right Controls: Panzoom, Connection Status & System Clock */}
+      {/* Right Controls: System Clock */}
       <div className="flex items-center gap-2.5">
-        {/* Navigation Controls Group */}
-        <div className="flex items-center bg-slate-900 border border-slate-800 rounded p-0.5 text-slate-400">
-          <button
-            onClick={() => panzoomControls?.zoomIn()}
-            className="p-1 hover:text-slate-100 hover:bg-slate-800 rounded transition-colors"
-            title="Zoom In (+)"
-          >
-            <ZoomIn className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => panzoomControls?.zoomOut()}
-            className="p-1 hover:text-slate-100 hover:bg-slate-800 rounded transition-colors"
-            title="Zoom Out (-)"
-          >
-            <ZoomOut className="w-3.5 h-3.5" />
-          </button>
-          <div className="w-[1px] h-3.5 bg-slate-800 mx-0.5" />
-          <button
-            onClick={() => panzoomControls?.focusCleanroom()}
-            className="p-1 hover:text-emerald-400 hover:bg-slate-800 rounded transition-colors"
-            title="Focus Laser Area"
-          >
-            <Maximize2 className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => panzoomControls?.resetView()}
-            className="p-1 hover:text-slate-100 hover:bg-slate-800 rounded transition-colors"
-            title="Reset Pan/Zoom (0)"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        {/* Live Status Badge */}
-        {renderConnectionBadge()}
-
         {/* Precision Clock */}
         <div className="hidden sm:block font-mono text-xs text-slate-400 px-2 py-1 bg-slate-900/80 rounded border border-slate-800">
           {timeStr || '--:--:--'}

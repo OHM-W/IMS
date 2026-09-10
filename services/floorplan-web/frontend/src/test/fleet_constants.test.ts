@@ -128,7 +128,7 @@ describe('Milestone 1: Fleet Model & Factory Machine Constants', () => {
       expect(telemetryIds).toEqual(
         expect.arrayContaining(['LDI-01', 'LDI-02', 'LDI-03', 'LDI-04', 'LDI-05'])
       );
-      expect(TELEMETRY_ID_MAP.size).toBe(5);
+      expect(TELEMETRY_ID_MAP.size).toBe(102); // 5 LDI + 97 CNC Drilling units
     });
 
     it('X-RAY has process units defined', () => {

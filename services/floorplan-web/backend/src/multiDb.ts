@@ -64,6 +64,7 @@ export class MultiDbManager {
       database: config.PGDATABASE,
       user: config.PGUSER,
       password: config.PGPASSWORD,
+      query_file: 'queries/ldi_telemetry.sql',
       isPrimary: true,
     });
 
@@ -91,6 +92,13 @@ export class MultiDbManager {
 
     if (spec.type === 'postgres' || spec.type === 'timescaledb' || !spec.type) {
       try {
+        const oldPool = this.pools.get(key);
+        if (oldPool) {
+          oldPool.end().catch((err) => {
+            console.warn(`[multiDb:${key}] Failed to cleanly end previous pool:`, err.message);
+          });
+        }
+
         const pool = new Pool({
           host: resolvedHost,
           port: spec.port,
@@ -141,39 +149,52 @@ export class MultiDbManager {
     return this.specs.get(key.toLowerCase());
   }
 
-  public getQuery(key: string): string | null {
+  public getQuery(key: string, vars?: Record<string, string | number>): string | null {
     const lowerKey = key.toLowerCase();
     const spec = this.specs.get(lowerKey);
     if (!spec || spec.enabled === false) return null;
 
+    let rawQuery: string | null = null;
     if (spec.query && spec.query.trim().length > 0) {
-      return spec.query.trim();
-    }
-
-    if (spec.query_file) {
+      rawQuery = spec.query.trim();
+    } else if (spec.query_file) {
       if (this.queryCache.has(lowerKey)) {
-        return this.queryCache.get(lowerKey)!;
-      }
-      try {
-        const candidatePaths = [
-          path.resolve(config.DATA_DIR, spec.query_file),
-          path.resolve(process.cwd(), spec.query_file),
-          path.resolve(spec.query_file),
-        ];
-        for (const p of candidatePaths) {
-          if (fs.existsSync(p)) {
-            const content = fs.readFileSync(p, 'utf-8').trim();
-            this.queryCache.set(lowerKey, content);
-            return content;
+        rawQuery = this.queryCache.get(lowerKey)!;
+      } else {
+        try {
+          const candidatePaths = [
+            path.resolve(config.DATA_DIR, spec.query_file),
+            path.resolve(process.cwd(), spec.query_file),
+            path.resolve(spec.query_file),
+          ];
+          for (const p of candidatePaths) {
+            if (fs.existsSync(p)) {
+              rawQuery = fs.readFileSync(p, 'utf-8').trim();
+              this.queryCache.set(lowerKey, rawQuery);
+              break;
+            }
           }
+          if (!rawQuery) {
+            console.warn(`[multiDb:${key}] query_file not found: ${spec.query_file}`);
+          }
+        } catch (err: any) {
+          console.warn(`[multiDb:${key}] Failed to load query_file:`, err.message);
         }
-        console.warn(`[multiDb:${key}] query_file not found: ${spec.query_file}`);
-      } catch (err: any) {
-        console.warn(`[multiDb:${key}] Failed to load query_file:`, err.message);
       }
     }
 
-    return null;
+    if (!rawQuery) return null;
+
+    if (vars) {
+      let interpolated = rawQuery;
+      for (const [k, v] of Object.entries(vars)) {
+        interpolated = interpolated.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v));
+        interpolated = interpolated.replace(new RegExp(`\\$\\{config\\.${k}\\}`, 'g'), String(v));
+      }
+      return interpolated;
+    }
+
+    return rawQuery;
   }
 
   public getAllConfiguredPools(): Array<{ key: string; pool: pg.Pool; spec: DbConnectionSpec }> {

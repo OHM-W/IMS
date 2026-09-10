@@ -1,4 +1,4 @@
-﻿const assert = require('assert');
+const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
 
@@ -10,7 +10,7 @@ const { broadcaster } = require('../dist/broadcaster.js');
 // Test 1: getQuery for drill_db via query_file
 const drillQuery = multiDb.getQuery('drill_db');
 assert(drillQuery, 'drill_db query must be loaded from query_file');
-assert(drillQuery.includes('tbl_dr_event'), 'drillQuery must contain tbl_dr_event');
+assert(drillQuery.includes('machine_event') || drillQuery.includes('tbl_dr_event'), 'drillQuery must contain machine_event or tbl_dr_event');
 console.log('[PASS] query_file loaded successfully for drill_db');
 
 // Test 2: inline query registration

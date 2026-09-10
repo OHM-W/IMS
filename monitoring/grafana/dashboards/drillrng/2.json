@@ -1,0 +1,943 @@
+{
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "ims-drilling-history",
+    "generation": 5,
+    "creationTimestamp": "2026-09-07T08:47:44Z",
+    "labels": {},
+    "annotations": {}
+  },
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "query": {
+            "kind": "DataQuery",
+            "group": "grafana",
+            "version": "v0",
+            "spec": {},
+            "labels": {
+              "grafana.app/export-label": "grafana-1"
+            }
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "builtIn": true
+        }
+      }
+    ],
+    "cursorSync": "Crosshair",
+    "editable": true,
+    "elements": {
+      "panel-101": {
+        "kind": "Panel",
+        "spec": {
+          "id": 101,
+          "title": "Production Information - ${focus_machine}",
+          "description": "7-day Day & Night shift performance replicating the physical Ta Liang DG CNC screen, with CSV export",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "format": "table",
+                        "rawSql": "WITH machine_target AS (\n  SELECT COALESCE(\n    NULLIF(${focus_machine:singlequote}, ''),\n    NULLIF(${machine_id:singlequote}, ''),\n    (SELECT equipment_id FROM public.machine_event WHERE equipment_id IS NOT NULL LIMIT 1)\n  ) AS eqp_id\n),\ndates AS (\n  SELECT \n    m.eqp_id,\n    (COALESCE(MAX(e.event_time::date), CURRENT_DATE) - (i || ' days')::interval)::date AS prod_date\n  FROM machine_target m\n  LEFT JOIN public.machine_event e \n    ON e.equipment_id = m.eqp_id \n   AND e.event_code IN ('0209', '0201')\n  CROSS JOIN generate_series(0, 6) AS i\n  GROUP BY m.eqp_id, i\n),\nshift_agg AS (\n  SELECT \n    m.eqp_id,\n    CASE \n      WHEN e.event_code = '0209' AND EXTRACT(HOUR FROM e.event_time) BETWEEN 5 AND 11 THEN (e.event_time::date - 1)\n      WHEN e.event_code = '0201' THEN (e.event_time - INTERVAL '8 hours')::date\n      ELSE e.event_time::date\n    END AS prod_date,\n    CASE \n      WHEN e.event_code = '0209' THEN (CASE WHEN EXTRACT(HOUR FROM e.event_time) BETWEEN 17 AND 23 THEN 1 ELSE 2 END)\n      ELSE (CASE WHEN EXTRACT(HOUR FROM (e.event_time - INTERVAL '8 hours')) < 12 THEN 1 ELSE 2 END)\n    END AS shift_num,\n    SUM((regexp_match(e.event_message, 'Run Hits:\\s*([0-9]+)'))[1]::bigint) FILTER (WHERE e.event_code = '0201') AS hits,\n    MAX(EXTRACT(EPOCH FROM substring(e.event_message FROM 'Online:\\s*([0-9]{2}:[0-9]{2}:[0-9]{2})')::interval)::int) FILTER (WHERE e.event_code = '0209') AS online_sec,\n    MAX(EXTRACT(EPOCH FROM substring(e.event_message FROM 'Stop:\\s*([0-9]{2}:[0-9]{2}:[0-9]{2})')::interval)::int) FILTER (WHERE e.event_code = '0209') AS stop_sec\n  FROM machine_target m\n  JOIN public.machine_event e \n    ON e.equipment_id = m.eqp_id \n   AND e.event_code IN ('0209', '0201')\n   AND e.event_time >= NOW() - INTERVAL '14 days'\n  GROUP BY 1, 2, 3\n)\nSELECT \n  to_char(d.prod_date, 'MM/DD') AS \"ShortDate\",\n  to_char(d.prod_date, 'YYYY-MM-DD') AS \"FullDate\",\n  UPPER(to_char(d.prod_date, 'Dy')) AS \"Day\",\n  d.eqp_id AS \"Machine\",\n  -- Shift 1 (08:00)\n  '08:00' AS \"Time1\",\n  COALESCE(to_char(MAX(s.hits) FILTER (WHERE s.shift_num = 1), 'FM999,999,999'), '0') AS \"Hits1\",\n  COALESCE(to_char((MAX(s.online_sec) FILTER (WHERE s.shift_num = 1) || ' seconds')::interval, 'HH24:MI:SS'), '00:00:00') AS \"Online1\",\n  COALESCE(to_char((MAX(s.stop_sec) FILTER (WHERE s.shift_num = 1) || ' seconds')::interval, 'HH24:MI:SS'), '00:00:00') AS \"Stop1\",\n  COALESCE(ROUND((MAX(s.online_sec - s.stop_sec) FILTER (WHERE s.shift_num = 1)::numeric / NULLIF(MAX(s.online_sec) FILTER (WHERE s.shift_num = 1), 0) * 100.0), 1)::text || '%', '0.0%') AS \"Rate1\",\n  -- Shift 2 (20:00)\n  '20:00' AS \"Time2\",\n  COALESCE(to_char(MAX(s.hits) FILTER (WHERE s.shift_num = 2), 'FM999,999,999'), '****') AS \"Hits2\",\n  COALESCE(to_char((MAX(s.online_sec) FILTER (WHERE s.shift_num = 2) || ' seconds')::interval, 'HH24:MI:SS'), '****') AS \"Online2\",\n  COALESCE(to_char((MAX(s.stop_sec) FILTER (WHERE s.shift_num = 2) || ' seconds')::interval, 'HH24:MI:SS'), '****') AS \"Stop2\",\n  COALESCE(ROUND((MAX(s.online_sec - s.stop_sec) FILTER (WHERE s.shift_num = 2)::numeric / NULLIF(MAX(s.online_sec) FILTER (WHERE s.shift_num = 2), 0) * 100.0), 1)::text || '%', '****') AS \"Rate2\"\nFROM dates d\nLEFT JOIN shift_agg s \n  ON s.eqp_id = d.eqp_id \n AND s.prod_date = d.prod_date\nGROUP BY d.eqp_id, d.prod_date\nORDER BY d.prod_date DESC;"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "postgres-1",
+                        "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "marcusolsson-dynamictext-panel",
+            "version": "6.3.0",
+            "spec": {
+              "options": {
+                "afterRender": "window.exportCncCsv = function() {\n  const table = document.querySelector('.cnc-table');\n  if (!table) return;\n  const rows = table.querySelectorAll('tr');\n  const csvLines = [];\n  rows.forEach(tr => {\n    const cells = tr.querySelectorAll('th, td');\n    const rowValues = [];\n    cells.forEach(cell => {\n      let val = cell.innerText.trim();\n      val = val.replace(/\"/g, '\"\"');\n      if (val.includes(',') || val.includes('\"') || val.includes('\\n')) {\n        val = '\"' + val + '\"';\n      }\n      rowValues.push(val);\n    });\n    csvLines.push(rowValues.join(','));\n  });\n  \n  const csvContent = \"\\uFEFF\" + csvLines.join('\\r\\n');\n  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });\n  const url = URL.createObjectURL(blob);\n  const link = document.createElement('a');\n  \n  const titleEl = document.querySelector('.cnc-title-text');\n  const mName = titleEl ? titleEl.innerText.replace('Production Information-', '').trim() : 'Machine';\n  const today = new Date().toISOString().slice(0, 10);\n  \n  link.setAttribute('href', url);\n  link.setAttribute('download', 'Production_Information_' + mName + '_' + today + '.csv');\n  document.body.appendChild(link);\n  link.click();\n  document.body.removeChild(link);\n  URL.revokeObjectURL(url);\n};",
+                "content": "<div class=\"cnc-window\">\n<div class=\"cnc-title-bar\">\n<div class=\"cnc-title-text\">Production Information-{{data.[0].Machine}}</div>\n<div class=\"cnc-close-btn\">&#x2715;</div>\n</div>\n<div class=\"cnc-body\">\n<table class=\"cnc-table\">\n<thead>\n<tr class=\"cnc-row-date\">\n<th class=\"cnc-lbl\">Date</th>\n{{#each data}}\n<th class=\"cnc-val-date\">{{this.ShortDate}}</th>\n{{/each}}\n</tr>\n<tr class=\"cnc-row-day\">\n<td class=\"cnc-lbl\">Day</td>\n{{#each data}}\n<td class=\"cnc-val-day\">{{this.Day}}</td>\n{{/each}}\n</tr>\n</thead>\n<tbody>\n<tr class=\"cnc-row-time1\">\n<td class=\"cnc-lbl\">Time1</td>\n{{#each data}}\n<td class=\"cnc-val-time\">{{this.Time1}}</td>\n{{/each}}\n</tr>\n<tr class=\"cnc-row-hits1\">\n<td class=\"cnc-lbl\">Hits1</td>\n{{#each data}}\n<td class=\"cnc-val-hits\">{{this.Hits1}}</td>\n{{/each}}\n</tr>\n<tr class=\"cnc-row-online1\">\n<td class=\"cnc-lbl\">Online1</td>\n{{#each data}}\n<td class=\"cnc-val-online\">{{this.Online1}}</td>\n{{/each}}\n</tr>\n<tr class=\"cnc-row-stop1\">\n<td class=\"cnc-lbl\">Stop1</td>\n{{#each data}}\n<td class=\"cnc-val-stop\">{{this.Stop1}}</td>\n{{/each}}\n</tr>\n<tr class=\"cnc-row-rate1\">\n<td class=\"cnc-lbl\">Rate1</td>\n{{#each data}}\n<td class=\"cnc-val-rate\">{{this.Rate1}}</td>\n{{/each}}\n</tr>\n<tr class=\"cnc-row-time2\">\n<td class=\"cnc-lbl\">Time2</td>\n{{#each data}}\n<td class=\"cnc-val-time\">{{this.Time2}}</td>\n{{/each}}\n</tr>\n<tr class=\"cnc-row-hits2\">\n<td class=\"cnc-lbl\">Hits2</td>\n{{#each data}}\n<td class=\"cnc-val-hits\">{{this.Hits2}}</td>\n{{/each}}\n</tr>\n<tr class=\"cnc-row-online2\">\n<td class=\"cnc-lbl\">Online2</td>\n{{#each data}}\n<td class=\"cnc-val-online\">{{this.Online2}}</td>\n{{/each}}\n</tr>\n<tr class=\"cnc-row-stop2\">\n<td class=\"cnc-lbl\">Stop2</td>\n{{#each data}}\n<td class=\"cnc-val-stop\">{{this.Stop2}}</td>\n{{/each}}\n</tr>\n<tr class=\"cnc-row-rate2\">\n<td class=\"cnc-lbl\">Rate2</td>\n{{#each data}}\n<td class=\"cnc-val-rate\">{{this.Rate2}}</td>\n{{/each}}\n</tr>\n</tbody>\n</table>\n<div class=\"cnc-footer\">\n<label class=\"cnc-checkbox-label\">\n<input type=\"checkbox\" disabled checked> Day information\n</label>\n<button class=\"cnc-export-btn\" onclick=\"window.exportCncCsv && window.exportCncCsv(); return false;\" title=\"Download 7-day shift CSV for this machine\">📥 Export .CSV</button>\n</div>\n</div>\n</div>",
+                "contentPartials": [],
+                "defaultContent": "No shift production events found for selected machine.",
+                "editor": {
+                  "format": "auto",
+                  "language": "markdown"
+                },
+                "editors": [
+                  "renderMode",
+                  "content",
+                  "styles"
+                ],
+                "externalStyles": [],
+                "helpers": "",
+                "renderMode": "allRows",
+                "styles": ".cnc-window {\n  font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;\n  background: #C4C8B8;\n  border: 2px solid #5A6268;\n  border-radius: 4px;\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);\n  margin: 0 auto;\n  overflow: hidden;\n  max-width: 100%;\n}\n.cnc-title-bar {\n  background: #D5D8CB;\n  border-bottom: 2px solid #7D858A;\n  padding: 4px 10px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  font-size: 13px;\n  font-weight: 700;\n  color: #1F2937;\n  letter-spacing: 0.5px;\n}\n.cnc-close-btn {\n  font-size: 14px;\n  font-weight: 700;\n  color: #374151;\n  cursor: pointer;\n  padding: 0 4px;\n}\n.cnc-body {\n  padding: 8px;\n  background: #D8DCCF;\n  overflow-x: auto;\n}\n.cnc-table {\n  width: 100%;\n  border-collapse: collapse;\n  border: 2px solid #555E64;\n  font-size: 12.5px;\n  font-weight: 700;\n  text-align: center;\n  background: #C8CEC0;\n}\n.cnc-table th, .cnc-table td {\n  border: 1px solid #717A80;\n  padding: 4px 6px;\n  white-space: nowrap;\n}\n.cnc-lbl {\n  background: #B4BCA8 !important;\n  color: #111827 !important;\n  font-weight: 800 !important;\n  text-align: center;\n  min-width: 70px;\n  font-size: 13px;\n}\n.cnc-val-date {\n  background: #A5C4A5 !important;\n  color: #064E3B !important;\n  font-weight: 800 !important;\n  font-size: 13.5px;\n}\n.cnc-val-day {\n  background: #B6D4B6 !important;\n  color: #065F46 !important;\n  font-weight: 800 !important;\n  font-size: 12.5px;\n}\n.cnc-val-time {\n  background: #B0CEE6 !important;\n  color: #0F172A !important;\n  font-weight: 700 !important;\n}\n.cnc-val-hits {\n  background: #B0CEE6 !important;\n  color: #0000FF !important;\n  font-weight: 800 !important;\n  font-size: 13px;\n}\n.cnc-val-online {\n  background: #505A58 !important;\n  color: #00FF33 !important;\n  font-weight: 700 !important;\n  letter-spacing: 0.5px;\n}\n.cnc-val-stop {\n  background: #505A58 !important;\n  color: #FF2222 !important;\n  font-weight: 700 !important;\n  letter-spacing: 0.5px;\n}\n.cnc-val-rate {\n  background: #C4C8B8 !important;\n  color: #111827 !important;\n  font-weight: 800 !important;\n  font-size: 13px;\n}\n.cnc-footer {\n  margin-top: 6px;\n  padding: 2px 4px 0 4px;\n  font-size: 11.5px;\n  color: #374151;\n  font-weight: 600;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.cnc-export-btn {\n  background: #B4BCA8;\n  color: #111827;\n  border: 1px solid #555E64;\n  border-radius: 3px;\n  padding: 2px 10px;\n  font-size: 11.5px;\n  font-weight: 700;\n  font-family: 'JetBrains Mono', 'Consolas', monospace;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: 5px;\n  transition: all 0.15s ease;\n}\n.cnc-export-btn:hover {\n  background: #9EAB94;\n  border-color: #2F3542;\n  color: #000000;\n}\n.cnc-export-btn:active {\n  transform: translateY(1px);\n  background: #8E9B84;\n}",
+                "wrap": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-103": {
+        "kind": "Panel",
+        "spec": {
+          "id": 103,
+          "title": "7-Day Shift Production — Standard Table",
+          "description": "Standard Grafana native table showing 7-day Day & Night shift performance without external plugins",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "format": "table",
+                        "rawSql": "WITH machine_target AS (\n  SELECT COALESCE(\n    NULLIF(${focus_machine:singlequote}, ''),\n    NULLIF(${machine_id:singlequote}, ''),\n    (SELECT equipment_id FROM public.machine_event WHERE equipment_id IS NOT NULL LIMIT 1)\n  ) AS eqp_id\n),\ndates AS (\n  SELECT \n    m.eqp_id,\n    (COALESCE(MAX(e.event_time::date), CURRENT_DATE) - (i || ' days')::interval)::date AS prod_date\n  FROM machine_target m\n  LEFT JOIN public.machine_event e \n    ON e.equipment_id = m.eqp_id \n   AND e.event_code IN ('0209', '0201')\n  CROSS JOIN generate_series(0, 6) AS i\n  GROUP BY m.eqp_id, i\n),\nshift_agg AS (\n  SELECT \n    m.eqp_id,\n    CASE \n      WHEN e.event_code = '0209' AND EXTRACT(HOUR FROM e.event_time) BETWEEN 5 AND 11 THEN (e.event_time::date - 1)\n      WHEN e.event_code = '0201' THEN (e.event_time - INTERVAL '8 hours')::date\n      ELSE e.event_time::date\n    END AS prod_date,\n    CASE \n      WHEN e.event_code = '0209' THEN (CASE WHEN EXTRACT(HOUR FROM e.event_time) BETWEEN 17 AND 23 THEN 1 ELSE 2 END)\n      ELSE (CASE WHEN EXTRACT(HOUR FROM (e.event_time - INTERVAL '8 hours')) < 12 THEN 1 ELSE 2 END)\n    END AS shift_num,\n    SUM((regexp_match(e.event_message, 'Run Hits:\\s*([0-9]+)'))[1]::bigint) FILTER (WHERE e.event_code = '0201') AS hits,\n    MAX(EXTRACT(EPOCH FROM substring(e.event_message FROM 'Online:\\s*([0-9]{2}:[0-9]{2}:[0-9]{2})')::interval)::int) FILTER (WHERE e.event_code = '0209') AS online_sec,\n    MAX(EXTRACT(EPOCH FROM substring(e.event_message FROM 'Stop:\\s*([0-9]{2}:[0-9]{2}:[0-9]{2})')::interval)::int) FILTER (WHERE e.event_code = '0209') AS stop_sec\n  FROM machine_target m\n  JOIN public.machine_event e \n    ON e.equipment_id = m.eqp_id \n   AND e.event_code IN ('0209', '0201')\n   AND e.event_time >= NOW() - INTERVAL '14 days'\n  GROUP BY 1, 2, 3\n)\nSELECT \n  to_char(d.prod_date, 'YYYY-MM-DD') AS \"Date\",\n  UPPER(to_char(d.prod_date, 'Dy')) AS \"Day\",\n  d.eqp_id AS \"Machine\",\n  -- Shift 1 (08:00)\n  '08:00' AS \"Time1\",\n  COALESCE(to_char(MAX(s.hits) FILTER (WHERE s.shift_num = 1), 'FM999,999,999'), '0') AS \"Hits1\",\n  COALESCE(to_char((MAX(s.online_sec) FILTER (WHERE s.shift_num = 1) || ' seconds')::interval, 'HH24:MI:SS'), '00:00:00') AS \"Online1\",\n  COALESCE(to_char((MAX(s.stop_sec) FILTER (WHERE s.shift_num = 1) || ' seconds')::interval, 'HH24:MI:SS'), '00:00:00') AS \"Stop1\",\n  COALESCE(ROUND((MAX(s.online_sec - s.stop_sec) FILTER (WHERE s.shift_num = 1)::numeric / NULLIF(MAX(s.online_sec) FILTER (WHERE s.shift_num = 1), 0) * 100.0), 1)::text || '%', '0.0%') AS \"Rate1\",\n  -- Shift 2 (20:00)\n  '20:00' AS \"Time2\",\n  COALESCE(to_char(MAX(s.hits) FILTER (WHERE s.shift_num = 2), 'FM999,999,999'), '****') AS \"Hits2\",\n  COALESCE(to_char((MAX(s.online_sec) FILTER (WHERE s.shift_num = 2) || ' seconds')::interval, 'HH24:MI:SS'), '****') AS \"Online2\",\n  COALESCE(to_char((MAX(s.stop_sec) FILTER (WHERE s.shift_num = 2) || ' seconds')::interval, 'HH24:MI:SS'), '****') AS \"Stop2\",\n  COALESCE(ROUND((MAX(s.online_sec - s.stop_sec) FILTER (WHERE s.shift_num = 2)::numeric / NULLIF(MAX(s.online_sec) FILTER (WHERE s.shift_num = 2), 0) * 100.0), 1)::text || '%', '****') AS \"Rate2\"\nFROM dates d\nLEFT JOIN shift_agg s \n  ON s.eqp_id = d.eqp_id \n AND s.prod_date = d.prod_date\nGROUP BY d.eqp_id, d.prod_date\nORDER BY d.prod_date DESC;"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "postgres-1",
+                        "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "table",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "cellHeight": "sm",
+                "enablePagination": false,
+                "showHeader": true,
+                "sortBy": [
+                  {
+                    "desc": true,
+                    "displayName": "Date"
+                  }
+                ]
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "#64748B"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "custom": {
+                    "align": "center",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "filterable": false,
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Date"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Date"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 124
+                      },
+                      {
+                        "id": "custom.align",
+                        "value": "center"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Day"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Day"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 106
+                      },
+                      {
+                        "id": "custom.align",
+                        "value": "center"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Machine"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Machine"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 149
+                      },
+                      {
+                        "id": "custom.align",
+                        "value": "center"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Time1"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Time (D)"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 66
+                      },
+                      {
+                        "id": "custom.align",
+                        "value": "center"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Hits1"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Hits (D)"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 76
+                      },
+                      {
+                        "id": "custom.align",
+                        "value": "right"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Online1"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Online (D)"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 72
+                      },
+                      {
+                        "id": "custom.align",
+                        "value": "center"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Stop1"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Stop (D)"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 72
+                      },
+                      {
+                        "id": "custom.align",
+                        "value": "center"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Rate1"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Rate (D)"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 66
+                      },
+                      {
+                        "id": "custom.align",
+                        "value": "center"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Time2"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Time (N)"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 66
+                      },
+                      {
+                        "id": "custom.align",
+                        "value": "center"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Hits2"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Hits (N)"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 76
+                      },
+                      {
+                        "id": "custom.align",
+                        "value": "right"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Online2"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Online (N)"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 72
+                      },
+                      {
+                        "id": "custom.align",
+                        "value": "center"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Stop2"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Stop (N)"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 72
+                      },
+                      {
+                        "id": "custom.align",
+                        "value": "center"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Rate2"
+                    },
+                    "properties": [
+                      {
+                        "id": "displayName",
+                        "value": "Rate (N)"
+                      },
+                      {
+                        "id": "custom.width",
+                        "value": 66
+                      },
+                      {
+                        "id": "custom.align",
+                        "value": "center"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Time (D)"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 109
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Hits (D)"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 138
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Online (D)"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 127
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Stop (D)"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 119
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Rate (D)"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 113
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Time (N)"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 118
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Hits (N)"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 105
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Online (N)"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 118
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "scope": "series",
+                      "options": "Stop (N)"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.width",
+                        "value": 124
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "panel-9000": {
+        "kind": "Panel",
+        "spec": {
+          "id": 9000,
+          "title": "",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "text",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "code": {
+                  "language": "plaintext",
+                  "showLineNumbers": false,
+                  "showMiniMap": false
+                },
+                "content": "# IMS DRILLING · 3 Shift Production History\n\n[1 · Fleet Overview (Command Center)](/d/adz7dcc/ims-drilling?orgId=1&${__url_time_range}) &nbsp;|&nbsp;\n[2 · Machine Investigation](/d/ims-drilling-machine-detail/ed64786?orgId=1&${__url_time_range}&var-focus_machine=${focus_machine}) &nbsp;|&nbsp;\n**3 · Shift Production History (Active)** &nbsp;|&nbsp;\n[4 · Reliability & System Health](/d/ims-drilling-anomaly-analysis/963b915?orgId=1&${__url_time_range}&var-focus_machine=${focus_machine})\n",
+                "mode": "markdown"
+              },
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      }
+    },
+    "layout": {
+      "kind": "GridLayout",
+      "spec": {
+        "items": [
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 0,
+              "width": 24,
+              "height": 2,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-9000"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 2,
+              "width": 24,
+              "height": 14,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-101"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 16,
+              "width": 24,
+              "height": 11,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-103"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": [
+      {
+        "title": "1 · Fleet Overview (Command Center)",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "Real-time fleet operations and machine KPI overview across all 93 machines",
+        "url": "/d/adz7dcc/ims-drilling",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "2 · Machine Investigation",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "Deep single-machine diagnostics, live telemetry state, spindle tool inspections, and errors",
+        "url": "/d/ims-drilling-machine-detail/ed64786",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "3 · Shift Production",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "7-day Day & Night shift performance, CNC Retro View, and tabular production report",
+        "url": "/d/ims-drilling-history/ims-drilling-e28094-3-shift-production-history",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "4 · Reliability & Health",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "Rule-based anomaly detection, top recurring errors, and telemetry ingestion pipeline health",
+        "url": "/d/ims-drilling-anomaly-analysis/963b915",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      }
+    ],
+    "liveNow": false,
+    "preload": false,
+    "tags": [
+      "ims",
+      "drilling",
+      "production",
+      "shifts"
+    ],
+    "timeSettings": {
+      "timezone": "browser",
+      "from": "now-30d",
+      "to": "now",
+      "autoRefresh": "30s",
+      "autoRefreshIntervals": [
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "hideTimepicker": false,
+      "fiscalYearStartMonth": 0
+    },
+    "title": "IMS Drilling — 3 Shift Production History",
+    "variables": [
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "machine_id",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "label": "Machine",
+          "hide": "hideVariable",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "postgres",
+            "version": "v0",
+            "spec": {
+              "__legacyStringValue": "SELECT 'All' AS __text, 'All' AS __value UNION ALL SELECT DISTINCT equipment_id AS __text, equipment_id AS __value FROM public.machine_event WHERE equipment_id IS NOT NULL ORDER BY 1"
+            },
+            "labels": {
+              "grafana.app/export-label": "postgres-1",
+              "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "alphabeticalAsc",
+          "definition": "SELECT 'All' AS __text, 'All' AS __value UNION ALL SELECT DISTINCT equipment_id AS __text, equipment_id AS __value FROM public.machine_event WHERE equipment_id IS NOT NULL ORDER BY 1",
+          "options": [],
+          "multi": true,
+          "includeAll": false,
+          "allowCustomValue": true
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "focus_machine",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "label": "Focus machine",
+          "hide": "dontHide",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "postgres",
+            "version": "v0",
+            "spec": {
+              "__legacyStringValue": "SELECT DISTINCT equipment_id AS __text, equipment_id AS __value FROM public.machine_event WHERE equipment_id IS NOT NULL ORDER BY 1"
+            },
+            "labels": {
+              "grafana.app/export-label": "postgres-1",
+              "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "alphabeticalAsc",
+          "definition": "SELECT DISTINCT equipment_id AS __text, equipment_id AS __value FROM public.machine_event WHERE equipment_id IS NOT NULL ORDER BY 1",
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "allowCustomValue": true
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "status_filter",
+          "query": "All,RUN,STOP",
+          "current": {
+            "text": "All",
+            "value": "All"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Status",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "event_filter",
+          "query": "All,status,event,alarm",
+          "current": {
+            "text": "All",
+            "value": "All"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Evidence type",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "TextVariable",
+        "spec": {
+          "name": "program_search",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "query": "",
+          "label": "Program contains",
+          "hide": "hideVariable",
+          "skipUrlSync": false
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "stale_hours",
+          "query": "24,72,168,720",
+          "current": {
+            "text": "168",
+            "value": "168"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Stale after (hours)",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "stop_minutes",
+          "query": "15,30,60,240",
+          "current": {
+            "text": "30",
+            "value": "30"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Long STOP (minutes)",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "alarm_burst",
+          "query": "3,5,10,20",
+          "current": {
+            "text": "5",
+            "value": "5"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Error burst / 5m",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "raw_limit",
+          "query": "100,250,500",
+          "current": {
+            "text": "250",
+            "value": "250"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Evidence rows",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      }
+    ]
+  }
+}

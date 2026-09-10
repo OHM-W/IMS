@@ -54,1188 +54,1287 @@
       "name": "140",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL140-M",
       "svgX": 510,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T00-141",
       "name": "141",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL141-M",
       "svgX": 510,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T00-142",
       "name": "142",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL142-M",
       "svgX": 510,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T00-143",
       "name": "143",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL143-M",
       "svgX": 510,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T00-144",
       "name": "144",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL144-M",
       "svgX": 510,
       "svgY": 796,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T01-139",
       "name": "139",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL139-M",
       "svgX": 552,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T01-138",
       "name": "138",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL138-M",
       "svgX": 552,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T01-137",
       "name": "137",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL137-M",
       "svgX": 552,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T01-136",
       "name": "136",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL136-M",
       "svgX": 552,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T01-135",
       "name": "135",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL135-M",
       "svgX": 552,
       "svgY": 796,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T02-130",
       "name": "130",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL130-M",
       "svgX": 584,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T02-131",
       "name": "131",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL131-M",
       "svgX": 584,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T02-132",
       "name": "132",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL132-M",
       "svgX": 584,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T02-133",
       "name": "133",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL133-M",
       "svgX": 584,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T02-134",
       "name": "134",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL134-M",
       "svgX": 584,
       "svgY": 796,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T03-129",
       "name": "129",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL129-M",
       "svgX": 624,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T03-128",
       "name": "128",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL128-M",
       "svgX": 624,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T03-127",
       "name": "127",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL127-M",
       "svgX": 624,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T03-126",
       "name": "126",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL126-M",
       "svgX": 624,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T03-125",
       "name": "125",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL125-M",
       "svgX": 624,
       "svgY": 796,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T04-120",
       "name": "120",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL120-M",
       "svgX": 658,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T04-121",
       "name": "121",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL121-M",
       "svgX": 658,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T04-122",
       "name": "122",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL122-M",
       "svgX": 658,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T04-123",
       "name": "123",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL123-M",
       "svgX": 658,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T04-124",
       "name": "124",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL124-M",
       "svgX": 658,
       "svgY": 796,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T05-119",
       "name": "119",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL119-M",
       "svgX": 696,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T05-118",
       "name": "118",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL118-M",
       "svgX": 696,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T05-117",
       "name": "117",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL117-M",
       "svgX": 696,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T05-116",
       "name": "116",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL116-M",
       "svgX": 696,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T05-115",
       "name": "115",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL115-M",
       "svgX": 696,
       "svgY": 796,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T06-110",
       "name": "110",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL110-M",
       "svgX": 730,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T06-111",
       "name": "111",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL111-M",
       "svgX": 730,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T06-112",
       "name": "112",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL112-M",
       "svgX": 730,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T06-113",
       "name": "113",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL113-M",
       "svgX": 730,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T06-114",
       "name": "114",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL114-M",
       "svgX": 730,
       "svgY": 796,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T07-109",
       "name": "109",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL109-M",
       "svgX": 768,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T07-108",
       "name": "108",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL108-M",
       "svgX": 768,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T07-107",
       "name": "107",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL107-M",
       "svgX": 768,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T07-106",
       "name": "106",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL106-M",
       "svgX": 768,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T07-105",
       "name": "105",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL105-M",
       "svgX": 768,
       "svgY": 796,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T08-099",
       "name": "099",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL099-M",
       "svgX": 802,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T08-100",
       "name": "100",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL100-M",
       "svgX": 802,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T08-096",
       "name": "096",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL096-M",
       "svgX": 840,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T08-095",
       "name": "095",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL095-M",
       "svgX": 840,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T09-098",
       "name": "098",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL098-M",
       "svgX": 840,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T09-097",
       "name": "097",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL097-M",
       "svgX": 840,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T10-083",
       "name": "083",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL083-M",
       "svgX": 874,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T10-084",
       "name": "084",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL084-M",
       "svgX": 874,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T10-085",
       "name": "085",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL085-M",
       "svgX": 874,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T10-086",
       "name": "086",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL086-M",
       "svgX": 874,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T11-082",
       "name": "082",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL082-M",
       "svgX": 914,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T11-081",
       "name": "081",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL081-M",
       "svgX": 914,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T11-080",
       "name": "080",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL080-M",
       "svgX": 914,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T11-079",
       "name": "079",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL079-M",
       "svgX": 914,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T12-066",
       "name": "066",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL066-M",
       "svgX": 948,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T12-067",
       "name": "067",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL067-M",
       "svgX": 948,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T12-068",
       "name": "068",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL068-M",
       "svgX": 948,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T12-069",
       "name": "069",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL69-M",
       "svgX": 948,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T12-070",
       "name": "070",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL070-M",
       "svgX": 948,
       "svgY": 796,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T13-065",
       "name": "065",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL065-M",
       "svgX": 986,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T13-064",
       "name": "064",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL64-M",
       "svgX": 986,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T13-063",
       "name": "063",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL063-M",
       "svgX": 986,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T13-062",
       "name": "062",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL062-M",
       "svgX": 986,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T13-061",
       "name": "061",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL061-M",
       "svgX": 986,
       "svgY": 796,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T14-048",
       "name": "048",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL048-M",
       "svgX": 1020,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T14-049",
       "name": "049",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL049-M",
       "svgX": 1020,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T14-050",
       "name": "050",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL050-M",
       "svgX": 1020,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T14-051",
       "name": "051",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL051-M",
       "svgX": 1020,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T14-052",
       "name": "052",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL052-M",
       "svgX": 1020,
       "svgY": 796,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T15-047",
       "name": "047",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL047-M",
       "svgX": 1060,
       "svgY": 644,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T15-046",
       "name": "046",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL046-M",
       "svgX": 1060,
       "svgY": 682,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T15-045",
       "name": "045",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL045-M",
       "svgX": 1060,
       "svgY": 720,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T15-044",
       "name": "044",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL044-M",
       "svgX": 1060,
       "svgY": 758,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-T15-043",
       "name": "043",
       "process": "DRILLING_MAIN",
       "processGroup": "TOP",
+      "telemetryId": "DRL043-M",
       "svgX": 1060,
       "svgY": 796,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B00-101",
       "name": "101",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL101-M",
       "svgX": 802,
       "svgY": 854,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B00-102",
       "name": "102",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL102-M",
       "svgX": 802,
       "svgY": 892,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B00-103",
       "name": "103",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL103-M",
       "svgX": 802,
       "svgY": 930,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B00-104",
       "name": "104",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL104-M",
       "svgX": 802,
       "svgY": 968,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B01-094",
       "name": "094",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL094-M",
       "svgX": 840,
       "svgY": 854,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B01-093",
       "name": "093",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL093-M",
       "svgX": 840,
       "svgY": 892,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B01-092",
       "name": "092",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL092-M",
       "svgX": 840,
       "svgY": 930,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B01-091",
       "name": "091",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL091-M",
       "svgX": 840,
       "svgY": 968,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B02-087",
       "name": "087",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL087-M",
       "svgX": 874,
       "svgY": 854,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B02-088",
       "name": "088",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL088-M",
       "svgX": 874,
       "svgY": 892,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B02-089",
       "name": "089",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL089-M",
       "svgX": 874,
       "svgY": 930,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B02-090",
       "name": "090",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL090-M",
       "svgX": 874,
       "svgY": 968,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B03-078",
       "name": "078",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL078-M",
       "svgX": 914,
       "svgY": 854,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B03-077",
       "name": "077",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL077-M",
       "svgX": 914,
       "svgY": 892,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B03-076",
       "name": "076",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL076-M",
       "svgX": 914,
       "svgY": 930,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B03-075",
       "name": "075",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL075-M",
       "svgX": 914,
       "svgY": 968,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B04-071",
       "name": "071",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL071-M",
       "svgX": 948,
       "svgY": 854,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B04-072",
       "name": "072",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL072-M",
       "svgX": 948,
       "svgY": 892,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B04-073",
       "name": "073",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL073-M",
       "svgX": 948,
       "svgY": 930,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B04-074",
       "name": "074",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL074-M",
       "svgX": 948,
       "svgY": 968,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B05-060",
       "name": "060",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL060-M",
       "svgX": 986,
       "svgY": 854,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B05-059",
       "name": "059",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL059-M",
       "svgX": 986,
       "svgY": 892,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B05-058",
       "name": "058",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL058-M",
       "svgX": 986,
       "svgY": 930,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B05-057",
       "name": "057",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL057-M",
       "svgX": 986,
       "svgY": 968,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B06-053",
       "name": "053",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL053-M",
       "svgX": 1020,
       "svgY": 854,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B06-054",
@@ -1255,528 +1354,572 @@
       "name": "055",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL055-M",
       "svgX": 1020,
       "svgY": 930,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B06-056",
       "name": "056",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL056-M",
       "svgX": 1020,
       "svgY": 968,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-B07-042",
       "name": "042",
       "process": "DRILLING_MAIN",
       "processGroup": "BOTTOM",
+      "telemetryId": "DRL042-M",
       "svgX": 1060,
       "svgY": 854,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M00-039",
       "name": "039",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL039-M",
       "svgX": 1122,
       "svgY": 780,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M00-040",
       "name": "040",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL040-M",
       "svgX": 1122,
       "svgY": 818,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M00-041",
       "name": "041",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL041-M",
       "svgX": 1122,
       "svgY": 856,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M01-038",
       "name": "038",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL038-M",
       "svgX": 1164,
       "svgY": 780,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M01-037",
       "name": "037",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL037-M",
       "svgX": 1164,
       "svgY": 818,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M01-036",
       "name": "036",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL036-M",
       "svgX": 1164,
       "svgY": 856,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M01-035",
       "name": "035",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL035-M",
       "svgX": 1164,
       "svgY": 894,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M01-034",
       "name": "034",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL034-M",
       "svgX": 1164,
       "svgY": 932,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M01-033",
       "name": "033",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL033-M",
       "svgX": 1164,
       "svgY": 970,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M01-031",
       "name": "031",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL031-M",
       "svgX": 1206,
       "svgY": 1008,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M01-032",
       "name": "032",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL032-M",
       "svgX": 1206,
       "svgY": 1046,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M02-025",
       "name": "025",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL025-M",
       "svgX": 1206,
       "svgY": 780,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M02-026",
       "name": "026",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL026-M",
       "svgX": 1206,
       "svgY": 818,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M02-027",
       "name": "027",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL027-M",
       "svgX": 1206,
       "svgY": 856,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M02-028",
       "name": "028",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL028-M",
       "svgX": 1206,
       "svgY": 894,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M02-029",
       "name": "029",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL029-M",
       "svgX": 1206,
       "svgY": 932,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M02-030",
       "name": "030",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL030-M",
       "svgX": 1206,
       "svgY": 970,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M03-024",
       "name": "024",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL024-M",
       "svgX": 1240,
       "svgY": 780,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M03-023",
       "name": "023",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL023-M",
       "svgX": 1240,
       "svgY": 818,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M03-022",
       "name": "022",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL022-M",
       "svgX": 1240,
       "svgY": 856,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M03-021",
       "name": "021",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL021-M",
       "svgX": 1240,
       "svgY": 894,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M03-020",
       "name": "020",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL020-M",
       "svgX": 1240,
       "svgY": 932,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M03-019",
       "name": "019",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL019-M",
       "svgX": 1240,
       "svgY": 970,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M03-018",
       "name": "018",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL018-M",
       "svgX": 1240,
       "svgY": 1008,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M03-017",
       "name": "017",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL017-M",
       "svgX": 1240,
       "svgY": 1046,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M04-009",
       "name": "009",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL009-M",
       "svgX": 1280,
       "svgY": 780,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M04-010",
       "name": "010",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL010-M",
       "svgX": 1280,
       "svgY": 818,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M04-011",
       "name": "011",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL011-M",
       "svgX": 1280,
       "svgY": 856,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M04-012",
       "name": "012",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL012-M",
       "svgX": 1280,
       "svgY": 894,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M04-013",
       "name": "013",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL013-M",
       "svgX": 1280,
       "svgY": 932,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M04-014",
       "name": "014",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL014-M",
       "svgX": 1280,
       "svgY": 970,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M04-015",
       "name": "015",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL015-M",
       "svgX": 1280,
       "svgY": 1008,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M04-016",
       "name": "016",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL016-M",
       "svgX": 1280,
       "svgY": 1046,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M05-008",
       "name": "008",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL008-M",
       "svgX": 1316,
       "svgY": 780,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M05-007",
       "name": "007",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL007-M",
       "svgX": 1316,
       "svgY": 818,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M05-006",
       "name": "006",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL006-M",
       "svgX": 1316,
       "svgY": 856,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M05-005",
       "name": "005",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL005-M",
       "svgX": 1316,
       "svgY": 894,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M05-004",
       "name": "004",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL004-M",
       "svgX": 1316,
       "svgY": 932,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M05-003",
       "name": "003",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL003-M",
       "svgX": 1316,
       "svgY": 970,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-M05-002",
       "name": "002",
       "process": "DRILLING_MAIN",
       "processGroup": "MIDDLE",
+      "telemetryId": "DRL002-M",
       "svgX": 1316,
       "svgY": 1008,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "DRL-S00-001",
       "name": "001",
       "process": "DRILLING_MAIN",
       "processGroup": "STANDALONE",
+      "telemetryId": "DRL001-M",
       "svgX": 1316,
       "svgY": 1046,
       "cardWidth": 30,
       "cardHeight": 38,
       "isCompact": true,
-      "hasLiveFeed": false
+      "hasLiveFeed": true
     },
     {
       "id": "ALU-1-H3",
@@ -2337,7 +2480,7 @@
     {
       "id": "CUSTOM-1788323680380",
       "name": "004",
-      "process": "DRILLING_MAIN",
+      "process": "LASER_DRILLING",
       "processGroup": "CUSTOM",
       "svgX": 1516,
       "svgY": 1446,
@@ -2349,35 +2492,35 @@
     {
       "id": "CUSTOM-1788324125127",
       "name": "PES",
-      "process": "DRILLING_MAIN",
+      "process": "AUTO_LAY_UP",
       "processGroup": "CUSTOM",
       "svgX": 1716,
       "svgY": 718,
-      "cardWidth": 30,
-      "cardHeight": 38,
+      "cardWidth": 149,
+      "cardHeight": 26,
       "isCompact": true,
       "hasLiveFeed": false
     },
     {
       "id": "CUSTOM-1788324149442",
       "name": "LTK",
-      "process": "DRILLING_MAIN",
+      "process": "AUTO_LAY_UP",
       "processGroup": "CUSTOM",
       "svgX": 1814,
-      "svgY": 748,
-      "cardWidth": 30,
-      "cardHeight": 38,
+      "svgY": 744,
+      "cardWidth": 53,
+      "cardHeight": 54,
       "isCompact": true,
       "hasLiveFeed": false
     },
     {
       "id": "CUSTOM-1788324181737",
       "name": "DLM",
-      "process": "DRILLING_MAIN",
+      "process": "AUTO_LAY_UP",
       "processGroup": "CUSTOM",
-      "svgX": 1596,
-      "svgY": 748,
-      "cardWidth": 30,
+      "svgX": 1672,
+      "svgY": 744,
+      "cardWidth": 142,
       "cardHeight": 38,
       "isCompact": true,
       "hasLiveFeed": false

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Database, Save, AlertTriangle, Check } from 'lucide-react';
 import { LdiMachine } from '../../types/ldi';
 import { MachineDef } from '../../types/fleet';
@@ -25,6 +25,14 @@ export const DatabaseMappingPanel = ({
     machineDef?.telemetryId || ''
   );
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+
+  // Reset form inputs when target machine selection changes
+  useEffect(() => {
+    setEditName(machineDef?.name || '');
+    setEditTelemetryId(machineDef?.telemetryId || '');
+    setIsEditingMapping(false);
+    setSaveStatus('idle');
+  }, [machineDef?.id, machineDef?.name, machineDef?.telemetryId]);
 
   if (!onSaveMapping) return null;
 

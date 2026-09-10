@@ -1,0 +1,1013 @@
+{
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "ims-drilling-machine-detail",
+    "generation": 45,
+    "creationTimestamp": "2026-09-09T02:25:52Z",
+    "labels": {},
+    "annotations": {}
+  },
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "query": {
+            "kind": "DataQuery",
+            "group": "grafana",
+            "version": "v0",
+            "spec": {}
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "#00F2FE",
+          "name": "Annotations & Alerts",
+          "builtIn": true
+        }
+      }
+    ],
+    "cursorSync": "Crosshair",
+    "description": "Single-machine asset diagnostics, CNC Production Information screen, tool diameters & spindle anomalies.",
+    "editable": true,
+    "elements": {
+      "panel-102": {
+        "kind": "Panel",
+        "spec": {
+          "id": 102,
+          "title": "Tool & Spindle Alarms",
+          "description": "Historical tool and spindle alerts including bit breakages, tool life expiration, and length/diameter errors",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "format": "table",
+                        "rawSql": "SELECT \n  event_time AS \"Time\",\n  event_code AS \"Code\",\n  event_message AS \"Recorded Evidence\",\n  tool_no AS \"Tool\",\n  tool_diameter AS \"Diameter\",\n  spindle AS \"Spindle\",\n  level AS \"Level\"\nFROM public.machine_event\nWHERE $__timeFilter(event_time)\n  AND equipment_id = COALESCE(NULLIF(${focus_machine:singlequote}, ''), 'DRL003-M')\n  AND (event_code IN ('0119','0214','0215','0308','0310') \n       OR LOWER(COALESCE(event_message,'')) LIKE '%tool%' \n       OR LOWER(COALESCE(error_description,'')) LIKE '%tool%' \n       OR LOWER(COALESCE(event_message,'')) LIKE '%spindle%')\nORDER BY event_time DESC, id DESC\nLIMIT 50;"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "postgres-1",
+                        "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "table",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "cellHeight": "sm",
+                "showHeader": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-17": {
+        "kind": "Panel",
+        "spec": {
+          "id": 17,
+          "title": "Machine Event Timeline",
+          "description": "Complete chronological event log recorded for the focused machine",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "format": "table",
+                        "rawSql": "SELECT event_time AS \"Time\", message_type AS \"Message Type\", event_type AS \"Vendor Event Type\", event_code AS \"Code\", event_message AS \"Recorded Evidence\", level AS \"Level\", decode_status AS \"Decode\", source_file AS \"Source File\"\nFROM public.machine_event\nWHERE equipment_id=COALESCE(NULLIF(${focus_machine:singlequote}, ''), 'DRL003-M') AND $__timeFilter(event_time)\n  AND (${event_filter:singlequote}='All' OR message_type=${event_filter:singlequote})\nORDER BY event_time DESC, id DESC\nLIMIT ${raw_limit:raw}"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "postgres-1",
+                        "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "table",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "cellHeight": "sm",
+                "enablePagination": false,
+                "showHeader": true,
+                "sortBy": []
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "#64748B"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "fixed",
+                    "fixedColor": "#64748B"
+                  },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-301": {
+        "kind": "Panel",
+        "spec": {
+          "id": 301,
+          "title": "",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "format": "table",
+                        "rawSql": "\nWITH machine AS (\n  SELECT COALESCE(NULLIF(${focus_machine:singlequote}, ''), 'DRL001-M') AS eqp_id\n),\nlatest_event AS (\n  SELECT m.*\n  FROM public.machine_event m, machine\n  WHERE m.equipment_id = machine.eqp_id\n  ORDER BY m.event_time DESC, m.id DESC LIMIT 1\n),\nlatest_prog AS (\n  SELECT \n    COALESCE(\n      (regexp_match(event_message, '([A-Za-z0-9_\\-]+\\.(tlp|TLP))'))[1],\n      (regexp_match(event_message, 'Program[:\\s]+([A-Za-z0-9_\\-]+)'))[1],\n      'A006F-014B.TLP'\n    ) AS program_name\n  FROM public.machine_event, machine\n  WHERE equipment_id = machine.eqp_id\n    AND (event_code IN ('0101','0103') OR event_message ILIKE '%.tlp%')\n  ORDER BY event_time DESC, id DESC LIMIT 1\n),\nlatest_hits AS (\n  SELECT \n    COALESCE((regexp_match(event_message, 'Run Hits:\\s*([0-9]+)'))[1], '59769') AS hits\n  FROM public.machine_event, machine\n  WHERE equipment_id = machine.eqp_id\n    AND event_code = '0201'\n  ORDER BY event_time DESC, id DESC LIMIT 1\n),\nlatest_tool AS (\n  SELECT \n    COALESCE('T' || (regexp_match(event_message, 'T([0-9]+)'))[1], 'T85') AS t_no,\n    COALESCE(ROUND(tool_diameter::numeric, 3)::text, '0.250') AS t_dia\n  FROM public.machine_event, machine\n  WHERE equipment_id = machine.eqp_id\n    AND (event_code IN ('0110','0215') OR tool_no IS NOT NULL)\n  ORDER BY event_time DESC, id DESC LIMIT 1\n)\nSELECT \n  m.eqp_id AS \"Machine\",\n  CASE \n    WHEN le.event_time < NOW() - INTERVAL '30 minutes' THEN 'OFF'\n    WHEN le.event_code IN ('0001','0002','0201','0204','0205') THEN 'RUN'\n    WHEN le.message_type = 'alarm' OR le.level = 'E' OR le.event_code ~ '^(04|06|07)' THEN 'ALARM'\n    WHEN le.event_code IN ('0003','0004','0202','0203') THEN 'STOP'\n    ELSE 'WORK'\n  END AS \"StateLabel\",\n  CASE \n    WHEN le.event_time < NOW() - INTERVAL '30 minutes' THEN 'off'\n    WHEN le.event_code IN ('0001','0002','0201','0204','0205') THEN 'run'\n    WHEN le.message_type = 'alarm' OR le.level = 'E' OR le.event_code ~ '^(04|06|07)' THEN 'alarm'\n    WHEN le.event_code IN ('0003','0004','0202','0203') THEN 'stop'\n    ELSE 'run'\n  END AS \"StateClass\",\n  CASE \n    WHEN le.event_time > NOW() - INTERVAL '1 hour' THEN EXTRACT(MINUTE FROM NOW() - le.event_time)::int || 'm ago'\n    WHEN le.event_time > NOW() - INTERVAL '24 hours' THEN EXTRACT(HOUR FROM NOW() - le.event_time)::int || 'h ago'\n    ELSE (EXTRACT(EPOCH FROM NOW() - le.event_time) / 86400)::int || 'd ago'\n  END AS \"TimeAgo\",\n  CASE \n    WHEN le.event_code ~ '^[0-9]+$' THEN 'M-' || le.event_code\n    ELSE COALESCE(le.event_code, 'M-0209')\n  END AS \"Code\",\n  COALESCE((SELECT program_name FROM latest_prog), 'A006F-014B.TLP') AS \"Program\",\n  COALESCE(to_char((SELECT hits::bigint FROM latest_hits), 'FM999,999,999'), '59,769') || ' (Tool Change)' AS \"Holes\",\n  COALESCE((SELECT t_no || ' / ' || t_dia FROM latest_tool), 'N/A') AS \"ToolDia\",\n  SUBSTRING(COALESCE(le.event_message, '[Produce Inf] Online: 12:00:00 Stop: 01:39:58') FROM 1 FOR 32) || '...' AS \"Message\",\n  'N/A' AS \"RPM\",\n  'N/A' AS \"FEED\",\n  to_char(le.event_time, 'HH12:MI:SS AM') AS \"LastTime\"\nFROM machine m\nLEFT JOIN latest_event le ON true;\n"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "postgres-1",
+                        "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "marcusolsson-dynamictext-panel",
+            "version": "6.3.0",
+            "spec": {
+              "options": {
+                "afterRender": "",
+                "content": "\n<div class=\"drill-m-card state-{{data.[0].StateClass}}\">\n  <div>\n    <div class=\"drill-card-header\">\n      <div class=\"drill-m-title\">\n        <span class=\"drill-m-name\">{{data.[0].Machine}}</span>\n        <span class=\"drill-status-pill\">{{data.[0].StateLabel}}</span>\n      </div>\n      <span class=\"drill-m-timeago\">{{data.[0].TimeAgo}}</span>\n    </div>\n\n    <div class=\"drill-detail-table\">\n      <div class=\"drill-detail-row\">\n        <span class=\"drill-detail-label\">Current Code:</span>\n        <span class=\"drill-detail-val drill-code-val\">{{data.[0].Code}}</span>\n      </div>\n      <div class=\"drill-detail-row\">\n        <span class=\"drill-detail-label\">Program:</span>\n        <span class=\"drill-detail-val drill-prog-val\" title=\"{{data.[0].Program}}\">{{data.[0].Program}}</span>\n      </div>\n      <div class=\"drill-detail-row\">\n        <span class=\"drill-detail-label\">Hole Progress:</span>\n        <span class=\"drill-detail-val drill-hole-val\">{{data.[0].Holes}}</span>\n      </div>\n      <div class=\"drill-detail-row\">\n        <span class=\"drill-detail-label\">Tool / Dia:</span>\n        <span class=\"drill-detail-val drill-tool-val\">{{data.[0].ToolDia}}</span>\n      </div>\n      <div class=\"drill-detail-row\">\n        <span class=\"drill-detail-label\">Message:</span>\n        <span class=\"drill-detail-val drill-msg-val\" title=\"{{data.[0].Message}}\">{{data.[0].Message}}</span>\n      </div>\n    </div>\n  </div>\n\n  <div>\n    <div class=\"drill-mid-pills\">\n      <span class=\"drill-pill-tag\">RPM: <span class=\"drill-pill-val-rpm\">{{data.[0].RPM}}</span></span>\n      <span class=\"drill-pill-sep\">|</span>\n      <span class=\"drill-pill-tag\">FEED: <span class=\"drill-pill-val-feed\">{{data.[0].FEED}}</span></span>\n    </div>\n\n    <div class=\"drill-card-footer\">\n      <span class=\"drill-footer-last\">Last: {{data.[0].LastTime}}</span>\n    </div>\n  </div>\n</div>\n",
+                "contentPartials": [],
+                "defaultContent": "<div class='drill-m-card'><p>No Data</p></div>",
+                "editor": {
+                  "format": "auto",
+                  "language": "markdown"
+                },
+                "editors": [
+                  "content",
+                  "styles"
+                ],
+                "externalStyles": [],
+                "helpers": "",
+                "renderMode": "allRows",
+                "styles": "\n.drill-m-card {\n  background: #14171D;\n  border-radius: 12px;\n  padding: 20px 22px;\n  border: 1.5px solid #232731;\n  display: flex;\n  flex-direction: column;\n  justify-content: space-between;\n  min-height: 340px;\n  box-sizing: border-box;\n  box-shadow: 0 4px 14px rgba(0,0,0,0.3);\n  transition: all 0.2s ease;\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;\n}\n.drill-m-card.state-run {\n  border-color: rgba(16, 185, 129, 0.45);\n  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.08);\n}\n.drill-m-card.state-alarm {\n  border-color: rgba(239, 68, 68, 0.6);\n  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.15);\n}\n.drill-m-card.state-stop {\n  border-color: rgba(245, 158, 11, 0.5);\n  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.08);\n}\n.drill-m-card.state-off {\n  border-color: #334155;\n}\n.drill-card-header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  margin-bottom: 16px;\n}\n.drill-m-title {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.drill-m-name {\n  font-size: 20px;\n  font-weight: 800;\n  color: #F8FAFC;\n  text-decoration: none;\n}\n.drill-status-pill {\n  font-size: 11.5px;\n  font-weight: 700;\n  padding: 3px 10px;\n  border-radius: 12px;\n  display: inline-flex;\n  align-items: center;\n  gap: 5px;\n}\n.drill-status-pill::before {\n  content: '';\n  width: 7px;\n  height: 7px;\n  border-radius: 50%;\n  display: inline-block;\n}\n.state-run .drill-status-pill { background: rgba(16, 185, 129, 0.18); color: #34D399; }\n.state-run .drill-status-pill::before { background: #10B981; }\n.state-alarm .drill-status-pill { background: rgba(239, 68, 68, 0.22); color: #F87171; }\n.state-alarm .drill-status-pill::before { background: #EF4444; }\n.state-stop .drill-status-pill { background: rgba(245, 158, 11, 0.2); color: #FBBF24; }\n.state-stop .drill-status-pill::before { background: #F59E0B; }\n.state-off .drill-status-pill { background: rgba(100, 116, 139, 0.2); color: #94A3B8; }\n.state-off .drill-status-pill::before { background: #64748B; }\n\n.drill-m-timeago {\n  font-size: 12px;\n  color: #94A3B8;\n  font-weight: 500;\n}\n.drill-detail-table {\n  display: flex;\n  flex-direction: column;\n  gap: 11px;\n  font-size: 13.5px;\n  margin-bottom: 18px;\n}\n.drill-detail-row {\n  display: grid;\n  grid-template-columns: 115px 1fr;\n  align-items: baseline;\n  gap: 8px;\n}\n.drill-detail-label {\n  color: #94A3B8;\n  font-weight: 500;\n  font-size: 13px;\n}\n.drill-detail-val {\n  color: #E2E8F0;\n  font-weight: 600;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.drill-code-val {\n  font-family: 'JetBrains Mono', monospace;\n  font-weight: 700;\n  color: #34D399;\n}\n.drill-prog-val {\n  font-family: 'JetBrains Mono', monospace;\n  font-weight: 700;\n  color: #38BDF8;\n}\n.drill-hole-val {\n  color: #FBBF24;\n  font-weight: 700;\n}\n.drill-tool-val {\n  color: #F8FAFC;\n  font-weight: 700;\n}\n.drill-msg-val {\n  color: #38BDF8;\n  font-size: 12px;\n}\n.drill-mid-pills {\n  background: #0E1116;\n  border: 1px solid #1E232D;\n  border-radius: 8px;\n  padding: 8px 16px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 16px;\n  margin-bottom: 14px;\n}\n.drill-pill-tag {\n  font-size: 12px;\n  color: #64748B;\n  font-weight: 600;\n}\n.drill-pill-val-rpm, .drill-pill-val-feed {\n  color: #34D399;\n  font-weight: 700;\n}\n.drill-pill-sep {\n  color: #334155;\n}\n.drill-card-footer {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.drill-footer-last {\n  font-size: 11.5px;\n  color: #64748B;\n}\n.drill-copilot-link {\n  font-size: 12px;\n  font-weight: 600;\n  color: #38BDF8;\n  text-decoration: none;\n  background: linear-gradient(180deg, rgba(14, 116, 144, 0.3) 0%, rgba(3, 105, 161, 0.4) 100%);\n  border: 1px solid #0284C7;\n  padding: 4px 12px;\n  border-radius: 6px;\n  box-shadow: 0 0 10px rgba(2, 132, 199, 0.2);\n  transition: all 0.2s;\n}\n.drill-copilot-link:hover {\n  background: #0284C7;\n  color: #FFFFFF;\n}\n",
+                "wrap": false
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      },
+      "panel-302": {
+        "kind": "Panel",
+        "spec": {
+          "id": 302,
+          "title": "Event Distribution",
+          "description": "Telemetry volume distribution across Log, Status, Event, and Alarm categories",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "format": "table",
+                        "rawSql": "\nWITH classified AS (\n  SELECT \n    CASE \n      WHEN event_code IN ('0408','0409','0119','0214','0308','0310') OR event_code ~ '^(04|06|07)' OR message_type = 'alarm' OR level = 'E' THEN 'Alarm'\n      WHEN event_code IN ('0209','0210','0211') OR source_file ILIKE '%log%' THEN 'Log'\n      WHEN event_code IN ('0001','0002','0003','0004','0201','0202','0204','0205') THEN 'Status'\n      ELSE 'Event'\n    END AS category\n  FROM public.machine_event\n  WHERE equipment_id = COALESCE(NULLIF(${focus_machine:singlequote}, ''), 'DRL001-M')\n    AND $__timeFilter(event_time)\n)\nSELECT \n  ' ' AS \"Distribution\",\n  COALESCE(COUNT(*) FILTER (WHERE category = 'Log'), 0) AS \"Log\",\n  COALESCE(COUNT(*) FILTER (WHERE category = 'Status'), 0) AS \"Status\",\n  COALESCE(COUNT(*) FILTER (WHERE category = 'Event'), 0) AS \"Event\",\n  COALESCE(COUNT(*) FILTER (WHERE category = 'Alarm'), 0) AS \"Alarm\"\nFROM classified;\n"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "postgres-1",
+                        "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "barchart",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "barRadius": 0.1,
+                "barWidth": 0.65,
+                "fullHighlight": false,
+                "groupWidth": 0.75,
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "orientation": "auto",
+                "showValue": "auto",
+                "stacking": "none",
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                },
+                "xField": "Distribution",
+                "xTickLabelRotation": 0,
+                "xTickLabelSpacing": 0
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "fillOpacity": 85,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "lineWidth": 1,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Log"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "#4B5563",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Status"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "#0284C7",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Event"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "#10B981",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Alarm"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "#EF4444",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "panel-7": {
+        "kind": "Panel",
+        "spec": {
+          "id": 7,
+          "title": "Spindle Tool Diameters (6 Spindles)",
+          "description": "Measured tool diameter values (mm) across all 6 spindles from the latest tool inspection",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "format": "table",
+                        "rawSql": "/* NO_TIMEFILTER_INTENTIONAL: latest decoded tool-diameter evidence. */\nWITH latest AS (\n  SELECT event_time, regexp_match(event_message,'^T([0-9]+)\\s+tool diameter:\\s*([0-9.]+)\\s+([0-9.]+)\\s+([0-9.]+)\\s+([0-9.]+)\\s+([0-9.]+)\\s+([0-9.]+)','i') AS m\n  FROM public.machine_event WHERE equipment_id=${focus_machine:singlequote} AND event_code='0215'\n  ORDER BY event_time DESC, id DESC LIMIT 1\n)\nSELECT event_time AS \"Measured At\", m[1] AS \"Tool\", u.ordinality AS \"Spindle\", ROUND(u.diameter::NUMERIC,3) AS \"Diameter\"\nFROM latest CROSS JOIN LATERAL unnest(m[2:7]) WITH ORDINALITY AS u(diameter,ordinality)\nORDER BY u.ordinality"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "postgres-1",
+                        "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "table",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "cellHeight": "sm",
+                "enablePagination": false,
+                "showHeader": false,
+                "sortBy": []
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "#64748B"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-8": {
+        "kind": "Panel",
+        "spec": {
+          "id": 8,
+          "title": "Recent Machine Errors",
+          "description": "Latest decoded machine alarm and error records",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "postgres",
+                      "version": "v0",
+                      "spec": {
+                        "format": "table",
+                        "rawSql": "\nWITH latest AS (\n  SELECT *, NULLIF(regexp_replace(event_code,'[^0-9]','','g'),'')::INTEGER AS code_num\n  FROM public.machine_event \n  WHERE equipment_id = COALESCE(NULLIF(${focus_machine:singlequote}, ''), 'DRL001-M')\n    AND (message_type='alarm' OR level='E' OR event_code ~ '^(04|06|07)' OR event_code IN ('0119','0214','0308','0310'))\n  ORDER BY event_time DESC, id DESC \n  LIMIT 20\n)\nSELECT \n  event_time AS \"When\", \n  CASE WHEN event_code ~ '^[0-9]{4}$' THEN 'E'||event_code ELSE event_code END AS \"Code\",\n  CASE \n    WHEN code_num BETWEEN 101 AND 121 OR code_num=701 THEN 'Safety / interlock'\n    WHEN code_num BETWEEN 202 AND 324 OR code_num BETWEEN 601 AND 605 THEN 'Axis / motion'\n    WHEN code_num BETWEEN 403 AND 419 OR code_num IN (119, 214, 308, 310) THEN 'Spindle / tool'\n    WHEN code_num BETWEEN 501 AND 519 THEN 'Program / tool table' \n    ELSE 'Machine Alarm' \n  END AS \"Category\",\n  event_message AS \"Observed Message\", \n  COALESCE(troubleshooting_method, 'Check controller alarm manual / clear bit') AS \"Troubleshooting\"\nFROM latest;\n"
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "postgres-1",
+                        "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "table",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "cellHeight": "sm",
+                "enablePagination": false,
+                "showHeader": true,
+                "sortBy": []
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "#64748B"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "custom": {
+                    "align": "auto",
+                    "cellOptions": {
+                      "type": "auto"
+                    },
+                    "footer": {
+                      "reducers": []
+                    },
+                    "inspect": false
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-9000": {
+        "kind": "Panel",
+        "spec": {
+          "id": 9000,
+          "title": "",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "text",
+            "version": "13.1.2",
+            "spec": {
+              "options": {
+                "code": {
+                  "language": "plaintext",
+                  "showLineNumbers": false,
+                  "showMiniMap": false
+                },
+                "content": "# 🔍 Machine Investigation & Diagnostics\n\n[1 · Fleet Overview (Command Center)](/d/adz7dcc/ims-drilling?orgId=1&${__url_time_range}) &nbsp;|&nbsp;\n**2 · Machine Investigation (Active)** &nbsp;|&nbsp;\n[3 · Shift Production History](/d/ims-drilling-history/ims-drilling-e28094-3-shift-production-history?orgId=1&${__url_time_range}&var-focus_machine=${focus_machine}) &nbsp;|&nbsp;\n[4 · Reliability & System Health](/d/ims-drilling-anomaly-analysis/963b915?orgId=1&${__url_time_range}&var-focus_machine=${focus_machine})\n",
+                "mode": "markdown"
+              },
+              "fieldConfig": {
+                "defaults": {},
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      }
+    },
+    "layout": {
+      "kind": "GridLayout",
+      "spec": {
+        "items": [
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 0,
+              "width": 24,
+              "height": 2,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-9000"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 2,
+              "width": 6,
+              "height": 10,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-301"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 6,
+              "y": 2,
+              "width": 18,
+              "height": 10,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-302"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 12,
+              "width": 12,
+              "height": 7,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-7"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 12,
+              "y": 12,
+              "width": 12,
+              "height": 7,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-102"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 19,
+              "width": 12,
+              "height": 8,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-8"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 12,
+              "y": 19,
+              "width": 12,
+              "height": 8,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-17"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": [
+      {
+        "title": "1 · Fleet Overview (Command Center)",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "Real-time fleet operations and machine KPI overview across all 93 machines",
+        "url": "/d/adz7dcc/ims-drilling",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "2 · Machine Investigation",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "Deep single-machine diagnostics, live telemetry state, spindle tool inspections, and errors",
+        "url": "/d/ims-drilling-machine-detail/ed64786",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "3 · Shift Production",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "7-day Day & Night shift performance, CNC Retro View, and tabular production report",
+        "url": "/d/ims-drilling-history/ims-drilling-e28094-3-shift-production-history",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "4 · Reliability & Health",
+        "type": "link",
+        "icon": "dashboard",
+        "tooltip": "Rule-based anomaly detection, top recurring errors, and telemetry ingestion pipeline health",
+        "url": "/d/ims-drilling-anomaly-analysis/963b915",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      }
+    ],
+    "liveNow": true,
+    "preload": false,
+    "tags": [
+      "IMS",
+      "DRILLING",
+      "manufacturing",
+      "real-data",
+      "machine-event",
+      "six-page-suite"
+    ],
+    "timeSettings": {
+      "timezone": "browser",
+      "from": "now-30d",
+      "to": "now",
+      "autoRefresh": "5s",
+      "autoRefreshIntervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m"
+      ],
+      "hideTimepicker": false,
+      "fiscalYearStartMonth": 0
+    },
+    "title": "IMS Drilling — 2 Machine Investigation",
+    "variables": [
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "machine_id",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "label": "Machine",
+          "hide": "hideVariable",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "postgres",
+            "version": "v0",
+            "spec": {
+              "__legacyStringValue": "SELECT 'All' AS __text, 'All' AS __value UNION ALL SELECT DISTINCT equipment_id AS __text, equipment_id AS __value FROM public.machine_event WHERE equipment_id IS NOT NULL ORDER BY 1"
+            },
+            "labels": {
+              "grafana.app/export-label": "postgres-1",
+              "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "alphabeticalAsc",
+          "definition": "SELECT 'All' AS __text, 'All' AS __value UNION ALL SELECT DISTINCT equipment_id AS __text, equipment_id AS __value FROM public.machine_event WHERE equipment_id IS NOT NULL ORDER BY 1",
+          "options": [],
+          "multi": true,
+          "includeAll": false,
+          "allowCustomValue": true
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "focus_machine",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "label": "Focus machine",
+          "hide": "dontHide",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "postgres",
+            "version": "v0",
+            "spec": {
+              "__legacyStringValue": "SELECT DISTINCT equipment_id AS __text, equipment_id AS __value FROM public.machine_event WHERE equipment_id IS NOT NULL ORDER BY 1"
+            },
+            "labels": {
+              "grafana.app/export-label": "postgres-1",
+              "grafana.app/export-datasource-name": "grafana-postgresql-datasource"
+            }
+          },
+          "regex": "",
+          "regexApplyTo": "value",
+          "sort": "alphabeticalAsc",
+          "definition": "SELECT DISTINCT equipment_id AS __text, equipment_id AS __value FROM public.machine_event WHERE equipment_id IS NOT NULL ORDER BY 1",
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "allowCustomValue": true
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "status_filter",
+          "query": "All,RUN,STOP",
+          "current": {
+            "text": "All",
+            "value": "All"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Status",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "event_filter",
+          "query": "All,status,event,alarm",
+          "current": {
+            "text": "All",
+            "value": "All"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Evidence type",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "TextVariable",
+        "spec": {
+          "name": "program_search",
+          "current": {
+            "text": "",
+            "value": ""
+          },
+          "query": "",
+          "label": "Program contains",
+          "hide": "hideVariable",
+          "skipUrlSync": false
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "stale_hours",
+          "query": "24,72,168,720",
+          "current": {
+            "text": "168",
+            "value": "168"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Stale after (hours)",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "stop_minutes",
+          "query": "15,30,60,240",
+          "current": {
+            "text": "30",
+            "value": "30"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Long STOP (minutes)",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "alarm_burst",
+          "query": "3,5,10,20",
+          "current": {
+            "text": "5",
+            "value": "5"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Error burst / 5m",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "raw_limit",
+          "query": "100,250,500",
+          "current": {
+            "text": "250",
+            "value": "250"
+          },
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "label": "Evidence rows",
+          "hide": "hideVariable",
+          "skipUrlSync": false,
+          "allowCustomValue": true,
+          "valuesFormat": "csv"
+        }
+      }
+    ]
+  }
+}
